@@ -1,0 +1,81 @@
+{
+    "Colors": [
+        {
+            "Color": "#4775b4",
+            "Height": 0
+        },
+        {
+            "Color": "#598cc3",
+            "Height": 100
+        },
+        {
+            "Color": "#6ca5ca",
+            "Height": 200
+        },
+        {
+            "Color": "#7db0cf",
+            "Height": 300
+        },
+        {
+            "Color": "#92c2d7",
+            "Height": 400
+        },
+        {
+            "Color": "#b6d8e1",
+            "Height": 500
+        },
+        {
+            "Color": "#dfefee",
+            "Height": 600
+        },
+        {
+            "Color": "#ecf8de",
+            "Height": 700
+        },
+        {
+            "Color": "#f7fcc9",
+            "Height": 800
+        },
+        {
+            "Color": "#fefab3",
+            "Height": 900
+        },
+        {
+            "Color": "#fceea5",
+            "Height": 1000
+        },
+        {
+            "Color": "#fddf94",
+            "Height": 1100
+        },
+        {
+            "Color": "#fdce80",
+            "Height": 1200
+        },
+        {
+            "Color": "#fcbd6f",
+            "Height": 1300
+        },
+        {
+            "Color": "#fca760",
+            "Height": 1400
+        },
+        {
+            "Color": "#f78e54",
+            "Height": 1500
+        },
+        {
+            "Color": "#fc9775",
+            "Height": 1600
+        },
+        {
+            "Color": "#f47647",
+            "Height": 1700
+        },
+        {
+            "Color": "#eb603e",
+            "Height": 1800
+        }
+    ],
+    "Count": 19
+}

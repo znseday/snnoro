@@ -1,0 +1,59 @@
+﻿{
+	"Configuration": 
+	{
+		"Count": 4,
+		
+		"b0.x": 0,
+		"b0.y": 0,
+		"b1.x": 5000,
+		"b1.y": 5000,
+		
+		"IsUseReliefRandomSeed": true,
+		"ReliefRandomSeed": 748,
+		"ReliefCoeffs": 
+		{
+			"A_r1": 0.001, 
+			"A_r2": 0.0018
+			
+		},
+		
+		"TrajectoryCount": 3,
+		"IsRandomTrajectories": false,
+		
+		"Trajectories": [
+			{
+				"p0.x": 1500, "p0.y": 1000, "p1.x": 3500, "p1.y": 2700,
+				"v": 0.7
+			},
+			{
+				"p0.x": 2000, "p0.y": 200, "p1.x": 4000, "p1.y": 1500,
+				"v": 1.2
+			},
+			{
+				"p0.x": 1000, "p0.y": 1000, "p1.x": 2500, "p1.y": 4000,
+				"v": 2.0
+			}
+		],
+		
+		"NodeCount": 3,
+		"IsRandomNodes": false,
+		
+		"Nodes": [
+			{
+				"R": 1000
+			},
+			{
+				"R": 1000
+			},
+			{
+				"R": 700
+			}
+			
+		],
+		
+		"pMutation": 0.012,
+		"pCrossover": 0.015,
+		
+		"TargetCostFunction": "MyFunction"
+	}
+}

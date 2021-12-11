@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>589</width>
+    <height>436</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="wgtCentral" native="true">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>481</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <widget class="QWidget" name="horizontalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>40</y>
+       <width>431</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>589</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileStart_Old"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileNew_Grad_Config"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileOpen_Grad_Descent"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileSave_Grad_Config"/>
+    <addaction name="actionFileSave_Grad_Config_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileExit"/>
+   </widget>
+   <widget class="QMenu" name="menuOld_Tables">
+    <property name="title">
+     <string>Old Tables</string>
+    </property>
+    <addaction name="actionOldTablesGeneral"/>
+    <addaction name="separator"/>
+    <addaction name="actionOldTablesConfig_0"/>
+    <addaction name="actionOldTablesConfig_1"/>
+    <addaction name="actionOldTablesConfig_2"/>
+    <addaction name="actionOldTablesConfig_3"/>
+   </widget>
+   <widget class="QMenu" name="menuGrad">
+    <property name="title">
+     <string>Grad</string>
+    </property>
+    <widget class="QMenu" name="menuCount_of_Viewports">
+     <property name="title">
+      <string>Count of Viewports</string>
+     </property>
+     <addaction name="actionGradSetDraw2"/>
+     <addaction name="actionGradSetDraw3"/>
+     <addaction name="actionGradSetDraw4"/>
+     <addaction name="actionGradSetDraw6"/>
+     <addaction name="actionGradSetDraw9"/>
+    </widget>
+    <addaction name="actionGradSwitch_Show_One_All"/>
+    <addaction name="menuCount_of_Viewports"/>
+    <addaction name="separator"/>
+    <addaction name="actionGradSwitch_Pespective_for_Current"/>
+    <addaction name="actionGradSwitch_Pespective_for_All"/>
+    <addaction name="actionGradReset_View_Point_for_Current"/>
+    <addaction name="actionGradReset_View_Point_for_All"/>
+    <addaction name="separator"/>
+    <addaction name="actionGradChange_Population_size"/>
+    <addaction name="actionGradSettings"/>
+    <addaction name="separator"/>
+    <addaction name="actionGradCalc_Bonds"/>
+    <addaction name="actionGradStart_Phase_1"/>
+    <addaction name="actionGradStart_Phase_1_for_Current_Config"/>
+    <addaction name="actionGradRemove_Uncovered"/>
+    <addaction name="actionGradStart_Phase_2"/>
+    <addaction name="actionGradStart_Phase_2_for_Current_Config"/>
+    <addaction name="actionGradStop"/>
+    <addaction name="separator"/>
+    <addaction name="actionShow_Tables"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuRelief">
+    <property name="title">
+     <string>Relief</string>
+    </property>
+    <addaction name="actionRelief_Relief_Creator"/>
+   </widget>
+   <widget class="QMenu" name="menuWorld">
+    <property name="title">
+     <string>World</string>
+    </property>
+    <addaction name="actionWorld_Show_Coords"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionEdit_Add_New_Route"/>
+    <addaction name="actionEdit_Finish_Route"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_Delete_Route"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_Edit_Signal_Nodes_for_All"/>
+    <addaction name="actionEdit_Edit_Signal_Nodes_for_Current"/>
+   </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>Debug</string>
+    </property>
+    <addaction name="actionTwoLines"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuOld_Tables"/>
+   <addaction name="menuGrad"/>
+   <addaction name="menuWorld"/>
+   <addaction name="menuRelief"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuDebug"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionFileExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionFileStart_Old">
+   <property name="text">
+    <string>Start &amp;Old</string>
+   </property>
+  </action>
+  <action name="actionOldTablesGeneral">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>General</string>
+   </property>
+  </action>
+  <action name="actionOldTablesConfig_0">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Config 0</string>
+   </property>
+  </action>
+  <action name="actionOldTablesConfig_1">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Config 1</string>
+   </property>
+  </action>
+  <action name="actionOldTablesConfig_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Config 2</string>
+   </property>
+  </action>
+  <action name="actionOldTablesConfig_3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Config 3</string>
+   </property>
+  </action>
+  <action name="actionFileOpen_Grad_Descent">
+   <property name="text">
+    <string>&amp;Open Grad Descent</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionGradSetDraw2">
+   <property name="text">
+    <string>2</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionGradSetDraw3">
+   <property name="text">
+    <string>3</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionGradSwitch_Show_One_All">
+   <property name="text">
+    <string>Switch Show One/All</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
+   </property>
+  </action>
+  <action name="actionGradSwitch_Pespective_for_Current">
+   <property name="text">
+    <string>Switch Pespective for Current</string>
+   </property>
+   <property name="shortcut">
+    <string>P</string>
+   </property>
+  </action>
+  <action name="actionGradSwitch_Pespective_for_All">
+   <property name="text">
+    <string>Switch Pespective for All</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+P</string>
+   </property>
+  </action>
+  <action name="actionGradReset_View_Point_for_Current">
+   <property name="text">
+    <string>Reset View Point for Current</string>
+   </property>
+   <property name="shortcut">
+    <string>R</string>
+   </property>
+  </action>
+  <action name="actionGradReset_View_Point_for_All">
+   <property name="text">
+    <string>Reset View Point for All</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+R</string>
+   </property>
+  </action>
+  <action name="actionGradSetDraw4">
+   <property name="text">
+    <string>4</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
+  </action>
+  <action name="actionGradSetDraw6">
+   <property name="text">
+    <string>6</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+6</string>
+   </property>
+  </action>
+  <action name="actionGradSetDraw9">
+   <property name="text">
+    <string>9</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+9</string>
+   </property>
+  </action>
+  <action name="actionGradStart_Phase_1">
+   <property name="text">
+    <string>Start Phase 1</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
+   </property>
+  </action>
+  <action name="actionGradStop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+  </action>
+  <action name="actionGradSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionGradStart_Phase_2">
+   <property name="text">
+    <string>Start Phase 2</string>
+   </property>
+  </action>
+  <action name="actionGradRemove_Uncovered">
+   <property name="text">
+    <string>Remove Uncovered</string>
+   </property>
+  </action>
+  <action name="actionGradChange_Population_size">
+   <property name="text">
+    <string>Change Population size</string>
+   </property>
+  </action>
+  <action name="actionShow_Tables">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Tables</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionGradCalc_Bonds">
+   <property name="text">
+    <string>Calc Bonds</string>
+   </property>
+  </action>
+  <action name="actionRelief_Relief_Creator">
+   <property name="text">
+    <string>Relief Creator...</string>
+   </property>
+  </action>
+  <action name="actionFileSave_Grad_Config">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Grad Config</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Coords">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Coords</string>
+   </property>
+  </action>
+  <action name="actionEdit_Add_New_Route">
+   <property name="text">
+    <string>Add New Route</string>
+   </property>
+  </action>
+  <action name="actionEdit_Finish_Route">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Finish Route</string>
+   </property>
+  </action>
+  <action name="actionFileNew_Grad_Config">
+   <property name="text">
+    <string>New Grad Config</string>
+   </property>
+  </action>
+  <action name="actionFileSave_Grad_Config_As">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Grad Config As...</string>
+   </property>
+  </action>
+  <action name="actionEdit_Delete_Route">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Delete Route</string>
+   </property>
+  </action>
+  <action name="actionEdit_Edit_Signal_Nodes_for_All">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Edit Signal Nodes for All...</string>
+   </property>
+  </action>
+  <action name="actionTwoLines">
+   <property name="text">
+    <string>TwoLines</string>
+   </property>
+  </action>
+  <action name="actionGradStart_Phase_1_for_Current_Config">
+   <property name="text">
+    <string>Start Phase 1 for Current Config</string>
+   </property>
+  </action>
+  <action name="actionGradStart_Phase_2_for_Current_Config">
+   <property name="text">
+    <string>Start Phase 2 for Current Config</string>
+   </property>
+  </action>
+  <action name="actionEdit_Edit_Signal_Nodes_for_Current">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Edit Signal Nodes for Current...</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

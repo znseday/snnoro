@@ -1,0 +1,53 @@
+{
+    "Colors": [
+        {
+            "Color": "#dcede4",
+            "Height": 0
+        },
+        {
+            "Color": "#51b2c8",
+            "Height": 100
+        },
+        {
+            "Color": "#000000",
+            "Height": 100
+        },
+        {
+            "Color": "#a9c663",
+            "Height": 200
+        },
+        {
+            "Color": "#dbe5ac",
+            "Height": 400
+        },
+        {
+            "Color": "#eae2a2",
+            "Height": 600
+        },
+        {
+            "Color": "#f7e298",
+            "Height": 800
+        },
+        {
+            "Color": "#f2b94a",
+            "Height": 1000
+        },
+        {
+            "Color": "#f3a428",
+            "Height": 1200
+        },
+        {
+            "Color": "#d17617",
+            "Height": 1400
+        },
+        {
+            "Color": "#e7710c",
+            "Height": 1600
+        },
+        {
+            "Color": "#c0c0cc",
+            "Height": 1800
+        }
+    ],
+    "Count": 12
+}
