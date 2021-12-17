@@ -55,6 +55,9 @@ void Model::getSpecialViewParams(int k, double &x0, double &y0, double &w, doubl
     h = getSpecialViewW(); // W vs H ?
 }
 
+///
+/// \brief Model::draw
+///
 void Model::draw() const
 {
 //    cout << __PRETTY_FUNCTION__ << endl;
@@ -94,6 +97,10 @@ void Model::draw() const
 
 }
 
+///
+/// \brief Model::drawSpecial Рисует в 3d
+/// \param k Номер модели
+///
 void Model::drawSpecial(int k) const
 {
     if (fDrawCfg3d)
@@ -104,6 +111,8 @@ void Model::drawSpecial(int k) const
         emit signalRepaint();
     }
 }
+
+
 
 
 // ----
