@@ -45,9 +45,6 @@ void View3d::setupCamera()
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-
-//    gluPerspective(60, height / (double)width, 0.1, 10000);
-
     gluPerspective(60, height / (double)width, 100, 10000);
 
     glMatrixMode(GL_MODELVIEW);
