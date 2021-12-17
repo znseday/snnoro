@@ -1,9 +1,6 @@
+// Файл для старой модели
 #include "Configuration.h"
-
 #include "MathUtil.h"
-//#include "IInfoProvider.h"
-
-
 #include "Settings.h"
 
 #include <ctime>
@@ -12,7 +9,6 @@ using namespace std;
 
 #define GR ((sqrt(5)+1)/2.0)
 #define K_GR ((0.5) / (GR))
-
 
 void Configuration::clear()
 {
