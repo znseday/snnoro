@@ -24,7 +24,7 @@ using namespace std;
 int main(int argc, char * argv[])
 {
  // проблема при изменении размера популяции на меньшее чем вьюпортов
-    MyLibTest();
+    MyLibTest(); // Просто тестирование библиотеки
 
     srand((unsigned int)time(0));
 
@@ -50,9 +50,6 @@ int main(int argc, char * argv[])
 
     Settings::Inst().LoadFromJson(fn.toStdString());
     cout << endl << Settings::Inst() << endl;
-
-    //MainGLWidget mainGLWidget;
-    //mainGLWidget.resize(640, 640);
 
     MainWindow mainWindow;
     mainWindow.resize(1200, 600);
