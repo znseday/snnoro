@@ -15,14 +15,11 @@ using namespace std;
 
 #include <QtWidgets>
 
-//#include "MainGLWidget.h"
 #include "MainWindow.h"
 #include "FormGeneral.h"
 #include "FormConfigInfo.h"
 
-
 #include "Test_tf_gd_lib.h"
-
 
 int main(int argc, char * argv[])
 {
@@ -32,16 +29,12 @@ int main(int argc, char * argv[])
     srand((unsigned int)time(0));
 
     QApplication app(argc, argv);
-    //    QString fn;
 
     QSurfaceFormat sfmt;
     sfmt.setSamples(4);
     QSurfaceFormat::setDefaultFormat(sfmt);
 
-
-
 //    FormSettingsSelector frmSettingsSelector;
-
 //    frmSettingsSelector.show();
 //    frmSettingsSelector.exec();
 //    if (frmSettingsSelector.ui->listWidget->count() > 0)
@@ -82,7 +75,6 @@ int main(int argc, char * argv[])
 //    QObject::connect(&Model::Instance(), SIGNAL(signalSendGeneralData(ExportGeneralData)),
 //                     &formGeneral, SLOT(slotReceiveGeneralData(ExportGeneralData)));
 
-
 //    FormConfigInfo formConfigInfo;
 //    formConfigInfo.resize(1350, 500);
 //    formConfigInfo.Set_nConfig(0);
@@ -91,12 +83,8 @@ int main(int argc, char * argv[])
 //    QObject::connect(&Model::Instance(), SIGNAL(signalSendDetailedInfo(ExportDetailedInfo)),
 //                     &formConfigInfo, SLOT(slotReceiveDetailedInfo(ExportDetailedInfo)));
 
-
-
-
 //    QObject::connect(&Model::Instance(), SIGNAL(signalRepaint()),
 //                     &mainGLWidget, SLOT(slotReceiveRepaintSignal()));
-
 
     app.exec();
 
