@@ -21,8 +21,9 @@ struct LegendColorType
     std::vector<std::pair<rgbaType, int>> Colors;
     double averSimilarity = 0;
 };
+//-------------------------------------------------------------
 
-class MyPicWidget : public QLabel
+class MyPicSrcWidget : public QLabel
 {
     Q_OBJECT
 private:
@@ -33,6 +34,7 @@ private:
 
 signals:
     void SignalSendRectFrame(QRect);
+    void SignalSendChangePoint(int, int);
 
 protected:
     void mousePressEvent(QMouseEvent *pe);
@@ -41,11 +43,31 @@ protected:
     void paintEvent(QPaintEvent *pe);
 
 public:
-    MyPicWidget(const QString &text, const QImage &_imgSrc, QWidget *parent = nullptr) : QLabel(text, parent), ImgSrc(_imgSrc) {};
-
+    MyPicSrcWidget(const QString &text, const QImage &_imgSrc, QWidget *parent = nullptr) : QLabel(text, parent), ImgSrc(_imgSrc) {};
 };
+//-------------------------------------------------------------
 
+class MyPicDstWidget : public QLabel
+{
+    Q_OBJECT
+private:
+    int OldX, OldY;
+    const QImage &ImgDst;
+    bool IsMouseDown = false;
 
+signals:
+    void SignalSendChangePoint(int, int);
+
+protected:
+    void mousePressEvent(QMouseEvent *pe);
+//    void mouseReleaseEvent(QMouseEvent *pe);
+//    void mouseMoveEvent(QMouseEvent *pe);
+    void paintEvent(QPaintEvent *pe);
+
+public:
+    MyPicDstWidget(const QString &text, const QImage &_imgDst, QWidget *parent = nullptr) : QLabel(text, parent), ImgDst(_imgDst) {};
+};
+//-------------------------------------------------------------
 
 namespace Ui {
 class FormRelief;
@@ -86,8 +108,8 @@ private:
     QImage ImgReliefSrc;
     QImage ImgReliefDst;
 
-    MyPicWidget *lblPicSrc;
-    QLabel *lblPicDst;
+    MyPicSrcWidget *lblPicSrc;
+    MyPicDstWidget *lblPicDst;
 
     QColorDialog dlgColor;
 
@@ -105,6 +127,7 @@ private:
 public slots:
 
     void SlotReceiveRectFrame(QRect _rect);
+    void SlotReceiveChangePoint(int x, int y);
 };
 
 #endif // FORMRELIEF_H

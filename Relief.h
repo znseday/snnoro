@@ -31,7 +31,6 @@ class Relief3D
 protected:
 //    std::vector<double> reliefA, reliefB, reliefH;
 
-
     double LinearInterpol(std::map<int, int> const & _row, double x) const;
 
     double MinX = std::numeric_limits<double>::max();

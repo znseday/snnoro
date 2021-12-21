@@ -330,7 +330,7 @@
      <x>0</x>
      <y>0</y>
      <width>1045</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -370,6 +370,9 @@
    </property>
   </action>
   <action name="actionRelief_Calc">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Calc</string>
    </property>
@@ -388,6 +391,9 @@
    </property>
   </action>
   <action name="actionRelief_Save_Relief_As">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save Relief As...</string>
    </property>

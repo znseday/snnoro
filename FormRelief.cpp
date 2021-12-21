@@ -12,7 +12,7 @@
 #include <QFile>
 #include <QJsonArray>
 
-void MyPicWidget::mousePressEvent(QMouseEvent *pe)
+void MyPicSrcWidget::mousePressEvent(QMouseEvent *pe)
 {
     qDebug() << __PRETTY_FUNCTION__;
 
@@ -22,11 +22,19 @@ void MyPicWidget::mousePressEvent(QMouseEvent *pe)
     FrameRect.setTopLeft({OldX, OldY});
     FrameRect.setBottomRight({OldX, OldY});
 
-    IsMouseDown = true;
+    if (pe->button() == Qt::LeftButton)
+    {
+        IsMouseDown = true;
+    }
+//    else if (pe->button() == Qt::RightButton)
+//    {
+//        emit SignalSendChangePoint(OldX, OldY); // Убрать?
+//        repaint();
+//    }
 }
 //-------------------------------------------------------------
 
-void MyPicWidget::mouseReleaseEvent(QMouseEvent *pe)
+void MyPicSrcWidget::mouseReleaseEvent(QMouseEvent *pe)
 {
     IsMouseDown = false;
     emit SignalSendRectFrame(QRect(QPoint(OldX, OldY), QPoint(pe->pos().x(), pe->pos().y())));
@@ -34,7 +42,7 @@ void MyPicWidget::mouseReleaseEvent(QMouseEvent *pe)
 }
 //-------------------------------------------------------------
 
-void MyPicWidget::mouseMoveEvent(QMouseEvent *pe)
+void MyPicSrcWidget::mouseMoveEvent(QMouseEvent *pe)
 {
     FrameRect.setTopLeft({OldX, OldY});
     FrameRect.setBottomRight({pe->pos().x(), pe->pos().y()});
@@ -42,14 +50,48 @@ void MyPicWidget::mouseMoveEvent(QMouseEvent *pe)
 }
 //-------------------------------------------------------------
 
-void MyPicWidget::paintEvent([[maybe_unused]] QPaintEvent *pe)
+void MyPicSrcWidget::paintEvent([[maybe_unused]] QPaintEvent *pe)
 {
-    QPainter painter(this);
-    painter.drawImage(0, 0, ImgSrc);
+    if (!ImgSrc.isNull())
+    {
+        QPainter painter(this);
+        painter.drawImage(0, 0, ImgSrc);
 
-    if (IsMouseDown)
-        painter.drawRect(FrameRect);
-    //painter.drawLine(100,100,200,200);
+        if (IsMouseDown)
+            painter.drawRect(FrameRect);
+
+        //painter.drawLine(100,100,200,200);
+    }
+}
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+
+void MyPicDstWidget::mousePressEvent(QMouseEvent *pe)
+{
+    qDebug() << __PRETTY_FUNCTION__;
+
+    OldX = pe->pos().x();
+    OldY = pe->pos().y();
+
+//    if (pe->button() == Qt::LeftButton) // Убрать?
+//    {
+//        IsMouseDown = true;
+//    }
+    if (pe->button() == Qt::RightButton)
+    {
+        emit SignalSendChangePoint(OldX, OldY);
+        repaint();
+    }
+}
+//-------------------------------------------------------------
+
+void MyPicDstWidget::paintEvent([[maybe_unused]] QPaintEvent *pe)
+{
+    if (!ImgDst.isNull())
+    {
+        QPainter painter(this);
+        painter.drawImage(0, 0, ImgDst);
+    }
 }
 //-------------------------------------------------------------
 //-------------------------------------------------------------
@@ -63,8 +105,8 @@ FormRelief::FormRelief(QWidget *parent) :
     wgtForScrollArea = new QWidget;
     QVBoxLayout *layouForScrollArea = new QVBoxLayout;
 
-    lblPicSrc = new MyPicWidget("Test", ImgReliefSrc);
-    lblPicDst = new QLabel("Result");
+    lblPicSrc = new MyPicSrcWidget("Test", ImgReliefSrc);
+    lblPicDst = new MyPicDstWidget("Result", ImgReliefDst);
     layouForScrollArea->addWidget(lblPicSrc);
     layouForScrollArea->addWidget(lblPicDst);
 
@@ -74,9 +116,10 @@ FormRelief::FormRelief(QWidget *parent) :
     connect(lblPicSrc, SIGNAL(SignalSendRectFrame(QRect)),
             this, SLOT(SlotReceiveRectFrame(QRect)));
 
+    connect(lblPicDst, SIGNAL(SignalSendChangePoint(int,int)),
+            this, SLOT(SlotReceiveChangePoint(int,int)));
 
     //ui->tableColors->setColumnCount(2);
-
     //connect(ui->tableColors, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(SlotColorItemDblClicked(QTableWidgetItem *)));
 
     dlgColor.setWindowTitle("Select color");
@@ -117,6 +160,8 @@ void FormRelief::on_actionFile_Open_Image_triggered()
     lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
 
     //lblPic->setPixmap(QPixmap::fromImage(ImgRelief));
+
+    ui->actionRelief_Calc->setEnabled(true);
 }
 //-------------------------------------------------------------
 
@@ -194,6 +239,8 @@ void FormRelief::on_actionRelief_Calc_triggered()
     //lblPicDst->repaint();
 
     lblPicDst->setPixmap(QPixmap::fromImage(ImgReliefDst));
+
+    ui->actionRelief_Save_Relief_As->setEnabled(true);
 }
 //-------------------------------------------------------------
 
@@ -239,6 +286,11 @@ void FormRelief::CalcLegendColor()
     }
 
     double averSim = 0;
+
+    if (LegendColor.Colors.size() < 2)
+    {
+        throw std::runtime_error("LegendColor.Colors.size() < 2 in CalcLegendColor");
+    }
 
     for (size_t i = 0; i < LegendColor.Colors.size()-1; ++i)
     {
@@ -306,7 +358,6 @@ int FormRelief::AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd)
 
     if (yEnd > ImgReliefSrc.height())
         throw std::runtime_error("yEnd > ImgReliefSrc.height()");
-
 
 //    double averR = 0;
 //    double averG = 0;
@@ -432,10 +483,10 @@ void FormRelief::SlotReceiveRectFrame(QRect _rect)
 
 //    int firstRow = list.first().row();
 
-    int firstRow = LastSelectedColorRow;
-    if (firstRow < 0 || firstRow >= ui->tableColors->rowCount())
+//    int firstRow = LastSelectedColorRow;
+    if (LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount())
     {
-        qDebug() << "firstRow < 0 || firstRow >= ui->tableColors->rowCount()";
+        qDebug() << "LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount()";
         return;
     }
 
@@ -444,8 +495,30 @@ void FormRelief::SlotReceiveRectFrame(QRect _rect)
 
 //    ui->tableColors->item(firstRow, 0)->background().setColor(QColor(color.r, color.g, color.b));
 
-    ui->tableColors->item(firstRow, 0)->setBackground(QBrush(QColor(color.r, color.g, color.b)));
+    ui->tableColors->item(LastSelectedColorRow, 0)->setBackground(QBrush(QColor(color.r, color.g, color.b)));
 
+}
+//-------------------------------------------------------------
+
+void FormRelief::SlotReceiveChangePoint(int x, int y)
+{
+    if (LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount())
+    {
+        qDebug() << "LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount()";
+        return;
+    }
+
+    QColor c = ui->tableColors->item(LastSelectedColorRow, 0)->background().color();
+    if (!c.isValid())
+    {
+        qDebug() << "Selected color is invalid!";
+        return;
+    }
+
+    int w = ImgReliefDst.width();
+    int h = ImgReliefDst.height();
+
+//    int col = x / (double)w * Relief.
 }
 //-------------------------------------------------------------
 
@@ -537,8 +610,6 @@ void FormRelief::on_actionFile_Load_Legend_triggered()
         qDebug() << "json file not open";
         return;
     }
-
-
 }
 //-------------------------------------------------------------
 
