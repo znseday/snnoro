@@ -430,7 +430,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                                          Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
                                Nodes[k2/2].R);
 
-                double x = sn1.Pos.distanceToPoint(sn2.Pos);
+                double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
                 double R12 = sn1.R + sn2.R;
 
                 R12 -= _targetFuncSettings.R_nodeOverlap;
@@ -740,8 +740,12 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params)
             p1.IsCovered = false;
             for (size_t k = 0; k < Nodes.size()*2; k += 2)
             {
-                SignalNode sn(QVector3D(params[k], params[k+1], 0), Nodes[k/2].R);
-                if (p1.Pos.distanceToPoint(sn.Pos) < sn.R) // ???
+//                SignalNode sn(QVector3D(params[k], params[k+1], 0), Nodes[k/2].R);
+                SignalNode sn(QVector3D(params[k],
+                                        params[k+1],
+                                        Relief->CalcRealZbyRealXY(params[k], params[k+1])),
+                                        Nodes[k/2].R);
+                if (p1.Pos.distanceToPoint(sn.Pos) < sn.R) // Сравниваем расстояния в 3d! Придумать что-то еще?
                 {
                     p1.IsCovered = true;
                     break;
@@ -776,10 +780,7 @@ void MyConfig::CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings)
                 double distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
                 if (distToPoint < Nodes[iNode].R)
                 {
-
-
                     double arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
-
 
                     if (_targetFuncSettings.IsUseLineBetweenTwoPoints )
                     {
