@@ -372,7 +372,7 @@ void MainGLWidget::mouseMoveEvent(QMouseEvent *pe)
     {
         if (IsShowCoordsAlways || WorldMode != WorldModeType::Nothing)
         {
-            double wx, wy, wz;
+            double wx = -1, wy = -1, wz = -1;
             bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
         //    wExists = Model.MouseToWorld(pe->x(), pe->y(), this->height(), wx, wy, wz);
         //    auto tEnd = ClockType::now();

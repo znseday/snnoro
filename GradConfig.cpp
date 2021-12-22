@@ -99,6 +99,8 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
 //    glEnd();
 
 
+    glPushMatrix();
+    glTranslatef(0, 0, -Relief->GetAverZ());
 
     Relief->Draw(!Settings3d.IsPerspective);
 
@@ -277,11 +279,11 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
 
     }
 
+    glPopMatrix();
+
     glGetIntegerv(GL_VIEWPORT, vport);
     glGetDoublev(GL_MODELVIEW_MATRIX, modl);
     glGetDoublev(GL_PROJECTION_MATRIX, proj);
-
-//    glPopMatrix();
 }
 //----------------------------------------------------------
 

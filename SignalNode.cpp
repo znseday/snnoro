@@ -59,7 +59,7 @@ bool SignalNode::SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos)
     Pos.setX(x);
     Pos.setY(y);
 
-    Pos.setZ( _relief.CalcRealZbyRealXY( Pos.x(), Pos.y()) ); // ?
+    Pos.setZ( _relief.CalcRealZbyRealXY( Pos.x(), Pos.y()) );
 
     return isOk;
 }

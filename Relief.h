@@ -54,8 +54,8 @@ protected:
 
     bool IsReliefCreated = false; // ?
 
-    double minZ = std::numeric_limits<double>::max();
-    double maxZ = -1;
+    double minZ = std::numeric_limits<double>::max();  // in meters
+    double maxZ = -1; // in meters
 
     double DeltaDiag = 0;
 
@@ -68,12 +68,14 @@ protected:
     void CalcDeltaDiag();
 
     double Global_kz = 1.0;
+    double AverZ = 0; // in Gl coords
 
 public:
     Relief3D() = default;
     ~Relief3D();
 
     double Get_kz() const {return Global_kz;}
+    double GetAverZ() const {return AverZ;}
 
     static double LinearInterpol(double x, double x1, double x0, double f1, double f0);
 

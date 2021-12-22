@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QMessageBox>
 
+#include <limits>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -461,16 +463,46 @@ void MainWindow::on_actionWorld_Show_Coords_toggled(bool _toggled)
 
 void MainWindow::SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists)
 {
+    if (wExists) // Пытаемся отловить ошибку, когда в интерполяцию рельефа залетает nan
+    {
+//        if (wx == std::numeric_limits<double>::quiet_NaN() ||
+//            wx == std::numeric_limits<double>::signaling_NaN() )
+        if (std::isnan(wx))
+        {
+            throw std::logic_error("wx == nan in SlotReceiveWorldCoords");
+        }
+//        if (wy == std::numeric_limits<double>::quiet_NaN() ||
+//            wy == std::numeric_limits<double>::signaling_NaN() )
+        if (std::isnan(wy))
+        {
+            throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
+        }
+//        if (wz == std::numeric_limits<double>::quiet_NaN() ||
+//            wz == std::numeric_limits<double>::signaling_NaN() )
+        if (std::isnan(wz))
+        {
+            throw std::logic_error("wz == nan in SlotReceiveWorldCoords");
+        }
+    }
+
     lblGlX->setText("Gl X = " + (wExists?QString().setNum(wx):"n/a"));
     lblGlY->setText("Gl Y = " + (wExists?QString().setNum(wy):"n/a"));
     lblGlZ->setText("Gl Z = " + (wExists?QString().setNum(wz):"n/a"));
 
     double realX, realY, realZ;
-    realZ = GradModel.GetRelief().CalcRealXYZbyNormXY(wx, wy, realX, realY);
+//    if (std::isnan(wy))   // Пытаемся отловить ошибку, когда в интерполяцию рельефа залетает nan
+//    {
+//        throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
+//    }
 
-    lblWorldX->setText("WorldX = " + (wExists?QString().setNum(realX):"n/a") + " m");
-    lblWorldY->setText("WorldY = " + (wExists?QString().setNum(realY):"n/a") + " m");
-    lblWorldZ->setText("WorldZ = " + (wExists?QString().setNum(realZ):"n/a") + " m");
+    if (!std::isnan(wx) && !std::isnan(wy) && !std::isnan(wy))   //  Тпереь должно работать
+    {                                                // Если всё будет работать, то удалить все подобные ловушки
+        realZ = GradModel.GetRelief().CalcRealXYZbyNormXY(wx, wy, realX, realY);
+
+        lblWorldX->setText("WorldX = " + (wExists?QString().setNum(realX):"n/a") + " m");
+        lblWorldY->setText("WorldY = " + (wExists?QString().setNum(realY):"n/a") + " m");
+        lblWorldZ->setText("WorldZ = " + (wExists?QString().setNum(realZ):"n/a") + " m");
+    }
 }
 //-------------------------------------------------------------
 
