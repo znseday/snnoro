@@ -1,0 +1,73 @@
+{
+    "Configuration": {
+        "Area": {
+            "bottom": 0,
+            "left": 0,
+            "right": 10000,
+            "top": 8000
+        },
+        "Count": 100,
+        "IsRandomNodeCoords": true,
+        "IsRandomRelief": false,
+        "IsRandomRoutes": false,
+        "Nodes": [
+            {
+                "Beta": 29.999999999999996,
+                "R": 200
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 200
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 200
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 200
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 200
+            }
+        ],
+        "ReliefFileName": "../snnoro/Examples/Reliefs/Relief_06_test_points_2.json",
+        "ReliefInfo": {
+            "IsUseReliefRandomSeed": true,
+            "ReliefCoeffs": {
+                "A_r1": 0.01,
+                "A_r2": 0.02
+            },
+            "ReliefRandomSeed": 100
+        },
+        "RouteCount": 0,
+        "Routes": [
+        ],
+        "SignalNodeCount": 5,
+        "SignalNodeType": "Sphere",
+        "TargetCostFunction": "MyFunction"
+    },
+    "GradDesc": {
+        "Alpha": 0.35,
+        "CallBackFreq": 20,
+        "Eps": 0.01,
+        "Eta_FirstJump": 10,
+        "Eta_k_dec": 2.01,
+        "Eta_k_inc": 1.08,
+        "FinDifMethod": false,
+        "MaxIters": 500,
+        "MaxTime": 5,
+        "Min_Eta": 1e-07
+    },
+    "TargetFunctionSettings": {
+        "A2": 40000000,
+        "Aarf": 100000000,
+        "IsUseCoveredFlag": true,
+        "IsUseLineBetweenTwoPoints": false,
+        "R_nodeOverlap": 50,
+        "k_step_ot": 0.03,
+        "offX": 0.01,
+        "p": 1e-05
+    }
+}

@@ -9,16 +9,20 @@
 #include <QMouseEvent>
 
 #include <Relief.h>
+//#include <vector>
 
 struct rgbaType
 {
     unsigned char b = 0, g = 0, r = 0, a = 0;
+    rgbaType() = default;
     rgbaType(unsigned char _b, unsigned char _g, unsigned char _r, unsigned char _a) : b(_b), g(_g), r(_r), a(_a) {}
 };
 
+using CorolAndZ_pair = std::pair<rgbaType, int>;
+
 struct LegendColorType
 {
-    std::vector<std::pair<rgbaType, int>> Colors;
+    std::vector<CorolAndZ_pair> Colors;
     double averSimilarity = 0;
 };
 //-------------------------------------------------------------
@@ -86,8 +90,6 @@ private slots:
 
     void on_btnApply_clicked();
 
-    void on_actionRelief_Calc_triggered();
-
     void on_actionFile_Close_triggered();
 
     void SlotColorDblClicked(QTableWidgetItem *pItem);
@@ -99,7 +101,8 @@ private slots:
 
     void on_chbColorToLegend_stateChanged(int arg1);
 
-    void on_actionRelief_Save_Relief_As_triggered();
+    void on_actionRelief_Calc_Discrete_Img_triggered();
+    void on_actionRelief_Calc_Relief_And_Save_As_triggered();
 
 private:
     Ui::FormRelief *ui;
@@ -119,10 +122,14 @@ private:
     void CalcLegendColor();
     int FindNearestColorIndex(int r, int g, int b);
 
-    int AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd);
+    CorolAndZ_pair AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd);
     rgbaType AnalyseImageAreaForColor(int xStart, int yStart, int xEnd, int yEnd);
 
     Relief3D Relief;
+
+    std::vector<std::vector<CorolAndZ_pair>> TempGrid;
+
+    void PrintImgReliefDstFromTempGrid();
 
 public slots:
 

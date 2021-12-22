@@ -348,9 +348,9 @@
     <property name="title">
      <string>Relief</string>
     </property>
-    <addaction name="actionRelief_Calc"/>
+    <addaction name="actionRelief_Calc_Discrete_Img"/>
     <addaction name="separator"/>
-    <addaction name="actionRelief_Save_Relief_As"/>
+    <addaction name="actionRelief_Calc_Relief_And_Save_As"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuRelief"/>
@@ -369,15 +369,15 @@
     <string>Close</string>
    </property>
   </action>
-  <action name="actionRelief_Calc">
+  <action name="actionRelief_Calc_Discrete_Img">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Calc</string>
+    <string>Calc Discrete Img</string>
    </property>
    <property name="toolTip">
-    <string>Calc</string>
+    <string>Calc Discrete Img</string>
    </property>
   </action>
   <action name="actionFile_Save_Legend_As">
@@ -390,12 +390,15 @@
     <string>Load Legend</string>
    </property>
   </action>
-  <action name="actionRelief_Save_Relief_As">
+  <action name="actionRelief_Calc_Relief_And_Save_As">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Save Relief As...</string>
+    <string>Calc Relief And Save As...</string>
+   </property>
+   <property name="toolTip">
+    <string>Calc Relief And Save As...</string>
    </property>
   </action>
  </widget>
