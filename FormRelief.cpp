@@ -26,11 +26,6 @@ void MyPicSrcWidget::mousePressEvent(QMouseEvent *pe)
     {
         IsMouseDown = true;
     }
-//    else if (pe->button() == Qt::RightButton)
-//    {
-//        emit SignalSendChangePoint(OldX, OldY); // Убрать?
-//        repaint();
-//    }
 }
 //-------------------------------------------------------------
 
@@ -241,10 +236,10 @@ void FormRelief::on_actionRelief_Calc_Discrete_Img_triggered()
             int xEnd = (j+1)*dxPic;
             int yEnd = (i+1)*dyPic;
 //            int Z = AnalyseImageAreaForZ(j*dxPic, i*dyPic, (j+1)*dxPic, (i+1)*dyPic);
-            auto [color, Z] = AnalyseImageAreaForZ(xStart, yStart, xEnd, yEnd);
+            auto res = AnalyseImageAreaForZ(xStart, yStart, xEnd, yEnd);
             //double xReal = l + dxReal/2 + j*dxReal;
 
-            TempGrid.back().emplace_back(color, Z);
+            TempGrid.back().emplace_back(res);
 
 //            for (int y = yStart; y < yEnd; ++y)
 //            {
@@ -270,8 +265,6 @@ void FormRelief::on_actionRelief_Calc_Discrete_Img_triggered()
 //    lblPicDst->repaint();
     PrintImgReliefDstFromTempGrid();
 
-    //lblPicDst->setPixmap(QPixmap::fromImage(ImgReliefDst));
-
     ui->actionRelief_Calc_Relief_And_Save_As->setEnabled(true);
 }
 //-------------------------------------------------------------
@@ -283,7 +276,7 @@ void FormRelief::PrintImgReliefDstFromTempGrid()
         throw std::logic_error("TempGrid is empty in PrintImgReliefDstFromTempGrid()");
     }
 
-    int rows = TempGrid.size(); // Размер сетки
+    int rows = TempGrid.size();         // Размер сетки
     int cols = TempGrid.front().size(); // Размер сетки
 
     int w = ImgReliefDst.width();  // в пикселах
@@ -304,7 +297,6 @@ void FormRelief::PrintImgReliefDstFromTempGrid()
             for (int y = yStart; y < yEnd; ++y)
             {
                 const auto & color = TempGrid.at(i).at(j).first;
-        //        QRgb *tempLine = reinterpret_cast<QRgb*>(ImgRelief.scanLine(y));
                 rgbaType *tempLine = reinterpret_cast<rgbaType*>(ImgReliefDst.scanLine(y));
                 tempLine += xStart;
                 for (int x = xStart; x < xEnd; ++x)
@@ -495,7 +487,6 @@ CorolAndZ_pair FormRelief::AnalyseImageAreaForZ(int xStart, int yStart, int xEnd
 //-------------------------------------------------------------
 //    for (int y = yStart; y < yEnd; ++y)
 //    {
-////        QRgb *tempLine = reinterpret_cast<QRgb*>(ImgRelief.scanLine(y));
 //        rgbaType *tempLine = reinterpret_cast<rgbaType*>(ImgReliefDst.scanLine(y));
 //        tempLine += xStart;
 //        for (int x = xStart; x < xEnd; ++x)
@@ -754,7 +745,6 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
     {
         std::vector<std::pair<int, int>> row;
         double yReal = b + dyReal/2 + (rows - i - 1)*dyReal;
-
 
         for (int j = 0; j < cols; ++j)
         {
