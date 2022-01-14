@@ -668,65 +668,37 @@ bool MainWindow::CheckIsSavedAndSaveIfNecessary()
 
 void MainWindow::on_actionFileNew_Grad_Config_triggered()
 {
-    WorkMode = WorkModeType::GradWord;
+//    WorkMode = WorkModeType::GradWord;
     ui->actionFileStart_Old->setEnabled(false);
-
-//    if ( !GradModel.GetIsSaved() )
-//    {
-//        auto res = QMessageBox::question(this, "Question",
-//                                         "Grad Config file is not saved. Would you like to save it?",
-//                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-
-//        if (res == QMessageBox::Yes)
-//        {
-//            // try save
-//            on_actionFileSave_Grad_Config_triggered();
-//            if (IsGradDescFileSavedSuccessfully)
-//            {
-//                // nothing
-//            }
-//            else
-//            {
-//                return;
-//            }
-//        }
-//        else if (res == QMessageBox::No)
-//        {
-//            // nothing
-//        }
-//        else if (res == QMessageBox::Cancel)
-//        {
-//            return;
-//        }
-//        else
-//        {
-//            QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
-//            return;
-//        }
-//    }
 
     if (!CheckIsSavedAndSaveIfNecessary())
         return;
 
-    GradModel.NewGradModelBulk();
-    GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
+//    GradModel.NewGradModelBulk();
+//    GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
     // Здесь сделать что-нибудь еще: новая конфигурация
     //DialogGradConfigNew.InitDialog(GradModel);
 
     if (DialogGradConfigNew.exec() == QDialog::Accepted)
     {
+        GradModel.NewGradModelBulk();
+        GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
+
         if (!DialogGradConfigNew.CreateNewGradModel(GradModel))
         {
             QMessageBox::warning(this, "Warning", "Failed to Create New Grad Config");
             return;
-        }
+        }       
     }
     else
     {
         // Rejected
         return;
     }
+
+    WorkMode = WorkModeType::GradWord;
+    GradModel.MarkAsNotSaved();
 
     ui->actionFileSave_Grad_Config->setEnabled(true);
     ui->actionFileSave_Grad_Config_As->setEnabled(true);
@@ -835,7 +807,9 @@ void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
 }
 //-------------------------------------------------------------
 
-
-
-
-
+void MainWindow::on_actionShow_Abonents_triggered()
+{
+    if (WorkMode != WorkModeType::GradWord)
+        return;
+}
+//-------------------------------------------------------------

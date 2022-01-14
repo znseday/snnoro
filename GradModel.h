@@ -28,6 +28,7 @@ protected:
     bool IsRandomNodeCoords = true;
     std::vector<SignalNode> Nodes;
     SignalNodeType NodesType = SignalNodeType::Sphere;
+    bool IsDrawAbonents = false;
 
     std::vector<Route> Routes;
     bool IsRandomRoutes = false;

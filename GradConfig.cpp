@@ -42,7 +42,7 @@ void MyConfig::SetRandomNodeCoords()
 }
 //----------------------------------------------------------
 
-void MyConfig::DrawIn3D(SignalNodeType _snt) const
+void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
 {
     if (!Relief)
         throw std::runtime_error("Relief is not set");
@@ -165,6 +165,36 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
             }
             gluSphere(Quadric(), 0.02 + 0.05*sqrt(p.Weight), 12, 12);
             glPopMatrix();
+        }
+
+        if (isDrawAbonents)
+        {
+            const auto & abo = r.GetAbonent();
+            double x = (abo.Pos.x()-offsetX)*k;
+            double y = (abo.Pos.y()-offsetY)*k;
+            double z;
+
+            if (Relief->GetIsMathRelief())
+            {
+                // z = ???;
+                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
+            }
+            else
+            {
+//                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
+                z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
+            }
+
+            glColor3f(0.9f, 0.1f, 0.1f);
+
+            glBegin(GL_LINE_LOOP);
+            constexpr float kTri = 0.02f;
+            glVertex3f(x-kTri, y, z);
+            glVertex3f(x, y+2*kTri, z);
+            glVertex3f(x+kTri, y, z);
+
+            glEnd();
+
         }
     }
 

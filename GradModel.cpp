@@ -111,7 +111,7 @@ void MyGradModel::DrawOneConfig(size_t ind, bool OnlyOne)
         glLoadIdentity();
     }
 
-    Configs.at(ind).DrawIn3D(NodesType);
+    Configs.at(ind).DrawIn3D(NodesType, IsDrawAbonents);
 }
 //----------------------------------------------------------
 
@@ -424,7 +424,7 @@ void MyGradModel::NewGradModelBulk()
     nDraws = 1;
     IsGradCalculating = false;
 
-    IsSaved = false;
+    //IsSaved = false;
 
     ProtoGradDesc.SetIsUseUserTargetFunction(true);
     ProtoGradDesc.SetAlpha(0.35);

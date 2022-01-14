@@ -19,3 +19,17 @@ void Route::CalcOtherWeights()
         if (p.Weight <= 0)
             p.Weight = w;
 }
+//----------------------------------------------------------
+
+void Route::CalcAbonentPos(double t)
+{
+    if (Points.empty())
+        throw std::runtime_error("Points.empty() in Route::CalcAbonentPos");
+
+    Abonent.Pos = Points.front().Pos;
+
+    // to do...
+}
+//----------------------------------------------------------
+
+

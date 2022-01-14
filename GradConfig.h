@@ -85,7 +85,7 @@ public:
 //    void SetRandomNodeCoords(const QRectF &_area);
     void SetRandomNodeCoords();
 
-    void DrawIn3D(SignalNodeType _snt) const;
+    void DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const;
 
     bool StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoGD,
                           const TargetFuncSettingsStruct &_targetFuncSettings,
