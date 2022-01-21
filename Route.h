@@ -2,6 +2,7 @@
 #define ROUTE_H
 
 #include <vector>
+#include <QJsonObject>
 
 #include "Types.h"
 
@@ -26,6 +27,8 @@ public:
     double v = 0;
     Abonent_t() = default;
     Abonent_t(const Pos3d &_pos, double _v) : Pos(_pos), v(_v) {}
+    QJsonObject RepresentAsJsonObject() const;
+    void LoadFromJsonObject(const QJsonObject &_jsonObject);
 };
 //----------------------------------------------------------
 
@@ -33,7 +36,7 @@ class Route
 {
 protected:
 
-    // QString Name;
+    QString Name = "Unnamed";
     // double Priority; // что-то в этом роде, инфа для конкретного маршрута/абонента
     // QColor Color;
 
@@ -59,6 +62,14 @@ public:
     void CalcAbonentPos(double t);
 
     const Abonent_t & GetAbonent() const {return Abonent;}
+    Abonent_t & AbonentDirectAccess() {return Abonent;}
+
+    const QString & GetName() const {return Name;}
+
+    void SetName(const QString &_name) {Name = _name;}
+    void SetVforAbonent(double _v) {Abonent.v = _v;} // ?
+
+
 };
 
 #endif // ROUTE_H

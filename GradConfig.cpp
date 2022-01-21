@@ -194,7 +194,6 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             glVertex3f(x+kTri, y, z);
 
             glEnd();
-
         }
     }
 

@@ -467,6 +467,16 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
 }
 //----------------------------------------------------------
 
+void MyGradModel::ApplyRoutesToAllConfigs()
+{
+    for (auto & cnf : Configs)
+    {
+        cnf.SetRoutes(Routes);
+    }
+    IsSaved = false;
+}
+//----------------------------------------------------------
+
 const MyConfig &MyGradModel::GetCurrentConfig() const
 {
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
@@ -691,10 +701,16 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
         {
             const QJsonObject &routeObject = it->toObject();
             //Route tempRoute;
+
+            QString Name = routeObject["Name"].toString("No name");
+
             size_t pointCount = routeObject["PointCount"].toDouble(-1);
 //            Routes.emplace_back(Route());
             Routes.emplace_back();
             Routes.back().Points.reserve(pointCount);
+            Routes.back().SetName(Name);
+            Routes.back().AbonentDirectAccess().
+                    LoadFromJsonObject(routeObject["Abonent"].toObject());
 
             const QJsonArray &pointsArray = routeObject["Points"].toArray();
             for (auto itP = pointsArray.begin(); itP != pointsArray.end();  ++itP)
@@ -807,6 +823,10 @@ QJsonArray MyGradModel::RepresentRoutesAsJsonArray() const
     for (const auto &r : Routes)
     {
         QJsonObject routeObject;
+
+        routeObject.insert("Name", r.GetName());
+        routeObject.insert("Abonent", r.GetAbonent().RepresentAsJsonObject());
+
         routeObject.insert("PointCount", (int)r.Points.size());
 
         QJsonArray pointsArray;
@@ -939,7 +959,7 @@ void MyGradModel::CreatePopulation(size_t _count)
     {
 //        cnf.SetArea(Area);
 //        cnf.SetNodes(Nodes);
-//        cnf.SetRoutes(Routes);
+//        cnf.;
 
         if (IsRandomNodeCoords)
         {

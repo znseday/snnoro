@@ -135,10 +135,14 @@ public:
     void NewGradModelBulk();
     void ReCreateSignalNodes(size_t _count, double _R, double _betha);  // ???
 
-    void ApplySignalNodesToAllConfigs(); //????????????????????
+    void ApplySignalNodesToAllConfigs();
+    void ApplyRoutesToAllConfigs();
 
     const std::vector<SignalNode> & GetSignalNodes() const {return Nodes;}
     std::vector<SignalNode> & SignalNodesDirectAccess() {return Nodes;}
+
+    const std::vector<Route> & GetRoutes() const {return Routes;}
+    std::vector<Route> & RoutesDirectAccess() {return Routes;}
 
     SignalNodeType GetNodesType() const {return NodesType;}
     void SetNodesType(SignalNodeType _snt) {NodesType = _snt;}

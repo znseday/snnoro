@@ -222,6 +222,8 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
 
+    ui->actionEdit_Edit_Routes->setEnabled(true);
+
     GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
     GradModel.Set_nDraws(35);
@@ -811,5 +813,28 @@ void MainWindow::on_actionShow_Abonents_triggered()
 {
     if (WorkMode != WorkModeType::GradWord)
         return;
+
+    // to do ???
+    // somewhere flag = ui->actionShow_Abonents->isChecked()
+
+//    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Edit_Routes_triggered()
+{
+    DialogRoutesEdit.InitDialog(GradModel.GetRoutes());
+
+    if (DialogRoutesEdit.exec() == QDialog::Accepted)
+    {
+        DialogRoutesEdit.ChangeRoutes(GradModel.RoutesDirectAccess());
+
+        GradModel.ApplyRoutesToAllConfigs();
+        mainGLWidget->repaint();
+    }
+    else
+    {
+        // Rejected
+    }
 }
 //-------------------------------------------------------------

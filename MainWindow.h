@@ -16,6 +16,7 @@
 #include "DialogChangePopulationSize.h"
 #include "DialogNewGradConfig.h"
 #include "DialogEditSignalNodes.h"
+#include "DialogEditRoutes.h"
 
 #include "FormGradGeneral.h"
 
@@ -97,6 +98,10 @@ private slots:
 
     void on_actionEdit_Edit_Signal_Nodes_for_Current_triggered();
 
+    void on_actionShow_Abonents_triggered();
+
+    void on_actionEdit_Edit_Routes_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -115,6 +120,7 @@ private:
     DialogNewGradConfig DialogGradConfigNew;
 
     DialogEditSignalNodes DialogSignalNodesEdit;
+    DialogEditRoutes DialogRoutesEdit;
 
     FormGradGeneral *formGradGeneral = nullptr;
 
