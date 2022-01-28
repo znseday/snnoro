@@ -22,6 +22,8 @@
 
 #include "FormRelief.h"
 
+#include "FormAboCalc.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -98,9 +100,9 @@ private slots:
 
     void on_actionEdit_Edit_Signal_Nodes_for_Current_triggered();
 
-    void on_actionShow_Abonents_triggered();
-
     void on_actionEdit_Edit_Routes_triggered();
+
+    void on_actionWorld_Show_Abonents_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -125,6 +127,8 @@ private:
     FormGradGeneral *formGradGeneral = nullptr;
 
     FormRelief formRelief;
+
+    FormAboCalc formAboCalc;
 
     QLabel *lblGlX;
     QLabel *lblGlY;

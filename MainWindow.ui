@@ -131,7 +131,7 @@
     </property>
     <addaction name="actionWorld_Show_Coords"/>
     <addaction name="separator"/>
-    <addaction name="actionShow_Abonents"/>
+    <addaction name="actionWorld_Show_Abonents"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -444,9 +444,12 @@
     <string>Edit Signal Nodes for Current...</string>
    </property>
   </action>
-  <action name="actionShow_Abonents">
+  <action name="actionWorld_Show_Abonents">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Show Abonents</string>

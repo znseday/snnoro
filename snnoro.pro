@@ -30,6 +30,7 @@ SOURCES += \
         DialogGradConfig.cpp \
         DialogNewGradConfig.cpp \
         Export.cpp \
+        FormAboCalc.cpp \
         FormConfigInfo.cpp \
         FormGeneral.cpp \
         FormGradConfigDetails.cpp \
@@ -64,6 +65,7 @@ HEADERS += \
     DialogGradConfig.h \
     DialogNewGradConfig.h \
     Export.h \
+    FormAboCalc.h \
     FormConfigInfo.h \
     FormGeneral.h \
     FormGradConfigDetails.h \
@@ -96,6 +98,7 @@ FORMS += \
     DialogEditSignalNodes.ui \
     DialogGradConfig.ui \
     DialogNewGradConfig.ui \
+    FormAboCalc.ui \
     FormConfigInfo.ui \
     FormGeneral.ui \
     FormGradConfigDetails.ui \

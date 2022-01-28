@@ -224,6 +224,8 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
 
+    ui->actionWorld_Show_Abonents->setEnabled(true);
+
     GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
     GradModel.Set_nDraws(35);
@@ -709,6 +711,9 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
 
+    ui->actionEdit_Edit_Routes->setEnabled(true);
+    ui->actionWorld_Show_Abonents->setEnabled(true);
+
     GradModel.Set_nDraws(35);
     mainGLWidget->repaint();
 }
@@ -809,18 +814,6 @@ void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
 }
 //-------------------------------------------------------------
 
-void MainWindow::on_actionShow_Abonents_triggered()
-{
-    if (WorkMode != WorkModeType::GradWord)
-        return;
-
-    // to do ???
-    // somewhere flag = ui->actionShow_Abonents->isChecked()
-
-//    mainGLWidget->repaint();
-}
-//-------------------------------------------------------------
-
 void MainWindow::on_actionEdit_Edit_Routes_triggered()
 {
     DialogRoutesEdit.InitDialog(GradModel.GetRoutes());
@@ -838,3 +831,19 @@ void MainWindow::on_actionEdit_Edit_Routes_triggered()
     }
 }
 //-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Abonents_triggered()
+{
+    if (WorkMode != WorkModeType::GradWord)
+        return;
+
+    // to do ???
+
+    formAboCalc.show();
+
+
+    // somewhere flag = ui->actionShow_Abonents->isChecked()
+
+//    mainGLWidget->repaint();
+}
+
