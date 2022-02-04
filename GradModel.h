@@ -126,8 +126,8 @@ public:
     bool AddNewRoute();
     void AddNewPointToLastRoute(double wx, double wy);
     void FinishRoute();
-
     bool DeleteRoute(double wx, double wy);
+    void CalcAbonentsPos(int t);
 
     void ChangeFileName(const QString &_newFileName);
     const QString &GetFileName() const {return FileName;}
@@ -136,7 +136,7 @@ public:
     void ReCreateSignalNodes(size_t _count, double _R, double _betha);  // ???
 
     void ApplySignalNodesToAllConfigs();
-    void ApplyRoutesToAllConfigs();
+    void ApplyRoutesToAllConfigs(bool _markAsConfigNeedToSave);
 
     const std::vector<SignalNode> & GetSignalNodes() const {return Nodes;}
     std::vector<SignalNode> & SignalNodesDirectAccess() {return Nodes;}

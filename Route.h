@@ -32,6 +32,7 @@ public:
 };
 //----------------------------------------------------------
 
+// При изменении маршрута - вызывать метод перерасчета длин
 class Route
 {
 protected:
@@ -41,6 +42,8 @@ protected:
     // QColor Color;
 
     Abonent_t Abonent;
+
+    double RouteLength = 0;
 
 public:
 
@@ -59,7 +62,7 @@ public:
 
     void CalcOtherWeights(); // распределяет оставшийся вес по незаданным точкам маршрута
 
-    void CalcAbonentPos(double t);
+    void CalcAbonentPos(int t);
 
     const Abonent_t & GetAbonent() const {return Abonent;}
     Abonent_t & AbonentDirectAccess() {return Abonent;}
@@ -69,7 +72,7 @@ public:
     void SetName(const QString &_name) {Name = _name;}
     void SetVforAbonent(double _v) {Abonent.v = _v;} // ?
 
-
+    void CalcRouteLength();
 };
 
 #endif // ROUTE_H

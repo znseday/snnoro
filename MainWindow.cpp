@@ -216,7 +216,7 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
         return;
     }
 
-    WorkMode = WorkModeType::GradWord;
+    WorkMode = WorkModeType::GradWork;
     ui->actionFileStart_Old->setEnabled(false);
 
     ui->actionFileSave_Grad_Config->setEnabled(true);
@@ -255,7 +255,7 @@ void MainWindow::on_actionGradSetDraw3_triggered()
 
 void MainWindow::on_actionGradSwitch_Show_One_All_triggered()
 {
-    if (WorkMode == WorkModeType::GradWord)
+    if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.SwitchDrawOnlyOne();
         mainGLWidget->repaint();
@@ -276,7 +276,7 @@ void MainWindow::on_actionGradSwitch_Show_One_All_triggered()
 
 void MainWindow::on_actionGradSwitch_Pespective_for_Current_triggered()
 {
-    if (WorkMode == WorkModeType::GradWord)
+    if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.SwitchPerspective();
         mainGLWidget->repaint();
@@ -290,7 +290,7 @@ void MainWindow::on_actionGradSwitch_Pespective_for_Current_triggered()
 
 void MainWindow::on_actionGradSwitch_Pespective_for_All_triggered()
 {
-    if (WorkMode == WorkModeType::GradWord)
+    if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.SwitchPerspectiveForAll();
         mainGLWidget->repaint();
@@ -705,7 +705,7 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
         return;
     }
 
-    WorkMode = WorkModeType::GradWord;
+    WorkMode = WorkModeType::GradWork;
     GradModel.MarkAsNotSaved();
 
     ui->actionFileSave_Grad_Config->setEnabled(true);
@@ -826,7 +826,7 @@ void MainWindow::on_actionEdit_Edit_Routes_triggered()
     {
         DialogRoutesEdit.ChangeRoutes(GradModel.RoutesDirectAccess());
 
-        GradModel.ApplyRoutesToAllConfigs();
+        GradModel.ApplyRoutesToAllConfigs(true);
         mainGLWidget->repaint();
     }
     else
@@ -838,7 +838,7 @@ void MainWindow::on_actionEdit_Edit_Routes_triggered()
 
 void MainWindow::on_actionWorld_Show_Abonents_triggered()
 {
-    if (WorkMode != WorkModeType::GradWord)
+    if (WorkMode != WorkModeType::GradWork)
         return;
 
     // to do ???
@@ -855,5 +855,12 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
 void MainWindow::SlotReceiveAboTime(int t) // in sec
 {
     qDebug() << "t =" << t << " - " << t/3600.0;
+
+    if (WorkMode == WorkModeType::GradWork)
+    {
+        GradModel.CalcAbonentsPos(t);
+        GradModel.ApplyRoutesToAllConfigs(false);
+        mainGLWidget->repaint();
+    }
 }
 

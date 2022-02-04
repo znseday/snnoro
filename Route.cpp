@@ -38,14 +38,32 @@ void Route::CalcOtherWeights()
 }
 //----------------------------------------------------------
 
-void Route::CalcAbonentPos(double t)
+void Route::CalcAbonentPos(int t) // in sec
 {
     if (Points.empty())
         throw std::runtime_error("Points.empty() in Route::CalcAbonentPos");
 
     Abonent.Pos = Points.front().Pos; // to del
 
-    // to do...
+    if (RouteLength <= 0)
+        throw std::runtime_error("RouteLength <= 0 in Route::CalcAbonentPos");
+
+    double AboLen = fmod(Abonent.v*t, 2*RouteLength);
+
+    // to do
+
+    qDebug() << "CalcAbonentPos, t =" << t;
+}
+//----------------------------------------------------------
+
+void Route::CalcRouteLength()
+{
+    RouteLength = 0;
+    for (size_t i = 0; i < Points.size()-1; ++i)
+    {
+        QVector3D q = Points[i+1].Pos - Points[i].Pos;
+        RouteLength += q.length();
+    }
 }
 //----------------------------------------------------------
 

@@ -340,6 +340,7 @@ void MyGradModel::AddNewPointToLastRoute(double wx, double wy)
 void MyGradModel::FinishRoute()
 {
     Routes.back().CalcOtherWeights();
+    Routes.back().CalcRouteLength();
 }
 //----------------------------------------------------------
 
@@ -383,6 +384,15 @@ bool MyGradModel::DeleteRoute(double wx, double wy)
     }
 
     return true;
+}
+//----------------------------------------------------------
+
+void MyGradModel::CalcAbonentsPos(int t)
+{
+    for (auto & r : Routes)
+    {
+        r.CalcAbonentPos(t);
+    }
 }
 //----------------------------------------------------------
 
@@ -467,13 +477,13 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
 }
 //----------------------------------------------------------
 
-void MyGradModel::ApplyRoutesToAllConfigs()
+void MyGradModel::ApplyRoutesToAllConfigs(bool _markAsConfigNeedToSave)
 {
     for (auto & cnf : Configs)
     {
         cnf.SetRoutes(Routes);
     }
-    IsSaved = false;
+    IsSaved = !_markAsConfigNeedToSave;
 }
 //----------------------------------------------------------
 
@@ -727,6 +737,7 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
             }
 
             Routes.back().CalcOtherWeights();
+            Routes.back().CalcRouteLength();
 
             if (pointCount != Routes.back().Points.size())
                 throw std::runtime_error("pointCount != Routes.back().Points.size()");
@@ -918,6 +929,7 @@ bool MyGradModel::LoadFromFile(const QString &_fileName)
         qDebug() << "json file not open";
         return false;
     }
+
 
     CreatePopulation(configCount);
 

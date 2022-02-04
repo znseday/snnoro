@@ -9,7 +9,7 @@ enum class WorkModeType
 {
     Nothing,
     OldWork,
-    GradWord
+    GradWork
 };
 
 enum class WorldModeType
