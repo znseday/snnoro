@@ -83,6 +83,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //on_actionFileStart_Grad_Descent_triggered();
 
+
+    connect(&formAboCalc, SIGNAL(SignalSendAboTime(int)),
+            this, SLOT(SlotReceiveAboTime(int)));
+
     mainGLWidget->setMouseTracking(true);
 }
 //-------------------------------------------------------------
@@ -845,5 +849,11 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
     // somewhere flag = ui->actionShow_Abonents->isChecked()
 
 //    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveAboTime(int t) // in sec
+{
+    qDebug() << "t =" << t << " - " << t/3600.0;
 }
 

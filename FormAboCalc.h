@@ -28,11 +28,19 @@ private slots:
 
     void on_SliderTime_sliderMoved(int position);
 
+    void on_EditCurTime_editingFinished();
+
+    void on_SliderTime_valueChanged(int value);
+
 private:
     Ui::FormAboCalc *ui;
 
 protected:
     void showEvent(QShowEvent *event) override;
+
+signals:
+    void SignalSendAboTime(int);
+
 };
 
 #endif // FORMABOCALC_H

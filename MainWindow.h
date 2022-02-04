@@ -146,6 +146,8 @@ public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);
     void SlotReceiveRouteDeleted(bool isDeleted);
 
+    void SlotReceiveAboTime(int t);
+
     // QPaintDevice interface
 public:
     //QPaintEngine *paintEngine() const override;
