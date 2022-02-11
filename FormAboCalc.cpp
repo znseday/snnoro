@@ -60,7 +60,7 @@ void FormAboCalc::on_EditMaxTime_textEdited(const QString &str)
 void FormAboCalc::on_btnOk_clicked()
 {
     qDebug() << __PRETTY_FUNCTION__;
-    this->hide();
+    this->close(); // ? Раньше это приводило к зависанию
 }
 
 
@@ -73,6 +73,8 @@ void FormAboCalc::showEvent([[maybe_unused]] QShowEvent *event)
 
     ui->EditCurTime->setText("0");
     ui->SliderTime->setValue(0*3600);
+
+    emit SignalSendAboTime(0); // in sec
 }
 
 void FormAboCalc::on_SliderTime_sliderMoved(int position)
@@ -118,3 +120,13 @@ void FormAboCalc::on_SliderTime_valueChanged(int value)
     emit SignalSendAboTime(value);
 }
 
+void FormAboCalc::hideEvent([[maybe_unused]] QHideEvent *event)
+{
+    //qDebug() << __PRETTY_FUNCTION__;
+}
+
+void FormAboCalc::closeEvent([[maybe_unused]] QCloseEvent *event)
+{
+    qDebug() << __PRETTY_FUNCTION__;
+    emit SignalFormAboCalcClose();
+}

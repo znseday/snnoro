@@ -43,17 +43,56 @@ void Route::CalcAbonentPos(int t) // in sec
     if (Points.empty())
         throw std::runtime_error("Points.empty() in Route::CalcAbonentPos");
 
+    qDebug() << "CalcAbonentPos, t =" << t;
+
     Abonent.Pos = Points.front().Pos; // to del
 
     if (RouteLength <= 0)
         throw std::runtime_error("RouteLength <= 0 in Route::CalcAbonentPos");
 
     double AboLen = fmod(Abonent.v*t, 2*RouteLength);
+    qDebug() << "AboLen =" << AboLen;
 
     // to do
+    double S = 0;
+    for (size_t k = 0; k < Points.size()*2 - 1; ++k)
+    {
+        int i1, i2;
+        if (k < Points.size()-1)
+        {
+            i1 = k;
+            i2 = k+1;
+        }
+        else if (k == Points.size()-1)
+        {
+            i1 = k;
+            i2 = k-1;
+        }
+        else
+        {
+            i1 = Points.size()*2 - (k+2);
+            i2 = Points.size()*2 - (k+3);
+        }
 
-    qDebug() << "CalcAbonentPos, t =" << t;
+        Abonent.q = Points.at(i2).Pos - Points.at(i1).Pos;
+        S += Abonent.q.length();
+        if (S > AboLen)
+        {
+            double reverseS = S - AboLen;
+
+            Abonent.Pos = Points[i2].Pos - Abonent.q.normalized()*reverseS;
+
+            qDebug() << "Abonent.Pos =" << Abonent.Pos;
+
+            break;
+//            Abonent.Pos = Points[i].Pos + q.normalized()*Abonent.v*dt;
+        }
+    }
 }
+// k = 0 1 2 3 4 5 6 7 8 9
+//     0 1 2 3 4 3 2 1 0
+
+
 //----------------------------------------------------------
 
 void Route::CalcRouteLength()
@@ -64,6 +103,7 @@ void Route::CalcRouteLength()
         QVector3D q = Points[i+1].Pos - Points[i].Pos;
         RouteLength += q.length();
     }
+    qDebug() << "RouteLength =" << RouteLength;
 }
 //----------------------------------------------------------
 

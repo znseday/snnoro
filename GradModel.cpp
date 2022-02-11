@@ -477,13 +477,14 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
 }
 //----------------------------------------------------------
 
-void MyGradModel::ApplyRoutesToAllConfigs(bool _markAsConfigNeedToSave)
+void MyGradModel::ApplyRoutesToAllConfigs(NeedToSave _NeedToSave)
 {
     for (auto & cnf : Configs)
     {
         cnf.SetRoutes(Routes);
     }
-    IsSaved = !_markAsConfigNeedToSave;
+    if (_NeedToSave == NeedToSave::Need)
+        IsSaved = false;
 }
 //----------------------------------------------------------
 

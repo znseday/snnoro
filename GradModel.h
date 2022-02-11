@@ -136,7 +136,7 @@ public:
     void ReCreateSignalNodes(size_t _count, double _R, double _betha);  // ???
 
     void ApplySignalNodesToAllConfigs();
-    void ApplyRoutesToAllConfigs(bool _markAsConfigNeedToSave);
+    void ApplyRoutesToAllConfigs(NeedToSave _NeedToSave);
 
     const std::vector<SignalNode> & GetSignalNodes() const {return Nodes;}
     std::vector<SignalNode> & SignalNodesDirectAccess() {return Nodes;}
@@ -151,6 +151,8 @@ public:
     MyConfig & CurrentConfigAccess();
 
     void TestTwoLines();
+
+    void SetIsDrawAbonents(bool _isDrawAbo) {IsDrawAbonents = _isDrawAbo;}
 };
 
 #endif // MYGRADMODEL_H

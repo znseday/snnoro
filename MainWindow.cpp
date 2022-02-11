@@ -87,6 +87,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&formAboCalc, SIGNAL(SignalSendAboTime(int)),
             this, SLOT(SlotReceiveAboTime(int)));
 
+    connect(&formAboCalc, SIGNAL(SignalFormAboCalcClose()),
+            this, SLOT(SlotReceiveFormAboCalcClose()));
+
     mainGLWidget->setMouseTracking(true);
 }
 //-------------------------------------------------------------
@@ -538,6 +541,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //        QMessageBox::information(this, "test spontaneous", "test spontaneous");
 //    }
 
+    formAboCalc.close();
+
     if ( !GradModel.GetIsSaved() )
     {
         auto res = QMessageBox::question(this, "Question",
@@ -826,7 +831,7 @@ void MainWindow::on_actionEdit_Edit_Routes_triggered()
     {
         DialogRoutesEdit.ChangeRoutes(GradModel.RoutesDirectAccess());
 
-        GradModel.ApplyRoutesToAllConfigs(true);
+        GradModel.ApplyRoutesToAllConfigs(NeedToSave::Need);
         mainGLWidget->repaint();
     }
     else
@@ -841,14 +846,12 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
     if (WorkMode != WorkModeType::GradWork)
         return;
 
-    // to do ???
 
+    GradModel.SetIsDrawAbonents(true);
     formAboCalc.show();
+//    SlotReceiveAboTime(0);
 
-
-    // somewhere flag = ui->actionShow_Abonents->isChecked()
-
-//    mainGLWidget->repaint();
+    mainGLWidget->repaint();
 }
 //-------------------------------------------------------------
 
@@ -859,8 +862,16 @@ void MainWindow::SlotReceiveAboTime(int t) // in sec
     if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.CalcAbonentsPos(t);
-        GradModel.ApplyRoutesToAllConfigs(false);
+        GradModel.ApplyRoutesToAllConfigs(NeedToSave::DoNotNeed);
         mainGLWidget->repaint();
     }
 }
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveFormAboCalcClose()
+{
+    GradModel.SetIsDrawAbonents(false);
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
 

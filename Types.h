@@ -20,6 +20,12 @@ enum class WorldModeType
     DeletingRoute
 };
 
+enum class NeedToSave
+{
+    Need,
+    DoNotNeed
+};
+
 struct TargetFuncSettingsStruct
 {
     double Aarf = 1e8;

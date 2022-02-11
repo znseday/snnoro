@@ -146,6 +146,8 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             //glVertex3f((p.Pos.x()-offsetX)*k, (p.Pos.y()-offsetY)*k, 0);
             //glEnd();
 
+            glDisable(GL_DEPTH_TEST);
+
             glPushMatrix();    
             double x = (p.Pos.x()-offsetX)*k;
             double y = (p.Pos.y()-offsetY)*k;
@@ -163,6 +165,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
                 z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
                 glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
             }
+            gluQuadricDrawStyle(Quadric(), GLU_FILL);
             gluSphere(Quadric(), 0.02 + 0.05*sqrt(p.Weight), 12, 12);
             glPopMatrix();
         }
@@ -172,7 +175,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             const auto & abo = r.GetAbonent();
             double x = (abo.Pos.x()-offsetX)*k;
             double y = (abo.Pos.y()-offsetY)*k;
-            double z;
+            double z = 0;
 
             if (Relief->GetIsMathRelief())
             {
@@ -187,13 +190,21 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
 
             glColor3f(0.9f, 0.1f, 0.1f);
 
-            glBegin(GL_LINE_LOOP);
             constexpr float kTri = 0.02f;
-            glVertex3f(x-kTri, y, z);
-            glVertex3f(x, y+2*kTri, z);
-            glVertex3f(x+kTri, y, z);
 
-            glEnd();
+            glPushMatrix();
+
+            glTranslatef(x, y, z);
+            gluQuadricDrawStyle(Quadric(), GLU_LINE);
+            gluCylinder(Quadric(), kTri, 0, kTri*3.5, 16, 4);
+
+            glPopMatrix();
+
+//            glBegin(GL_LINE_LOOP);
+//            glVertex3f(x-kTri, y - kTri,     z + zOffset);
+//            glVertex3f(x,      y + kTri,     z + zOffset);
+//            glVertex3f(x+kTri, y - kTri,     z + zOffset);
+//            glEnd();
         }
     }
 
@@ -224,6 +235,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             z = (node.Pos.z()-offsetZ)*Relief->Get_kz();
             glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
         }
+        gluQuadricDrawStyle(Quadric(), GLU_FILL);
         gluSphere(Quadric(), 0.02, 12, 12);
         glPopMatrix();
 

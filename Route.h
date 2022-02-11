@@ -25,6 +25,9 @@ public:
     QString Name;
     Pos3d Pos;
     double v = 0;
+
+    QVector3D q;
+
     Abonent_t() = default;
     Abonent_t(const Pos3d &_pos, double _v) : Pos(_pos), v(_v) {}
     QJsonObject RepresentAsJsonObject() const;

@@ -147,6 +147,7 @@ public slots:
     void SlotReceiveRouteDeleted(bool isDeleted);
 
     void SlotReceiveAboTime(int t);
+    void SlotReceiveFormAboCalcClose();
 
     // QPaintDevice interface
 public:
