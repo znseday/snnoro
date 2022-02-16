@@ -111,6 +111,8 @@ public:
 
     void TestTwoLines() const;
 
+    void CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints);
+
 //signals:
 
 //    void signalRepaint();

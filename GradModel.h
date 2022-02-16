@@ -153,6 +153,8 @@ public:
     void TestTwoLines();
 
     void SetIsDrawAbonents(bool _isDrawAbo) {IsDrawAbonents = _isDrawAbo;}
+
+    void ReCalcAboAccessRate();
 };
 
 #endif // MYGRADMODEL_H

@@ -1266,5 +1266,15 @@ void MyGradModel::TestTwoLines()
 }
 //----------------------------------------------------------
 
+void MyGradModel::ReCalcAboAccessRate()
+{
+    for (auto & c : Configs)
+    {
+//        c.CalcAccessRateForAbos(false); // Заменить на мембер или типа того !!!!!!!
+        c.CalcAccessRateForAbos(TargetFuncSettings.IsUseLineBetweenTwoPoints); // Заменить на мембер или типа того !!!!!!!
+    }
+}
+//----------------------------------------------------------
+
 
 

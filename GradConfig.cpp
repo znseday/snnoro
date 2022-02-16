@@ -146,7 +146,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             //glVertex3f((p.Pos.x()-offsetX)*k, (p.Pos.y()-offsetY)*k, 0);
             //glEnd();
 
-            glDisable(GL_DEPTH_TEST);
+
 
             glPushMatrix();    
             double x = (p.Pos.x()-offsetX)*k;
@@ -192,13 +192,32 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
 
             constexpr float kTri = 0.02f;
 
-            glPushMatrix();
+            glPushMatrix();         
+
+            const auto & q = abo.q;
+
+            double tetha = acos(q.z() / q.length()) * 180.0 / M_PI;
+            double fi;
+            if (qFuzzyCompare(q.toVector2D().length(), 0))
+                fi = 0;
+            else
+                fi = acos(q.y() / q.toVector2D().length()) * 180.8 / M_PI;
 
             glTranslatef(x, y, z);
+
+            glRotatef( (q.x() > 0) ? -fi : fi, 0, 0, 1);
+            glRotatef(-tetha, 1, 0, 0);
+
+            glTranslatef(0, 0, -kTri*2);
+
+            glDisable(GL_DEPTH_TEST);
             gluQuadricDrawStyle(Quadric(), GLU_LINE);
-            gluCylinder(Quadric(), kTri, 0, kTri*3.5, 16, 4);
+            gluCylinder(Quadric(), kTri, 0, kTri*4, 16, 4);
+            glEnable(GL_DEPTH_TEST);
 
             glPopMatrix();
+
+            qDebug() << "abo =" << abo.Pos << ", ar =" << abo.accessRate;
 
 //            glBegin(GL_LINE_LOOP);
 //            glVertex3f(x-kTri, y - kTri,     z + zOffset);
@@ -965,6 +984,29 @@ void MyConfig::CalcPointStats()
         }
     Stats.UncoveredCount = pointCount - coveredCount;
     Stats.PercentOfCovered = coveredCount/double(pointCount);
+}
+//----------------------------------------------------------
+
+void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints)
+{
+    for (auto & route : Routes)
+    {
+        auto & abo = route.AbonentDirectAccess();
+        double y1 = 0;
+        for (const auto & sn : Nodes)
+        {
+            double y = sn.accessRateF(abo.Pos);
+
+            if (_isUseLineBetweenTwoPoints)
+            {
+                y *= IsLineBetweenTwoPoints(sn.Pos, abo.Pos);
+            }
+
+            y1 += y;
+        }
+        abo.accessRate = y1;
+    }
+
 }
 //----------------------------------------------------------
 

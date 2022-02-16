@@ -28,10 +28,14 @@ public:
 
     QVector3D q;
 
+    double accessRate = 0;
+
     Abonent_t() = default;
     Abonent_t(const Pos3d &_pos, double _v) : Pos(_pos), v(_v) {}
     QJsonObject RepresentAsJsonObject() const;
     void LoadFromJsonObject(const QJsonObject &_jsonObject);
+
+    // double Calc(rel, nodes)
 };
 //----------------------------------------------------------
 

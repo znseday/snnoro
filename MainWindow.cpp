@@ -863,6 +863,7 @@ void MainWindow::SlotReceiveAboTime(int t) // in sec
     {
         GradModel.CalcAbonentsPos(t);
         GradModel.ApplyRoutesToAllConfigs(NeedToSave::DoNotNeed);
+        GradModel.ReCalcAboAccessRate();
         mainGLWidget->repaint();
     }
 }
