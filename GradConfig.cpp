@@ -188,8 +188,6 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
                 z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
             }
 
-            glColor3f(0.9f, 0.1f, 0.1f);
-
             constexpr float kTri = 0.02f;
 
             glPushMatrix();         
@@ -205,20 +203,57 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
 
             glTranslatef(x, y, z);
 
+            //glDisable(GL_DEPTH_TEST);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glBegin(GL_QUADS);
+            constexpr float hr = 0.03;
+            constexpr float wr = 0.25;
+
+            float wrr = abo.accessRate / 1.0 * wr;
+            constexpr double endHue = 120;
+            int hu = /*startHue -*/ -20 + (abo.accessRate - 0)/(1.0 - 0)*endHue;
+            if (hu > 120)
+                hu = 120;
+            if (hu < 0)
+                hu += 360;
+
+            QColor res = QColor::fromHsv(hu, 220, 150);
+        //    qDebug() << res.hslHue() << res.hslSaturation() << res.lightness();
+        //    qDebug() << res.isValid();
+            res = res.toRgb();
+
+            glColor3f(res.redF(), res.greenF(), res.blueF());
+            glVertex3f(0, 0, 0);
+            glVertex3f(0, hr, 0);
+            glVertex3f(wrr, hr, 0);
+            glVertex3f(wrr, 0, 0);
+            glEnd();
+
+            glLineWidth(2.0f);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glBegin(GL_QUADS);
+            glColor3f(0, 0, 0);
+            glVertex3f(0, 0, 0);
+            glVertex3f(0, hr, 0);
+            glVertex3f(wr, hr, 0);
+            glVertex3f(wr, 0, 0);
+            glEnd();
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+            glColor3f(0.9f, 0.1f, 0.1f);
             glRotatef( (q.x() > 0) ? -fi : fi, 0, 0, 1);
             glRotatef(-tetha, 1, 0, 0);
 
             glTranslatef(0, 0, -kTri*2);
 
-            glDisable(GL_DEPTH_TEST);
+            glLineWidth(1.0);
             gluQuadricDrawStyle(Quadric(), GLU_LINE);
             gluCylinder(Quadric(), kTri, 0, kTri*4, 16, 4);
-            glEnable(GL_DEPTH_TEST);
 
+            //glEnable(GL_DEPTH_TEST);
             glPopMatrix();
 
-            qDebug() << "abo =" << abo.Pos << ", ar =" << abo.accessRate;
-
+//            qDebug() << "abo =" << abo.Pos << ", ar =" << abo.accessRate;
 //            glBegin(GL_LINE_LOOP);
 //            glVertex3f(x-kTri, y - kTri,     z + zOffset);
 //            glVertex3f(x,      y + kTri,     z + zOffset);
