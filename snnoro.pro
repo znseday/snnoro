@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         Configuration.cpp \
+        DialogAboReport.cpp \
         DialogChangePopulationSize.cpp \
         DialogEditRoutes.cpp \
         DialogEditSignalNodes.cpp \
@@ -59,6 +60,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     Configuration.h \
+    DialogAboReport.h \
     DialogChangePopulationSize.h \
     DialogEditRoutes.h \
     DialogEditSignalNodes.h \
@@ -93,6 +95,7 @@ HEADERS += \
     View3d.h
 
 FORMS += \
+    DialogAboReport.ui \
     DialogChangePopulationSize.ui \
     DialogEditRoutes.ui \
     DialogEditSignalNodes.ui \

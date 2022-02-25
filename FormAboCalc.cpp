@@ -1,11 +1,15 @@
 #include "FormAboCalc.h"
 #include "ui_FormAboCalc.h"
 
+#include <QMessageBox>
+
 FormAboCalc::FormAboCalc(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FormAboCalc)
 {
     ui->setupUi(this);
+
+    dlgAboReport.InitDialog();
 }
 
 FormAboCalc::~FormAboCalc()
@@ -15,8 +19,16 @@ FormAboCalc::~FormAboCalc()
 
 void FormAboCalc::on_btnToReport_clicked()
 {
-    qDebug() << __PRETTY_FUNCTION__;
-
+//    qDebug() << __PRETTY_FUNCTION__;
+    bool isOk = false;
+    double t = ui->EditCurTime->text().toDouble(&isOk);
+    if (!isOk)
+    {
+        QMessageBox::critical(this, "Error", "Time is incorrect!");
+        return;
+    }
+    dlgAboReport.AddTimePoint(t);
+    dlgAboReport.exec();
 }
 
 void FormAboCalc::on_EditMaxTime_editingFinished()

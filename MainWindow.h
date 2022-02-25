@@ -23,6 +23,7 @@
 #include "FormRelief.h"
 
 #include "FormAboCalc.h"
+//#include "DialogAboReport.h"
 
 namespace Ui {
 class MainWindow;
@@ -129,6 +130,7 @@ private:
     FormRelief formRelief;
 
     FormAboCalc formAboCalc;
+//    DialogAboReport dlgAboReport;
 
     QLabel *lblGlX;
     QLabel *lblGlY;

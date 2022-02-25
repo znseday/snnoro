@@ -2,6 +2,7 @@
 #define FORMABOCALC_H
 
 #include <QDialog>
+#include "DialogAboReport.h"
 
 namespace Ui {
 class FormAboCalc;
@@ -34,6 +35,8 @@ private slots:
 
 private:
     Ui::FormAboCalc *ui;
+
+    DialogAboReport dlgAboReport;
 
 protected:
     void showEvent(QShowEvent *event) override;

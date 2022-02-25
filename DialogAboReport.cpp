@@ -1,0 +1,67 @@
+#include "DialogAboReport.h"
+#include "ui_DialogAboReport.h"
+
+//#include <GradConfig.h>
+#include <GradModel.h>
+
+DialogAboReport::DialogAboReport(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::DialogAboReport)
+{
+    ui->setupUi(this);
+}
+
+DialogAboReport::~DialogAboReport()
+{
+    delete ui;
+}
+
+void DialogAboReport::InitDialog()
+{
+    TimePoints.clear();
+
+    ui->Table->clear();
+    ui->Table->setRowCount(2);
+    ui->Table->setColumnCount(4);
+
+    ui->Table->setItem(0, 0, new QTableWidgetItem("t, h"));
+    ui->Table->setColumnWidth(0, 60);
+    ui->Table->item(0, 0)->setFlags( ui->Table->item(0, 0)->flags() & ~Qt::ItemIsEditable );
+
+    ui->Table->setItem(0, 1, new QTableWidgetItem("Route Name"));
+    ui->Table->setColumnWidth(1, 120);
+    ui->Table->item(0, 1)->setFlags( ui->Table->item(0, 1)->flags() & ~Qt::ItemIsEditable );
+
+    ui->Table->setItem(0, 2, new QTableWidgetItem("iAbo"));
+    ui->Table->setColumnWidth(2, 100);
+    ui->Table->item(0, 2)->setFlags( ui->Table->item(0, 2)->flags() & ~Qt::ItemIsEditable );
+
+    ui->Table->setItem(0, 3, new QTableWidgetItem("AccessRate, ?"));
+    ui->Table->setColumnWidth(3, 100);
+    ui->Table->item(0, 3)->setFlags( ui->Table->item(0, 3)->flags() & ~Qt::ItemIsEditable );
+
+
+//    for (size_t i = 0; i < _routes.size(); ++i)
+//    {
+//        ui->Table->setItem(1 + i, 0, new QTableWidgetItem(QString().setNum( i )));
+//        ui->Table->setItem(1 + i, 1, new QTableWidgetItem(_routes.at(i).GetName() ));
+
+//        ui->Table->setItem(1 + i, 2,
+//              new QTableWidgetItem(QString().setNum( _routes.at(i).GetAbonent().v )));
+
+//        ui->Table->item(1 + i, 0)->setFlags( ui->Table->item(1 + i, 0)->flags() & ~Qt::ItemIsEditable );
+//    }
+}
+
+void DialogAboReport::AddTimePoint(double t /*const MyConfig &_cnfg*/)
+{
+    TimePoints.emplace(t);
+}
+
+
+// Подумать: может, скопировать только одну нужную конфигурацию,
+// чтобы ее было не жалко портить при расчете accessrate
+void DialogAboReport::CalcTable(MyGradModel &_gradModel)
+{
+
+}
