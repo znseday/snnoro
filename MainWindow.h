@@ -23,7 +23,7 @@
 #include "FormRelief.h"
 
 #include "FormAboCalc.h"
-//#include "DialogAboReport.h"
+#include "DialogAboReport.h"
 
 namespace Ui {
 class MainWindow;
@@ -130,7 +130,7 @@ private:
     FormRelief formRelief;
 
     FormAboCalc formAboCalc;
-//    DialogAboReport dlgAboReport;
+    DialogAboReport dlgAboReport;
 
     QLabel *lblGlX;
     QLabel *lblGlY;
@@ -150,6 +150,9 @@ public slots:
 
     void SlotReceiveAboTime(int t);
     void SlotReceiveFormAboCalcClose();
+
+    void SlotReceiveAddTimePointToReport(int t);
+    void SlotReceiveShowAboReport();
 
     // QPaintDevice interface
 public:

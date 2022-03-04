@@ -65,6 +65,8 @@ public:
     TargetFuncSettingsStruct TargetFuncSettings;
 
     const std::vector<MyConfig> & GetConfigs() const {return Configs;}
+    const MyConfig & GetActiveConfig() const;
+    int Get_iCurConfig() const {return iCurConfig;}
 
     MyGradModel();
 

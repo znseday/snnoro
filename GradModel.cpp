@@ -896,6 +896,21 @@ QJsonObject MyGradModel::RepresentReliefInfoAsJsonObject() const
 }
 //----------------------------------------------------------
 
+const MyConfig & MyGradModel::GetActiveConfig() const
+{
+    if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
+    {
+        throw std::out_of_range("iCurConfig < 0 || iCurConfig >= (int)Configs.size()");
+    }
+    else
+    {
+        return Configs[iCurConfig];
+    }
+
+//    return Configs.at(iCurConfig);
+}
+//----------------------------------------------------------
+
 bool MyGradModel::LoadFromFile(const QString &_fileName)
 {
     Routes.clear();

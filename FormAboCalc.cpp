@@ -9,27 +9,35 @@ FormAboCalc::FormAboCalc(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    dlgAboReport.InitDialog();
+//    dlgAboReport.InitDialog();
 }
+//----------------------------------------------------------
 
 FormAboCalc::~FormAboCalc()
 {
     delete ui;
 }
+//----------------------------------------------------------
 
 void FormAboCalc::on_btnToReport_clicked()
 {
 //    qDebug() << __PRETTY_FUNCTION__;
-    bool isOk = false;
-    double t = ui->EditCurTime->text().toDouble(&isOk);
-    if (!isOk)
-    {
-        QMessageBox::critical(this, "Error", "Time is incorrect!");
-        return;
-    }
-    dlgAboReport.AddTimePoint(t);
-    dlgAboReport.exec();
+//    bool isOk = false;
+//    double t = ui->EditCurTime->text().toDouble(&isOk);
+
+    int t = ui->SliderTime->value();
+
+//    if (!isOk)
+//    {
+//        QMessageBox::critical(this, "Error", "Time is incorrect!");
+//        return;
+//    }
+
+    emit SignalAddTimePointToReport(t);
+//    dlgAboReport.AddTimePoint(t);
+//    dlgAboReport.exec();
 }
+//----------------------------------------------------------
 
 void FormAboCalc::on_EditMaxTime_editingFinished()
 {
@@ -54,27 +62,27 @@ void FormAboCalc::on_EditMaxTime_editingFinished()
 
 //    qDebug() <<  ui->SliderTime->value();
 }
-
+//----------------------------------------------------------
 
 void FormAboCalc::on_EditMaxTime_textChanged(const QString &str)
 {
     // включая программное изменение содержимого едита
     qDebug() << __PRETTY_FUNCTION__ << "str =" << str;
 }
-
+//----------------------------------------------------------
 
 void FormAboCalc::on_EditMaxTime_textEdited(const QString &str)
 {
     qDebug() << __PRETTY_FUNCTION__ << "str =" << str;
 }
-
+//----------------------------------------------------------
 
 void FormAboCalc::on_btnOk_clicked()
 {
     qDebug() << __PRETTY_FUNCTION__;
     this->close(); // ? Раньше это приводило к зависанию
 }
-
+//----------------------------------------------------------
 
 void FormAboCalc::showEvent([[maybe_unused]] QShowEvent *event)
 {
@@ -88,6 +96,7 @@ void FormAboCalc::showEvent([[maybe_unused]] QShowEvent *event)
 
     emit SignalSendAboTime(0); // in sec
 }
+//----------------------------------------------------------
 
 void FormAboCalc::on_SliderTime_sliderMoved(int position)
 {
@@ -95,7 +104,7 @@ void FormAboCalc::on_SliderTime_sliderMoved(int position)
 
 //    emit SignalSendAboTime(position);
 }
-
+//----------------------------------------------------------
 
 void FormAboCalc::on_EditCurTime_editingFinished()
 {
@@ -126,19 +135,33 @@ void FormAboCalc::on_EditCurTime_editingFinished()
     }
 
 }
+//----------------------------------------------------------
 
 void FormAboCalc::on_SliderTime_valueChanged(int value)
 {
-    emit SignalSendAboTime(value);
+    emit SignalSendAboTime(value); // in sec
 }
+//----------------------------------------------------------
 
 void FormAboCalc::hideEvent([[maybe_unused]] QHideEvent *event)
 {
     //qDebug() << __PRETTY_FUNCTION__;
 }
+//----------------------------------------------------------
 
 void FormAboCalc::closeEvent([[maybe_unused]] QCloseEvent *event)
 {
     qDebug() << __PRETTY_FUNCTION__;
     emit SignalFormAboCalcClose();
 }
+//----------------------------------------------------------
+
+void FormAboCalc::on_btnShowReport_clicked()
+{
+//    dlgAboReport.InitDialog();
+//    dlgAboReport.CalcTable(???)
+
+    emit SignalShowAboReport();
+}
+//----------------------------------------------------------
+

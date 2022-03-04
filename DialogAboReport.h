@@ -4,8 +4,8 @@
 #include <QDialog>
 #include <set>
 
-//class MyConfig;
-class MyGradModel;
+class MyConfig;
+//class MyGradModel;
 
 namespace Ui {
 class DialogAboReport;
@@ -20,14 +20,22 @@ public:
     ~DialogAboReport();
 
     void InitDialog();
-    void AddTimePoint(double t/*const MyConfig &_cnfg*/);
+    void AddTimePoint(int t/*const MyConfig &_cnfg*/);
 
-    void CalcTable(MyGradModel &_gradModel);
+    void CalcTable(const MyConfig &_cnfg, bool _isUseLineBetweenTwoPoints);
 
 private:
     Ui::DialogAboReport *ui;
 
-    std::set<double> TimePoints;
+    std::set<int> TimePoints;
+
+    // QPaintDevice interface
+//public:
+//    QPaintEngine *paintEngine() const override;
+
+    // QWidget interface
+protected:
+    void keyPressEvent(QKeyEvent *event) override;
 };
 
 #endif // DIALOGABOREPORT_H

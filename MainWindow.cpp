@@ -90,7 +90,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&formAboCalc, SIGNAL(SignalFormAboCalcClose()),
             this, SLOT(SlotReceiveFormAboCalcClose()));
 
+
+//    void SlotReceiveAddTimePointToReport(int t);
+//    void SlotReceiveShowAboReport();
+    connect(&formAboCalc, SIGNAL(SignalAddTimePointToReport(int)),
+            this, SLOT(SlotReceiveAddTimePointToReport(int)));
+
+    connect(&formAboCalc, SIGNAL(SignalShowAboReport()),
+            this, SLOT(SlotReceiveShowAboReport()));
+
     mainGLWidget->setMouseTracking(true);
+
+    dlgAboReport.InitDialog();
 }
 //-------------------------------------------------------------
 
@@ -871,8 +882,43 @@ void MainWindow::SlotReceiveAboTime(int t) // in sec
 
 void MainWindow::SlotReceiveFormAboCalcClose()
 {
+    dlgAboReport.InitDialog(); // ?
+
     GradModel.SetIsDrawAbonents(false);
     mainGLWidget->repaint();
 }
 //-------------------------------------------------------------
 
+void MainWindow::SlotReceiveAddTimePointToReport(int t)
+{
+    dlgAboReport.AddTimePoint(t);
+//    dlgAboReport.exec();
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveShowAboReport()
+{
+//    if (GradModel.getActiveConfigNumber < 0)
+//    {
+//        QMessageBox::critical(this, "Error", "Active config is not selected");
+//        return;
+//    }
+
+    try
+    {
+        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettings.IsUseLineBetweenTwoPoints);
+
+        dlgAboReport.setWindowTitle
+                (QString("iActiveConfig = %1").arg(GradModel.Get_iCurConfig()));
+
+        dlgAboReport.exec();
+    }
+    catch (const std::out_of_range &e)
+    {
+        QMessageBox::critical(this, "Error", QString("Active config is not selected\n") + e.what());
+        return;
+    }
+
+
+}
+//-------------------------------------------------------------
