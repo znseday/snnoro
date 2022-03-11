@@ -2,6 +2,19 @@
 #include "ui_DialogEditSignalNodes.h"
 
 #include <QMessageBox>
+#include <QPushButton>
+#include <QFileDialog>
+
+class MyButtonWithNumber : public QPushButton
+{
+protected:
+    int Number = -1;
+public:
+    explicit MyButtonWithNumber(const QString &c, int n, QWidget *p = nullptr) :
+        QPushButton(c, p), Number(n) {}
+    int GetNumber() const {return Number;}
+};
+
 
 DialogEditSignalNodes::DialogEditSignalNodes(QWidget *parent) :
     QDialog(parent),
@@ -33,12 +46,13 @@ void DialogEditSignalNodes::InitDialog_ForAll(SignalNodeType _snt, const std::ve
     else
         QMessageBox::critical(this, "Error", "SignalNodeType is Unknown");
 
+//    ui->Table->setCellWidget(0, 0+0, new QPushButton("Load"));
 
-//    ui->Table->setItem(0, 0+0, new QTableWidgetItem("n"));
-//    ui->Table->setColumnWidth(0+2, 60);
+//    ui->Table->setItem(0, 0+0, new QTableWidgetItem(new QPushButton("Load")));
+    ui->Table->setColumnWidth(0+0, 50);
 
-//    ui->Table->setItem(0, 0+1, new QTableWidgetItem("n"));
-//    ui->Table->setColumnWidth(0+2, 60);
+//    ui->Table->setItem(0, 0+1, new QPushButton("Save"));
+    ui->Table->setColumnWidth(0+1, 50);
 
     ui->Table->setItem(0, 0+2, new QTableWidgetItem("n"));
     ui->Table->setColumnWidth(0+2, 60);
@@ -57,6 +71,18 @@ void DialogEditSignalNodes::InitDialog_ForAll(SignalNodeType _snt, const std::ve
 
     for (size_t i = 0; i < _signalNodes.size(); ++i)
     {
+        QPushButton *btnLoad = new MyButtonWithNumber("Load", i);
+        ui->Table->setCellWidget(1 + i, 0+0, btnLoad);
+
+        connect(btnLoad, SIGNAL(clicked()),
+                this, SLOT(SlotLoadButtonClicked()));
+
+        QPushButton *btnSave = new MyButtonWithNumber("Save", i);
+        ui->Table->setCellWidget(1 + i, 0+1, btnSave);
+
+        connect(btnSave, SIGNAL(clicked()),
+                this, SLOT(SlotSaveButtonClicked()));
+
         ui->Table->setItem(1 + i, 0+2, new QTableWidgetItem(QString().setNum( i )));
         ui->Table->setItem(1 + i, 1+2, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).R )));
 
@@ -219,4 +245,40 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForCurrent(SignalNodeTyp
 }
 //----------------------------------------------------------
 
+void DialogEditSignalNodes::SlotLoadButtonClicked()
+{
+//    const auto s = dynamic_cast<MyButtonWithNumber*>(this->sender());
+//    if (!s)
+//        qDebug() << "ERROR CAST";
+//    else
+//        qDebug() << __PRETTY_FUNCTION__ << s->GetNumber();
 
+    QString fileName = QFileDialog::getOpenFileName(this,
+        "Open Signal Node file", ".", "Open Signal Node file (*.json)");
+
+    if (fileName == "")
+    {
+        qDebug() << "Warning: File name is not set. Abort saving.";
+        return;
+    }
+}
+//----------------------------------------------------------
+
+void DialogEditSignalNodes::SlotSaveButtonClicked()
+{
+//    const auto s = dynamic_cast<MyButtonWithNumber*>(this->sender());
+//    if (!s)
+//        qDebug() << "ERROR CAST";
+//    else
+//        qDebug() << __PRETTY_FUNCTION__ << s->GetNumber();
+
+    QString fileName = QFileDialog::getSaveFileName(this,
+        "Save Signal Node file", ".", "Save Signal Node file (*.json)");
+
+    if (fileName == "")
+    {
+        qDebug() << "Warning: File name is not set. Abort saving.";
+        return;
+    }
+}
+//----------------------------------------------------------

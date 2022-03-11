@@ -14,6 +14,11 @@ class DialogEditSignalNodes : public QDialog
 {
     Q_OBJECT
 
+private:
+
+    // Подумать: сделать указатель на вектор сигнальных узлов ?
+    // Сделать мембор с текем состояние таблицы (конусы или сферы)
+
 public:
     explicit DialogEditSignalNodes(QWidget *parent = nullptr);
     ~DialogEditSignalNodes();
@@ -29,6 +34,10 @@ public:
 
 private:
     Ui::DialogEditSignalNodes *ui;
+
+private slots:
+    void SlotLoadButtonClicked();
+    void SlotSaveButtonClicked();
 };
 
 #endif // DIALOGEDITSIGNALNODES_H
