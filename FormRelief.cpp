@@ -12,7 +12,7 @@
 #include <QFile>
 #include <QJsonArray>
 
-void MyPicWidget::mousePressEvent(QMouseEvent *pe)
+void MyPicSrcWidget::mousePressEvent(QMouseEvent *pe)
 {
     qDebug() << __PRETTY_FUNCTION__;
 
@@ -22,11 +22,14 @@ void MyPicWidget::mousePressEvent(QMouseEvent *pe)
     FrameRect.setTopLeft({OldX, OldY});
     FrameRect.setBottomRight({OldX, OldY});
 
-    IsMouseDown = true;
+    if (pe->button() == Qt::LeftButton)
+    {
+        IsMouseDown = true;
+    }
 }
 //-------------------------------------------------------------
 
-void MyPicWidget::mouseReleaseEvent(QMouseEvent *pe)
+void MyPicSrcWidget::mouseReleaseEvent(QMouseEvent *pe)
 {
     IsMouseDown = false;
     emit SignalSendRectFrame(QRect(QPoint(OldX, OldY), QPoint(pe->pos().x(), pe->pos().y())));
@@ -34,7 +37,7 @@ void MyPicWidget::mouseReleaseEvent(QMouseEvent *pe)
 }
 //-------------------------------------------------------------
 
-void MyPicWidget::mouseMoveEvent(QMouseEvent *pe)
+void MyPicSrcWidget::mouseMoveEvent(QMouseEvent *pe)
 {
     FrameRect.setTopLeft({OldX, OldY});
     FrameRect.setBottomRight({pe->pos().x(), pe->pos().y()});
@@ -42,14 +45,48 @@ void MyPicWidget::mouseMoveEvent(QMouseEvent *pe)
 }
 //-------------------------------------------------------------
 
-void MyPicWidget::paintEvent([[maybe_unused]] QPaintEvent *pe)
+void MyPicSrcWidget::paintEvent([[maybe_unused]] QPaintEvent *pe)
 {
-    QPainter painter(this);
-    painter.drawImage(0, 0, ImgSrc);
+    if (!ImgSrc.isNull())
+    {
+        QPainter painter(this);
+        painter.drawImage(0, 0, ImgSrc);
 
-    if (IsMouseDown)
-        painter.drawRect(FrameRect);
-    //painter.drawLine(100,100,200,200);
+        if (IsMouseDown)
+            painter.drawRect(FrameRect);
+
+        //painter.drawLine(100,100,200,200);
+    }
+}
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+
+void MyPicDstWidget::mousePressEvent(QMouseEvent *pe)
+{
+    qDebug() << __PRETTY_FUNCTION__;
+
+    OldX = pe->pos().x();
+    OldY = pe->pos().y();
+
+//    if (pe->button() == Qt::LeftButton) // Убрать?
+//    {
+//        IsMouseDown = true;
+//    }
+    if (pe->button() == Qt::RightButton)
+    {
+        emit SignalSendChangePoint(OldX, OldY);
+        repaint();
+    }
+}
+//-------------------------------------------------------------
+
+void MyPicDstWidget::paintEvent([[maybe_unused]] QPaintEvent *pe)
+{
+    if (!ImgDst.isNull())
+    {
+        QPainter painter(this);
+        painter.drawImage(0, 0, ImgDst);
+    }
 }
 //-------------------------------------------------------------
 //-------------------------------------------------------------
@@ -63,8 +100,8 @@ FormRelief::FormRelief(QWidget *parent) :
     wgtForScrollArea = new QWidget;
     QVBoxLayout *layouForScrollArea = new QVBoxLayout;
 
-    lblPicSrc = new MyPicWidget("Test", ImgReliefSrc);
-    lblPicDst = new QLabel("Result");
+    lblPicSrc = new MyPicSrcWidget("Test", ImgReliefSrc);
+    lblPicDst = new MyPicDstWidget("Result", ImgReliefDst);
     layouForScrollArea->addWidget(lblPicSrc);
     layouForScrollArea->addWidget(lblPicDst);
 
@@ -74,9 +111,10 @@ FormRelief::FormRelief(QWidget *parent) :
     connect(lblPicSrc, SIGNAL(SignalSendRectFrame(QRect)),
             this, SLOT(SlotReceiveRectFrame(QRect)));
 
+    connect(lblPicDst, SIGNAL(SignalSendChangePoint(int,int)),
+            this, SLOT(SlotReceiveChangePoint(int,int)));
 
     //ui->tableColors->setColumnCount(2);
-
     //connect(ui->tableColors, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(SlotColorItemDblClicked(QTableWidgetItem *)));
 
     dlgColor.setWindowTitle("Select color");
@@ -117,6 +155,8 @@ void FormRelief::on_actionFile_Open_Image_triggered()
     lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
 
     //lblPic->setPixmap(QPixmap::fromImage(ImgRelief));
+
+    ui->actionRelief_Calc_Discrete_Img->setEnabled(true);
 }
 //-------------------------------------------------------------
 
@@ -143,13 +183,21 @@ void FormRelief::on_btnApply_clicked()
 }
 //-------------------------------------------------------------
 
-void FormRelief::on_actionRelief_Calc_triggered()
+void FormRelief::on_actionRelief_Calc_Discrete_Img_triggered()
 {
     if (ImgReliefSrc.isNull())
     {
         qDebug() << "ImgReliefSrc.isNull()";
         return;
     }
+    int colorCount = ui->tableColors->rowCount();
+    if (colorCount < 2)
+    {
+        QMessageBox::critical(this, "Error", "There must be at least 2 colors in the legend");
+        return;
+    }
+
+    TempGrid.clear();
 
     CalcLegendColor();
 
@@ -162,38 +210,108 @@ void FormRelief::on_actionRelief_Calc_triggered()
     double dxPic = w/double(cols); // в пикселах
     double dyPic = h/double(rows); // в пикселах
 
-    Relief.Clear();
-    double l = ui->EditXStart->text().toDouble();
-    double b = ui->EditYStart->text().toDouble();
-    double r = l + ui->EditWidth->text().toDouble();
-    double t = b + ui->EditHeight->text().toDouble();
-    Relief.SetArea(l, b, r, t);
+//    Relief.Clear();
+//    double l = ui->EditXStart->text().toDouble();
+//    double b = ui->EditYStart->text().toDouble();
+//    double r = l + ui->EditWidth->text().toDouble();
+//    double t = b + ui->EditHeight->text().toDouble();
+//    Relief.SetArea(l, b, r, t);
 
-    if (!Relief.GetArea().isValid())
-        throw std::runtime_error("!Relief.GetArea().isValid()");
+//    if (!Relief.GetArea().isValid())
+//        throw std::runtime_error("!Relief.GetArea().isValid()");
 
-    double dxReal = Relief.GetArea().width()/double(cols);  // в пикселах
-    double dyReal = Relief.GetArea().height()/double(rows); // в пикселах
+    //double dxReal = Relief.GetArea().width()/double(cols);
+    //double dyReal = Relief.GetArea().height()/double(rows);
 
     for (int i = 0; i < rows; ++i)
     {
-        std::vector<std::pair<int, int>> row;
-        double yReal = b + (rows - i - 1)*dyReal;
+        //std::vector<std::pair<int, int>> row;
+        //double yReal = b + (rows - i - 1)*dyReal;
+        TempGrid.push_back({});
 
         for (int j = 0; j < cols; ++j)
         {
-            int Z = AnalyseImageAreaForZ(j*dxPic, i*dyPic, (j+1)*dxPic, (i+1)*dyPic);
-            double xReal = l + dxReal/2 + j*dxReal;
+            int xStart = j*dxPic;
+            int yStart = i*dyPic;
+            int xEnd = (j+1)*dxPic;
+            int yEnd = (i+1)*dyPic;
+//            int Z = AnalyseImageAreaForZ(j*dxPic, i*dyPic, (j+1)*dxPic, (i+1)*dyPic);
+            auto res = AnalyseImageAreaForZ(xStart, yStart, xEnd, yEnd);
+            //double xReal = l + dxReal/2 + j*dxReal;
 
-            row.emplace_back(xReal, Z);
+            TempGrid.back().emplace_back(res);
+
+//            for (int y = yStart; y < yEnd; ++y)
+//            {
+//        //        QRgb *tempLine = reinterpret_cast<QRgb*>(ImgRelief.scanLine(y));
+//                rgbaType *tempLine = reinterpret_cast<rgbaType*>(ImgReliefDst.scanLine(y));
+//                tempLine += xStart;
+//                for (int x = xStart; x < xEnd; ++x)
+//                {
+//                        tempLine->r = color.r;
+//                        tempLine->g = color.g;
+//                        tempLine->b = color.b;
+
+//                    tempLine++;
+//                }
+//            }
+
+            //row.emplace_back(xReal, Z);
             //Relief.AddPoint(xReal, yReal, Z);
         }
-        Relief.AddRow(yReal + dyReal/2, row);
+        //Relief.AddRow(yReal + dyReal/2, row);
     }
 
-    //lblPicDst->repaint();
+//    lblPicDst->repaint();
+    PrintImgReliefDstFromTempGrid();
 
-    lblPicDst->setPixmap(QPixmap::fromImage(ImgReliefDst));
+    ui->actionRelief_Calc_Relief_And_Save_As->setEnabled(true);
+}
+//-------------------------------------------------------------
+
+void FormRelief::PrintImgReliefDstFromTempGrid()
+{
+    if (TempGrid.empty())
+    {
+        throw std::logic_error("TempGrid is empty in PrintImgReliefDstFromTempGrid()");
+    }
+
+    int rows = TempGrid.size();         // Размер сетки
+    int cols = TempGrid.front().size(); // Размер сетки
+
+    int w = ImgReliefDst.width();  // в пикселах
+    int h = ImgReliefDst.height(); // в пикселах
+
+    double dxPic = w/double(cols); // в пикселах
+    double dyPic = h/double(rows); // в пикселах
+
+    for (int i = 0; i < rows; ++i)
+    {
+        for (int j = 0; j < cols; ++j)
+        {
+            int xStart = j*dxPic;
+            int yStart = i*dyPic;
+            int xEnd = (j+1)*dxPic;
+            int yEnd = (i+1)*dyPic;
+
+            for (int y = yStart; y < yEnd; ++y)
+            {
+                const auto & color = TempGrid.at(i).at(j).first;
+                rgbaType *tempLine = reinterpret_cast<rgbaType*>(ImgReliefDst.scanLine(y));
+                tempLine += xStart;
+                for (int x = xStart; x < xEnd; ++x)
+                {
+                    tempLine->r = color.r;
+                    tempLine->g = color.g;
+                    tempLine->b = color.b;
+
+                    tempLine++;
+                }
+            }
+        }
+    }
+
+    lblPicDst->repaint();
 }
 //-------------------------------------------------------------
 
@@ -229,6 +347,12 @@ void FormRelief::CalcLegendColor()
 {
     int colorCount = ui->tableColors->rowCount();
 
+    if (colorCount < 2)
+    {
+        QMessageBox::critical(this, "Error", "There must be at least 2 colors in the legend");
+        return;
+    }
+
     LegendColor.Colors.clear();
 
     for (int i = 0; i < colorCount; ++i)
@@ -239,6 +363,7 @@ void FormRelief::CalcLegendColor()
     }
 
     double averSim = 0;
+
 
     for (size_t i = 0; i < LegendColor.Colors.size()-1; ++i)
     {
@@ -293,7 +418,7 @@ int FormRelief::FindNearestColorIndex(int r, int g, int b)
 }
 //-------------------------------------------------------------
 
-int FormRelief::AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd)
+CorolAndZ_pair FormRelief::AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd)
 {
     //int res = 0;
 
@@ -306,7 +431,6 @@ int FormRelief::AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd)
 
     if (yEnd > ImgReliefSrc.height())
         throw std::runtime_error("yEnd > ImgReliefSrc.height()");
-
 
 //    double averR = 0;
 //    double averG = 0;
@@ -350,46 +474,44 @@ int FormRelief::AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd)
             }
     }
 
-//    if (indRes < 0)
-//    {
-//        qDebug() << "ERROR: Color for Area not found!";
-//        return 0;
-//    }
+    if (indRes < 0)
+    {
+        qDebug() << "Warning: Appropriate Color for Area not found!";
+        return {};
+    }
 
 //    averR /= (yEnd-yStart)*(xEnd-xStart);
 //    averG /= (yEnd-yStart)*(xEnd-xStart);
 //    averB /= (yEnd-yStart)*(xEnd-xStart);
 
-
-    for (int y = yStart; y < yEnd; ++y)
-    {
-//        QRgb *tempLine = reinterpret_cast<QRgb*>(ImgRelief.scanLine(y));
-        rgbaType *tempLine = reinterpret_cast<rgbaType*>(ImgReliefDst.scanLine(y));
-        tempLine += xStart;
-        for (int x = xStart; x < xEnd; ++x)
-        {
-            if (indRes >= 0)
-            {
-                tempLine->r = LegendColor.Colors.at(indRes).first.r;
-                tempLine->g = LegendColor.Colors.at(indRes).first.g;
-                tempLine->b = LegendColor.Colors.at(indRes).first.b;
-            }
-            else
-            {
-                tempLine->r = 0;
-                tempLine->g = 0;
-                tempLine->b = 0;
-            }
-
-
-            tempLine++;
-        }
-    }
+//-------------------------------------------------------------
+//    for (int y = yStart; y < yEnd; ++y)
+//    {
+//        rgbaType *tempLine = reinterpret_cast<rgbaType*>(ImgReliefDst.scanLine(y));
+//        tempLine += xStart;
+//        for (int x = xStart; x < xEnd; ++x)
+//        {
+//            if (indRes >= 0)
+//            {
+//                tempLine->r = LegendColor.Colors.at(indRes).first.r;
+//                tempLine->g = LegendColor.Colors.at(indRes).first.g;
+//                tempLine->b = LegendColor.Colors.at(indRes).first.b;
+//            }
+//            else
+//            {
+//                tempLine->r = 0;
+//                tempLine->g = 0;
+//                tempLine->b = 0;
+//            }
+//            tempLine++;
+//        }
+//    }
+//---------------------------------------------------------------
 
     if (indRes >= 0)
-        return LegendColor.Colors.at(indRes).second;
+        return LegendColor.Colors.at(indRes);
     else
-        return 0;
+        return {};
 }
 //-------------------------------------------------------------
 
@@ -432,10 +554,10 @@ void FormRelief::SlotReceiveRectFrame(QRect _rect)
 
 //    int firstRow = list.first().row();
 
-    int firstRow = LastSelectedColorRow;
-    if (firstRow < 0 || firstRow >= ui->tableColors->rowCount())
+//    int firstRow = LastSelectedColorRow;
+    if (LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount())
     {
-        qDebug() << "firstRow < 0 || firstRow >= ui->tableColors->rowCount()";
+        qDebug() << "LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount()";
         return;
     }
 
@@ -444,8 +566,43 @@ void FormRelief::SlotReceiveRectFrame(QRect _rect)
 
 //    ui->tableColors->item(firstRow, 0)->background().setColor(QColor(color.r, color.g, color.b));
 
-    ui->tableColors->item(firstRow, 0)->setBackground(QBrush(QColor(color.r, color.g, color.b)));
+    ui->tableColors->item(LastSelectedColorRow, 0)->setBackground(QBrush(QColor(color.r, color.g, color.b)));
+}
+//-------------------------------------------------------------
 
+void FormRelief::SlotReceiveChangePoint(int x, int y)
+{
+    if (LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount())
+    {
+        QMessageBox::critical(this, "Error", "There must be a selected color in the legend");
+        qDebug() << "LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount()";
+        return;
+    }
+    if (TempGrid.empty())
+    {
+        QMessageBox::critical(this, "Error", "TempGrid is empty in SlotReceiveChangePoint()");
+        qDebug() << "TempGrid is empty in SlotReceiveChangePoint()";
+        return;
+    }
+
+    QColor c = ui->tableColors->item(LastSelectedColorRow, 0)->background().color();
+    if (!c.isValid())
+    {
+        qDebug() << "Selected color is invalid!";
+        return;
+    }
+
+    int w = ImgReliefDst.width();
+    int h = ImgReliefDst.height();
+
+    int row = y / (double)h * TempGrid.size();
+    int col = x / (double)w * TempGrid.front().size();
+
+    qDebug() << "row =" << row << "col =" << col;
+
+    TempGrid.at(row).at(col) = LegendColor.Colors.at(LastSelectedColorRow);
+
+    PrintImgReliefDstFromTempGrid();
 }
 //-------------------------------------------------------------
 
@@ -537,8 +694,6 @@ void FormRelief::on_actionFile_Load_Legend_triggered()
         qDebug() << "json file not open";
         return;
     }
-
-
 }
 //-------------------------------------------------------------
 
@@ -553,8 +708,13 @@ void FormRelief::on_chbColorToLegend_stateChanged([[maybe_unused]] int arg1)
 }
 //-------------------------------------------------------------
 
-void FormRelief::on_actionRelief_Save_Relief_As_triggered()
+void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
 {
+    if (TempGrid.empty())
+    {
+        throw std::logic_error("TempGrid is empty in PrintImgReliefDstFromTempGrid()");
+    }
+
     QString fileName = QFileDialog::getSaveFileName(this,
         "Save Relief file", ".", "Relief Files (*.json)");
 
@@ -562,6 +722,38 @@ void FormRelief::on_actionRelief_Save_Relief_As_triggered()
     {
         qDebug() << (fileName + " not found");
         return;
+    }
+
+
+    int rows = TempGrid.size();         // Размер сетки
+    int cols = TempGrid.front().size(); // Размер сетки
+
+    Relief.Clear();
+    double l = ui->EditXStart->text().toDouble();
+    double b = ui->EditYStart->text().toDouble();
+    double r = l + ui->EditWidth->text().toDouble();
+    double t = b + ui->EditHeight->text().toDouble();
+    Relief.SetArea(l, b, r, t);
+
+    if (!Relief.GetArea().isValid())
+        throw std::runtime_error("!Relief.GetArea().isValid()");
+
+    double dxReal = Relief.GetArea().width()/double(cols);  // в метрах
+    double dyReal = Relief.GetArea().height()/double(rows); // в метрах
+
+    for (int i = 0; i < rows; ++i)
+    {
+        std::vector<std::pair<int, int>> row;
+        double yReal = b + dyReal/2 + (rows - i - 1)*dyReal;
+
+        for (int j = 0; j < cols; ++j)
+        {
+            double xReal = l + dxReal/2 + j*dxReal;
+            auto Z = TempGrid.at(i).at(j).second;
+            row.emplace_back(xReal, Z);
+        }
+
+        Relief.AddRow(yReal, row);
     }
 
     Relief.SaveToFile(fileName);

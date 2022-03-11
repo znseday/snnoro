@@ -131,6 +131,7 @@
     </property>
     <addaction name="actionWorld_Show_Coords"/>
     <addaction name="separator"/>
+    <addaction name="actionWorld_Show_Abonents"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -143,6 +144,8 @@
     <addaction name="separator"/>
     <addaction name="actionEdit_Edit_Signal_Nodes_for_All"/>
     <addaction name="actionEdit_Edit_Signal_Nodes_for_Current"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_Edit_Routes"/>
    </widget>
    <widget class="QMenu" name="menuDebug">
     <property name="title">
@@ -439,6 +442,25 @@
    </property>
    <property name="text">
     <string>Edit Signal Nodes for Current...</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Abonents">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Abonents</string>
+   </property>
+  </action>
+  <action name="actionEdit_Edit_Routes">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Edit Routes...</string>
    </property>
   </action>
  </widget>

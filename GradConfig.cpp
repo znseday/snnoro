@@ -42,7 +42,7 @@ void MyConfig::SetRandomNodeCoords()
 }
 //----------------------------------------------------------
 
-void MyConfig::DrawIn3D(SignalNodeType _snt) const
+void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
 {
     if (!Relief)
         throw std::runtime_error("Relief is not set");
@@ -99,6 +99,8 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
 //    glEnd();
 
 
+    glPushMatrix();
+    glTranslatef(0, 0, -Relief->GetAverZ());
 
     Relief->Draw(!Settings3d.IsPerspective);
 
@@ -144,6 +146,8 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
             //glVertex3f((p.Pos.x()-offsetX)*k, (p.Pos.y()-offsetY)*k, 0);
             //glEnd();
 
+
+
             glPushMatrix();    
             double x = (p.Pos.x()-offsetX)*k;
             double y = (p.Pos.y()-offsetY)*k;
@@ -161,8 +165,100 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
                 z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
                 glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
             }
+            gluQuadricDrawStyle(Quadric(), GLU_FILL);
             gluSphere(Quadric(), 0.02 + 0.05*sqrt(p.Weight), 12, 12);
             glPopMatrix();
+        }
+
+        if (isDrawAbonents)
+        {
+            const auto & abo = r.GetAbonent();
+            double x = (abo.Pos.x()-offsetX)*k;
+            double y = (abo.Pos.y()-offsetY)*k;
+            double z = 0;
+
+            if (Relief->GetIsMathRelief())
+            {
+                // z = ???;
+                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
+            }
+            else
+            {
+//                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
+                z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
+            }
+
+            constexpr float kTri = 0.02f;
+
+            glPushMatrix();         
+
+            const auto & q = abo.q;
+
+            double tetha = acos(q.z() / q.length()) * 180.0 / M_PI;
+            double fi;
+            if (qFuzzyCompare(q.toVector2D().length(), 0))
+                fi = 0;
+            else
+                fi = acos(q.y() / q.toVector2D().length()) * 180.8 / M_PI;
+
+            glTranslatef(x, y, z);
+
+            //glDisable(GL_DEPTH_TEST);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glBegin(GL_QUADS);
+            constexpr float hr = 0.03;
+            constexpr float wr = 0.25;
+
+            float wrr = abo.accessRate / 1.0 * wr;
+            constexpr double endHue = 120;
+            int hu = /*startHue -*/ -20 + (abo.accessRate - 0)/(1.0 - 0)*endHue;
+            if (hu > 120)
+                hu = 120;
+            if (hu < 0)
+                hu += 360;
+
+            QColor res = QColor::fromHsv(hu, 220, 150);
+        //    qDebug() << res.hslHue() << res.hslSaturation() << res.lightness();
+        //    qDebug() << res.isValid();
+            res = res.toRgb();
+
+            glColor3f(res.redF(), res.greenF(), res.blueF());
+            glVertex3f(0, 0, 0);
+            glVertex3f(0, hr, 0);
+            glVertex3f(wrr, hr, 0);
+            glVertex3f(wrr, 0, 0);
+            glEnd();
+
+            glLineWidth(2.0f);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glBegin(GL_QUADS);
+            glColor3f(0, 0, 0);
+            glVertex3f(0, 0, 0);
+            glVertex3f(0, hr, 0);
+            glVertex3f(wr, hr, 0);
+            glVertex3f(wr, 0, 0);
+            glEnd();
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+            glColor3f(0.9f, 0.1f, 0.1f);
+            glRotatef( (q.x() > 0) ? -fi : fi, 0, 0, 1);
+            glRotatef(-tetha, 1, 0, 0);
+
+            glTranslatef(0, 0, -kTri*2);
+
+            glLineWidth(1.0);
+            gluQuadricDrawStyle(Quadric(), GLU_LINE);
+            gluCylinder(Quadric(), kTri, 0, kTri*4, 16, 4);
+
+            //glEnable(GL_DEPTH_TEST);
+            glPopMatrix();
+
+//            qDebug() << "abo =" << abo.Pos << ", ar =" << abo.accessRate;
+//            glBegin(GL_LINE_LOOP);
+//            glVertex3f(x-kTri, y - kTri,     z + zOffset);
+//            glVertex3f(x,      y + kTri,     z + zOffset);
+//            glVertex3f(x+kTri, y - kTri,     z + zOffset);
+//            glEnd();
         }
     }
 
@@ -193,6 +289,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
             z = (node.Pos.z()-offsetZ)*Relief->Get_kz();
             glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
         }
+        gluQuadricDrawStyle(Quadric(), GLU_FILL);
         gluSphere(Quadric(), 0.02, 12, 12);
         glPopMatrix();
 
@@ -277,11 +374,11 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
 
     }
 
+    glPopMatrix();
+
     glGetIntegerv(GL_VIEWPORT, vport);
     glGetDoublev(GL_MODELVIEW_MATRIX, modl);
     glGetDoublev(GL_PROJECTION_MATRIX, proj);
-
-//    glPopMatrix();
 }
 //----------------------------------------------------------
 
@@ -430,7 +527,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                                          Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
                                Nodes[k2/2].R);
 
-                double x = sn1.Pos.distanceToPoint(sn2.Pos);
+                double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
                 double R12 = sn1.R + sn2.R;
 
                 R12 -= _targetFuncSettings.R_nodeOverlap;
@@ -740,8 +837,12 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params)
             p1.IsCovered = false;
             for (size_t k = 0; k < Nodes.size()*2; k += 2)
             {
-                SignalNode sn(QVector3D(params[k], params[k+1], 0), Nodes[k/2].R);
-                if (p1.Pos.distanceToPoint(sn.Pos) < sn.R) // ???
+//                SignalNode sn(QVector3D(params[k], params[k+1], 0), Nodes[k/2].R);
+                SignalNode sn(QVector3D(params[k],
+                                        params[k+1],
+                                        Relief->CalcRealZbyRealXY(params[k], params[k+1])),
+                                        Nodes[k/2].R);
+                if (p1.Pos.distanceToPoint(sn.Pos) < sn.R) // Сравниваем расстояния в 3d! Придумать что-то еще?
                 {
                     p1.IsCovered = true;
                     break;
@@ -776,10 +877,7 @@ void MyConfig::CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings)
                 double distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
                 if (distToPoint < Nodes[iNode].R)
                 {
-
-
                     double arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
-
 
                     if (_targetFuncSettings.IsUseLineBetweenTwoPoints )
                     {
@@ -921,6 +1019,29 @@ void MyConfig::CalcPointStats()
         }
     Stats.UncoveredCount = pointCount - coveredCount;
     Stats.PercentOfCovered = coveredCount/double(pointCount);
+}
+//----------------------------------------------------------
+
+void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints)
+{
+    for (auto & route : Routes)
+    {
+        auto & abo = route.AbonentDirectAccess();
+        double y1 = 0;
+        for (const auto & sn : Nodes)
+        {
+            double y = sn.accessRateF(abo.Pos);
+
+            if (_isUseLineBetweenTwoPoints)
+            {
+                y *= IsLineBetweenTwoPoints(sn.Pos, abo.Pos);
+            }
+
+            y1 += y;
+        }
+        abo.accessRate = y1;
+    }
+
 }
 //----------------------------------------------------------
 

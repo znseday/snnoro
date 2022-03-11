@@ -49,14 +49,14 @@ bool DialogNewGradConfig::CreateNewGradModel(MyGradModel &_gradModel)
     }
 
     isOk = false;
-    double Betha = ui->EditSignalNodeBetha->text().toDouble(&isOk);
-    if (!isOk || Betha < 0 || Betha > 180)
+    double Beta = ui->EditSignalNodeBetha->text().toDouble(&isOk);
+    if (!isOk || Beta < 0 || Beta > 180)
     {
         QMessageBox::critical(this, "Error", "SignalNode Betha is incorrect!");
         return false;
     }
 
-    _gradModel.ReCreateSignalNodes(signalNodeCount, R, Betha);
+    _gradModel.ReCreateSignalNodes(signalNodeCount, R, qDegreesToRadians(Beta));
 
     isOk = false;
     size_t configCount = ui->EditPopulationSize->text().toInt(&isOk);

@@ -9,20 +9,25 @@
 #include <QMouseEvent>
 
 #include <Relief.h>
+//#include <vector>
 
 struct rgbaType
 {
     unsigned char b = 0, g = 0, r = 0, a = 0;
+    rgbaType() = default;
     rgbaType(unsigned char _b, unsigned char _g, unsigned char _r, unsigned char _a) : b(_b), g(_g), r(_r), a(_a) {}
 };
 
+using CorolAndZ_pair = std::pair<rgbaType, int>;
+
 struct LegendColorType
 {
-    std::vector<std::pair<rgbaType, int>> Colors;
+    std::vector<CorolAndZ_pair> Colors;
     double averSimilarity = 0;
 };
+//-------------------------------------------------------------
 
-class MyPicWidget : public QLabel
+class MyPicSrcWidget : public QLabel
 {
     Q_OBJECT
 private:
@@ -33,6 +38,7 @@ private:
 
 signals:
     void SignalSendRectFrame(QRect);
+    void SignalSendChangePoint(int, int);
 
 protected:
     void mousePressEvent(QMouseEvent *pe);
@@ -41,11 +47,31 @@ protected:
     void paintEvent(QPaintEvent *pe);
 
 public:
-    MyPicWidget(const QString &text, const QImage &_imgSrc, QWidget *parent = nullptr) : QLabel(text, parent), ImgSrc(_imgSrc) {};
-
+    MyPicSrcWidget(const QString &text, const QImage &_imgSrc, QWidget *parent = nullptr) : QLabel(text, parent), ImgSrc(_imgSrc) {};
 };
+//-------------------------------------------------------------
 
+class MyPicDstWidget : public QLabel
+{
+    Q_OBJECT
+private:
+    int OldX, OldY;
+    const QImage &ImgDst;
+    bool IsMouseDown = false;
 
+signals:
+    void SignalSendChangePoint(int, int);
+
+protected:
+    void mousePressEvent(QMouseEvent *pe);
+//    void mouseReleaseEvent(QMouseEvent *pe);
+//    void mouseMoveEvent(QMouseEvent *pe);
+    void paintEvent(QPaintEvent *pe);
+
+public:
+    MyPicDstWidget(const QString &text, const QImage &_imgDst, QWidget *parent = nullptr) : QLabel(text, parent), ImgDst(_imgDst) {};
+};
+//-------------------------------------------------------------
 
 namespace Ui {
 class FormRelief;
@@ -64,8 +90,6 @@ private slots:
 
     void on_btnApply_clicked();
 
-    void on_actionRelief_Calc_triggered();
-
     void on_actionFile_Close_triggered();
 
     void SlotColorDblClicked(QTableWidgetItem *pItem);
@@ -77,7 +101,8 @@ private slots:
 
     void on_chbColorToLegend_stateChanged(int arg1);
 
-    void on_actionRelief_Save_Relief_As_triggered();
+    void on_actionRelief_Calc_Discrete_Img_triggered();
+    void on_actionRelief_Calc_Relief_And_Save_As_triggered();
 
 private:
     Ui::FormRelief *ui;
@@ -86,8 +111,8 @@ private:
     QImage ImgReliefSrc;
     QImage ImgReliefDst;
 
-    MyPicWidget *lblPicSrc;
-    QLabel *lblPicDst;
+    MyPicSrcWidget *lblPicSrc;
+    MyPicDstWidget *lblPicDst;
 
     QColorDialog dlgColor;
 
@@ -97,14 +122,19 @@ private:
     void CalcLegendColor();
     int FindNearestColorIndex(int r, int g, int b);
 
-    int AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd);
+    CorolAndZ_pair AnalyseImageAreaForZ(int xStart, int yStart, int xEnd, int yEnd);
     rgbaType AnalyseImageAreaForColor(int xStart, int yStart, int xEnd, int yEnd);
 
     Relief3D Relief;
 
+    std::vector<std::vector<CorolAndZ_pair>> TempGrid;
+
+    void PrintImgReliefDstFromTempGrid();
+
 public slots:
 
     void SlotReceiveRectFrame(QRect _rect);
+    void SlotReceiveChangePoint(int x, int y);
 };
 
 #endif // FORMRELIEF_H

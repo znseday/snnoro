@@ -16,10 +16,14 @@
 #include "DialogChangePopulationSize.h"
 #include "DialogNewGradConfig.h"
 #include "DialogEditSignalNodes.h"
+#include "DialogEditRoutes.h"
 
 #include "FormGradGeneral.h"
 
 #include "FormRelief.h"
+
+#include "FormAboCalc.h"
+#include "DialogAboReport.h"
 
 namespace Ui {
 class MainWindow;
@@ -97,6 +101,10 @@ private slots:
 
     void on_actionEdit_Edit_Signal_Nodes_for_Current_triggered();
 
+    void on_actionEdit_Edit_Routes_triggered();
+
+    void on_actionWorld_Show_Abonents_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -115,10 +123,14 @@ private:
     DialogNewGradConfig DialogGradConfigNew;
 
     DialogEditSignalNodes DialogSignalNodesEdit;
+    DialogEditRoutes DialogRoutesEdit;
 
     FormGradGeneral *formGradGeneral = nullptr;
 
     FormRelief formRelief;
+
+    FormAboCalc formAboCalc;
+    DialogAboReport dlgAboReport;
 
     QLabel *lblGlX;
     QLabel *lblGlY;
@@ -135,6 +147,12 @@ private:
 public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);
     void SlotReceiveRouteDeleted(bool isDeleted);
+
+    void SlotReceiveAboTime(int t);
+    void SlotReceiveFormAboCalcClose();
+
+    void SlotReceiveAddTimePointToReport(int t);
+    void SlotReceiveShowAboReport();
 
     // QPaintDevice interface
 public:

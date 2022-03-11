@@ -140,7 +140,7 @@ void MainGLWidget::resizeGL(int w, int h)
 
         View::Instance().reshape(w, h);
     }
-    else if (WorkMode == WorkModeType::GradWord)
+    else if (WorkMode == WorkModeType::GradWork)
     {
 //        if (MyFBO)
 //            delete MyFBO;
@@ -169,7 +169,7 @@ void MainGLWidget::paintGL()
         //cout << __PRETTY_FUNCTION__ << endl;
         View::Instance().display();
     }
-    else if (WorkMode == WorkModeType::GradWord)
+    else if (WorkMode == WorkModeType::GradWork)
     {
 //        GradModel.OnResize(this->width(), this->height());
 
@@ -240,7 +240,7 @@ void MainGLWidget::keyPressEvent(QKeyEvent *pe)
             break;
         }
     }
-    else if (WorkMode == WorkModeType::GradWord)
+    else if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.OnKeyPress(pe);
     }
@@ -294,7 +294,7 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
         if (IsUpdated)
             this->repaint();
     }
-    else if (WorkMode == WorkModeType::GradWord)
+    else if (WorkMode == WorkModeType::GradWork)
     {
         if (pe->buttons() & Qt::LeftButton)
         {
@@ -368,11 +368,11 @@ void MainGLWidget::mouseMoveEvent(QMouseEvent *pe)
         OldX = CurrentX;
         OldY = CurrentY;
     }
-    else if (WorkMode == WorkModeType::GradWord)
+    else if (WorkMode == WorkModeType::GradWork)
     {
         if (IsShowCoordsAlways || WorldMode != WorldModeType::Nothing)
         {
-            double wx, wy, wz;
+            double wx = -1, wy = -1, wz = -1;
             bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
         //    wExists = Model.MouseToWorld(pe->x(), pe->y(), this->height(), wx, wy, wz);
         //    auto tEnd = ClockType::now();
@@ -406,7 +406,7 @@ void MainGLWidget::wheelEvent(QWheelEvent *pe)
     {
 
     }
-    else if (WorkMode == WorkModeType::GradWord)
+    else if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.OnMouseWheel(pe);
         this->repaint();

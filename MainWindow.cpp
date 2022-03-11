@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QMessageBox>
 
+#include <limits>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -81,7 +83,25 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //on_actionFileStart_Grad_Descent_triggered();
 
+
+    connect(&formAboCalc, SIGNAL(SignalSendAboTime(int)),
+            this, SLOT(SlotReceiveAboTime(int)));
+
+    connect(&formAboCalc, SIGNAL(SignalFormAboCalcClose()),
+            this, SLOT(SlotReceiveFormAboCalcClose()));
+
+
+//    void SlotReceiveAddTimePointToReport(int t);
+//    void SlotReceiveShowAboReport();
+    connect(&formAboCalc, SIGNAL(SignalAddTimePointToReport(int)),
+            this, SLOT(SlotReceiveAddTimePointToReport(int)));
+
+    connect(&formAboCalc, SIGNAL(SignalShowAboReport()),
+            this, SLOT(SlotReceiveShowAboReport()));
+
     mainGLWidget->setMouseTracking(true);
+
+    dlgAboReport.InitDialog();
 }
 //-------------------------------------------------------------
 
@@ -210,7 +230,7 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
         return;
     }
 
-    WorkMode = WorkModeType::GradWord;
+    WorkMode = WorkModeType::GradWork;
     ui->actionFileStart_Old->setEnabled(false);
 
     ui->actionFileSave_Grad_Config->setEnabled(true);
@@ -219,6 +239,10 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
+
+    ui->actionEdit_Edit_Routes->setEnabled(true);
+
+    ui->actionWorld_Show_Abonents->setEnabled(true);
 
     GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
@@ -245,7 +269,7 @@ void MainWindow::on_actionGradSetDraw3_triggered()
 
 void MainWindow::on_actionGradSwitch_Show_One_All_triggered()
 {
-    if (WorkMode == WorkModeType::GradWord)
+    if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.SwitchDrawOnlyOne();
         mainGLWidget->repaint();
@@ -266,7 +290,7 @@ void MainWindow::on_actionGradSwitch_Show_One_All_triggered()
 
 void MainWindow::on_actionGradSwitch_Pespective_for_Current_triggered()
 {
-    if (WorkMode == WorkModeType::GradWord)
+    if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.SwitchPerspective();
         mainGLWidget->repaint();
@@ -280,7 +304,7 @@ void MainWindow::on_actionGradSwitch_Pespective_for_Current_triggered()
 
 void MainWindow::on_actionGradSwitch_Pespective_for_All_triggered()
 {
-    if (WorkMode == WorkModeType::GradWord)
+    if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.SwitchPerspectiveForAll();
         mainGLWidget->repaint();
@@ -461,16 +485,46 @@ void MainWindow::on_actionWorld_Show_Coords_toggled(bool _toggled)
 
 void MainWindow::SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists)
 {
+    if (wExists) // Пытаемся отловить ошибку, когда в интерполяцию рельефа залетает nan
+    {
+//        if (wx == std::numeric_limits<double>::quiet_NaN() ||
+//            wx == std::numeric_limits<double>::signaling_NaN() )
+        if (std::isnan(wx))
+        {
+            throw std::logic_error("wx == nan in SlotReceiveWorldCoords");
+        }
+//        if (wy == std::numeric_limits<double>::quiet_NaN() ||
+//            wy == std::numeric_limits<double>::signaling_NaN() )
+        if (std::isnan(wy))
+        {
+            throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
+        }
+//        if (wz == std::numeric_limits<double>::quiet_NaN() ||
+//            wz == std::numeric_limits<double>::signaling_NaN() )
+        if (std::isnan(wz))
+        {
+            throw std::logic_error("wz == nan in SlotReceiveWorldCoords");
+        }
+    }
+
     lblGlX->setText("Gl X = " + (wExists?QString().setNum(wx):"n/a"));
     lblGlY->setText("Gl Y = " + (wExists?QString().setNum(wy):"n/a"));
     lblGlZ->setText("Gl Z = " + (wExists?QString().setNum(wz):"n/a"));
 
     double realX, realY, realZ;
-    realZ = GradModel.GetRelief().CalcRealXYZbyNormXY(wx, wy, realX, realY);
+//    if (std::isnan(wy))   // Пытаемся отловить ошибку, когда в интерполяцию рельефа залетает nan
+//    {
+//        throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
+//    }
 
-    lblWorldX->setText("WorldX = " + (wExists?QString().setNum(realX):"n/a") + " m");
-    lblWorldY->setText("WorldY = " + (wExists?QString().setNum(realY):"n/a") + " m");
-    lblWorldZ->setText("WorldZ = " + (wExists?QString().setNum(realZ):"n/a") + " m");
+    if (!std::isnan(wx) && !std::isnan(wy) && !std::isnan(wy))   //  Тпереь должно работать
+    {                                                // Если всё будет работать, то удалить все подобные ловушки
+        realZ = GradModel.GetRelief().CalcRealXYZbyNormXY(wx, wy, realX, realY);
+
+        lblWorldX->setText("WorldX = " + (wExists?QString().setNum(realX):"n/a") + " m");
+        lblWorldY->setText("WorldY = " + (wExists?QString().setNum(realY):"n/a") + " m");
+        lblWorldZ->setText("WorldZ = " + (wExists?QString().setNum(realZ):"n/a") + " m");
+    }
 }
 //-------------------------------------------------------------
 
@@ -497,6 +551,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //    {
 //        QMessageBox::information(this, "test spontaneous", "test spontaneous");
 //    }
+
+    formAboCalc.close();
 
     if ( !GradModel.GetIsSaved() )
     {
@@ -636,59 +692,28 @@ bool MainWindow::CheckIsSavedAndSaveIfNecessary()
 
 void MainWindow::on_actionFileNew_Grad_Config_triggered()
 {
-    WorkMode = WorkModeType::GradWord;
+//    WorkMode = WorkModeType::GradWord;
     ui->actionFileStart_Old->setEnabled(false);
-
-//    if ( !GradModel.GetIsSaved() )
-//    {
-//        auto res = QMessageBox::question(this, "Question",
-//                                         "Grad Config file is not saved. Would you like to save it?",
-//                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-
-//        if (res == QMessageBox::Yes)
-//        {
-//            // try save
-//            on_actionFileSave_Grad_Config_triggered();
-//            if (IsGradDescFileSavedSuccessfully)
-//            {
-//                // nothing
-//            }
-//            else
-//            {
-//                return;
-//            }
-//        }
-//        else if (res == QMessageBox::No)
-//        {
-//            // nothing
-//        }
-//        else if (res == QMessageBox::Cancel)
-//        {
-//            return;
-//        }
-//        else
-//        {
-//            QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
-//            return;
-//        }
-//    }
 
     if (!CheckIsSavedAndSaveIfNecessary())
         return;
 
-    GradModel.NewGradModelBulk();
-    GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
+//    GradModel.NewGradModelBulk();
+//    GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
     // Здесь сделать что-нибудь еще: новая конфигурация
     //DialogGradConfigNew.InitDialog(GradModel);
 
     if (DialogGradConfigNew.exec() == QDialog::Accepted)
     {
+        GradModel.NewGradModelBulk();
+        GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
+
         if (!DialogGradConfigNew.CreateNewGradModel(GradModel))
         {
             QMessageBox::warning(this, "Warning", "Failed to Create New Grad Config");
             return;
-        }
+        }       
     }
     else
     {
@@ -696,12 +721,18 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
         return;
     }
 
+    WorkMode = WorkModeType::GradWork;
+    GradModel.MarkAsNotSaved();
+
     ui->actionFileSave_Grad_Config->setEnabled(true);
     ui->actionFileSave_Grad_Config_As->setEnabled(true);
 
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
+
+    ui->actionEdit_Edit_Routes->setEnabled(true);
+    ui->actionWorld_Show_Abonents->setEnabled(true);
 
     GradModel.Set_nDraws(35);
     mainGLWidget->repaint();
@@ -803,7 +834,91 @@ void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
 }
 //-------------------------------------------------------------
 
+void MainWindow::on_actionEdit_Edit_Routes_triggered()
+{
+    DialogRoutesEdit.InitDialog(GradModel.GetRoutes());
+
+    if (DialogRoutesEdit.exec() == QDialog::Accepted)
+    {
+        DialogRoutesEdit.ChangeRoutes(GradModel.RoutesDirectAccess());
+
+        GradModel.ApplyRoutesToAllConfigs(NeedToSave::Need);
+        mainGLWidget->repaint();
+    }
+    else
+    {
+        // Rejected
+    }
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Abonents_triggered()
+{
+    if (WorkMode != WorkModeType::GradWork)
+        return;
 
 
+    GradModel.SetIsDrawAbonents(true);
+    formAboCalc.show();
+//    SlotReceiveAboTime(0);
+
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveAboTime(int t) // in sec
+{
+    qDebug() << "t =" << t << " - " << t/3600.0;
+
+    if (WorkMode == WorkModeType::GradWork)
+    {
+        GradModel.CalcAbonentsPos(t);
+        GradModel.ApplyRoutesToAllConfigs(NeedToSave::DoNotNeed);
+        GradModel.ReCalcAboAccessRate();
+        mainGLWidget->repaint();
+    }
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveFormAboCalcClose()
+{
+    dlgAboReport.InitDialog(); // ?
+
+    GradModel.SetIsDrawAbonents(false);
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveAddTimePointToReport(int t)
+{
+    dlgAboReport.AddTimePoint(t);
+//    dlgAboReport.exec();
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveShowAboReport()
+{
+//    if (GradModel.getActiveConfigNumber < 0)
+//    {
+//        QMessageBox::critical(this, "Error", "Active config is not selected");
+//        return;
+//    }
+
+    try
+    {
+        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettings.IsUseLineBetweenTwoPoints);
+
+        dlgAboReport.setWindowTitle
+                (QString("iActiveConfig = %1").arg(GradModel.Get_iCurConfig()));
+
+        dlgAboReport.exec();
+    }
+    catch (const std::out_of_range &e)
+    {
+        QMessageBox::critical(this, "Error", QString("Active config is not selected\n") + e.what());
+        return;
+    }
 
 
+}
+//-------------------------------------------------------------

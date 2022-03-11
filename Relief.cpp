@@ -42,8 +42,17 @@ Relief3D::~Relief3D()
 
 double Relief3D::CalcRealXYZbyNormXY(double normX, double normY, double &_realX, double &_realY) const
 {
-    _realX = (normX-xStartInside)/wInside*Area.width()+Area.left();
-    _realY = (normY-yStartInside)/hInside*Area.height()+Area.top();
+    if (std::isnan(normY))
+    {   // Временная ловушка - удалить потом !!!!!!!!!!!!!
+        throw std::logic_error("normY == nan in CalcRealXYZbyNormXY");
+    }
+
+    _realX = (normX-xStartInside)/wInside*Area.width() + Area.left();
+    _realY = (normY-yStartInside)/hInside*Area.height() + Area.top();
+    if (std::isnan(_realY))
+    {   // Временная ловушка - удалить потом !!!!!!!!!!!!!
+        throw std::logic_error("_realY == nan in CalcRealXYZbyNormXY");
+    }
     return CalcRealZbyRealXY(_realX, _realY);
 }
 //----------------------------------------------------------
@@ -137,7 +146,13 @@ double Relief3D::CalcRealZbyRealXY(double x, double y) const
     }
 
     if (it_u == ReliefMap.end() || it_l == ReliefMap.end())
-    {
+    {       
+        if (std::isnan(y))
+        {
+            throw std::logic_error("y == nan in Relief3D::CalcRealZbyRealXY");
+        }
+
+        // Случилось пару раз, когда y был nan
         throw std::logic_error("It's not supposed to be in Relief3D::CalcRealZbyRealXY - x = " + to_string(x) + " , y = " + to_string(y) );
 //        it_l = std::prev(it_l);
 //        it_u = std::prev(ReliefMap.end());
@@ -150,18 +165,30 @@ double Relief3D::CalcRealZbyRealXY(double x, double y) const
 
 void Relief3D::CalcAndReWriteRealZforPos3d(Pos3d &_pos3d) const
 {
+    if (std::isnan(_pos3d.y())) // Временная ловушка - потом удалить!!!
+    {
+        throw std::logic_error("y == nan in Relief3D::CalcAndReWriteRealZforPos3d");
+    }
     _pos3d.setZ( CalcRealZbyRealXY(_pos3d.x(), _pos3d.y()) );
 }
 //----------------------------------------------------------
 
 double Relief3D::CalcNormZbyRealXY(double x, double y) const
 {
+    if (std::isnan(y)) // Временная ловушка - потом удалить!!!
+    {
+        throw std::logic_error("y == nan in CalcNormZbyRealXY");
+    }
     return CalcRealZbyRealXY(x, y) / maxZ;
 }
 //----------------------------------------------------------
 
 double Relief3D::CalcNormToRealZbyRealXY(double x, double y) const
 {
+    if (std::isnan(y)) // Временная ловушка - потом удалить!!!
+    {
+        throw std::logic_error("y == nan in CalcNormToRealZbyRealXY");
+    }
     return CalcRealZbyRealXY(x, y) * Global_kz;
 }
 //----------------------------------------------------------
@@ -417,17 +444,24 @@ void Relief3D::BuildReliefToGL(bool _is2d)
 
     Global_kz = 2.0/max(Area.width(), Area.height());
 
-
+//    double averZ = 0;
+    AverZ = 0;
     for (int i = 0; i < RowCount; i++)
         for (int j = 0; j < ColCount; j++)
         {
 //            points[i][j].setZ(points[i][j].z()/maxZ);
-            points[i][j].setZ(points[i][j].z()*Global_kz);
+            double z = points[i][j].z()*Global_kz;
+            AverZ += z;
+            points[i][j].setZ(z);
 //            max(Area.width(), Area.height());
         }
 
+    AverZ /= (RowCount*ColCount);
+
 //    Global_kz = 1/maxZ;
 
+//    glPushMatrix();
+//    glTranslatef(0,0, -AverZ);
 
     glBegin(GL_QUADS);
     for (int i = 0; i < RowCount-1; i++)
@@ -463,6 +497,7 @@ void Relief3D::BuildReliefToGL(bool _is2d)
     }
     glEnd();
 
+//    glPopMatrix();
 
     glEndList(); // закончить список
 

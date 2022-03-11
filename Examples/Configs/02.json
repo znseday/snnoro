@@ -1,0 +1,137 @@
+{
+    "Configuration": {
+        "Area": {
+            "bottom": 0,
+            "left": 0,
+            "right": 10000,
+            "top": 8000
+        },
+        "Count": 45,
+        "IsRandomNodeCoords": true,
+        "IsRandomRelief": false,
+        "IsRandomRoutes": false,
+        "Nodes": [
+            {
+                "Beta": 29.999999999999996,
+                "R": 1200
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 1200
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 1200
+            },
+			{
+                "Beta": 29.999999999999996,
+                "R": 1200
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 1200
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 1200
+            }
+        ],
+        "ReliefFileName": "../snnoro/Examples/Reliefs/Relief_02.json",
+        "ReliefInfo": {
+            "IsUseReliefRandomSeed": true,
+            "ReliefCoeffs": {
+                "A_r1": 0.01,
+                "A_r2": 0.02
+            },
+            "ReliefRandomSeed": 100
+        },
+        "RouteCount": 2,
+        "Routes": [
+            {
+                "PointCount": 5,
+                "Points": [
+                    {
+                        "x": 2415.31982421875,
+                        "y": 6397.80615234375,
+                        "z": 800
+                    },
+                    {
+                        "x": 3578.903076171875,
+                        "y": 5348.2998046875,
+                        "z": 844.0213623046875
+                    },
+                    {
+                        "x": 4012.394775390625,
+                        "y": 3910.932373046875,
+                        "z": 962.3219604492188
+                    },
+                    {
+                        "x": 4810.93212890625,
+                        "y": 3066.76416015625,
+                        "z": 1188.846923828125
+                    },
+                    {
+                        "x": 4947.82470703125,
+                        "y": 2154.14990234375,
+                        "z": 1008.2012939453125
+                    }
+                ]
+            },
+            {
+                "PointCount": 5,
+                "Points": [
+                    {
+                        "x": 5814.80810546875,
+                        "y": 7721.09716796875,
+                        "z": 381.7790832519531
+                    },
+                    {
+                        "x": 7115.283203125,
+                        "y": 7698.28173828125,
+                        "z": 606.5026245117188
+                    },
+                    {
+                        "x": 8164.7900390625,
+                        "y": 7652.65087890625,
+                        "z": 764.9677734375
+                    },
+                    {
+                        "x": 9031.7734375,
+                        "y": 6831.2978515625,
+                        "z": 800
+                    },
+                    {
+                        "x": 9145.8505859375,
+                        "y": 5987.1298828125,
+                        "z": 800
+                    }
+                ]
+            }
+        ],
+        "SignalNodeCount": 6,
+        "SignalNodeType": "Sphere",
+        "TargetCostFunction": "MyFunction"
+    },
+    "GradDesc": {
+        "Alpha": 0.35,
+        "CallBackFreq": 20,
+        "Eps": 0.01,
+        "Eta_FirstJump": 10,
+        "Eta_k_dec": 2.01,
+        "Eta_k_inc": 1.08,
+        "FinDifMethod": false,
+        "MaxIters": 500,
+        "MaxTime": 5,
+        "Min_Eta": 1e-07
+    },
+    "TargetFunctionSettings": {
+        "A2": 40000000,
+        "Aarf": 100000000,
+        "IsUseCoveredFlag": true,
+        "IsUseLineBetweenTwoPoints": false,
+        "R_nodeOverlap": 600,
+        "k_step_ot": 0.03,
+        "offX": 0.01,
+        "p": 1e-05
+    }
+}
