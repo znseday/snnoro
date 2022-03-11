@@ -27,37 +27,37 @@ void DialogEditSignalNodes::InitDialog_ForAll(SignalNodeType _snt, const std::ve
     ui->Table->setRowCount(1 + _signalNodes.size());
 
     if (_snt == SignalNodeType::Sphere)
-        ui->Table->setColumnCount(2);
+        ui->Table->setColumnCount(2+2);
     else if (_snt == SignalNodeType::Cone)
-        ui->Table->setColumnCount(3);
+        ui->Table->setColumnCount(3+2);
     else
         QMessageBox::critical(this, "Error", "SignalNodeType is Unknown");
 
-    ui->Table->setItem(0, 0, new QTableWidgetItem("n"));
-    ui->Table->setColumnWidth(0, 60);
-    ui->Table->item(0, 0)->setFlags( ui->Table->item(0, 0)->flags() & ~Qt::ItemIsEditable );
+    ui->Table->setItem(0, 0+2, new QTableWidgetItem("n"));
+    ui->Table->setColumnWidth(0+2, 60);
+    ui->Table->item(0, 0+2)->setFlags( ui->Table->item(0, 0+2)->flags() & ~Qt::ItemIsEditable );
 
-    ui->Table->setItem(0, 1, new QTableWidgetItem("R, m"));
-    ui->Table->setColumnWidth(1, 100);
-    ui->Table->item(0, 1)->setFlags( ui->Table->item(0, 1)->flags() & ~Qt::ItemIsEditable );
+    ui->Table->setItem(0, 1+2, new QTableWidgetItem("R, m"));
+    ui->Table->setColumnWidth(1+2, 100);
+    ui->Table->item(0, 1+2)->setFlags( ui->Table->item(0, 1+2)->flags() & ~Qt::ItemIsEditable );
 
     if (_snt == SignalNodeType::Cone)
     {
-        ui->Table->setItem(0, 2, new QTableWidgetItem("Betha, deg"));
-        ui->Table->setColumnWidth(2, 100);
-        ui->Table->item(0, 2)->setFlags( ui->Table->item(0, 2)->flags() & ~Qt::ItemIsEditable );
+        ui->Table->setItem(0, 2+2, new QTableWidgetItem("Betha, deg"));
+        ui->Table->setColumnWidth(2+2, 100);
+        ui->Table->item(0, 2+2)->setFlags( ui->Table->item(0, 2+2)->flags() & ~Qt::ItemIsEditable );
     }
 
     for (size_t i = 0; i < _signalNodes.size(); ++i)
     {
-        ui->Table->setItem(1 + i, 0, new QTableWidgetItem(QString().setNum( i )));
-        ui->Table->setItem(1 + i, 1, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).R )));
+        ui->Table->setItem(1 + i, 0+2, new QTableWidgetItem(QString().setNum( i )));
+        ui->Table->setItem(1 + i, 1+2, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).R )));
 
         //ui->Table->setItem(1 + i, 2, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Alpha )));
         if (_snt == SignalNodeType::Cone)
-            ui->Table->setItem(1 + i, 2, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Beta) )));
+            ui->Table->setItem(1 + i, 2+2, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Beta) )));
 
-        ui->Table->item(1 + i, 0)->setFlags( ui->Table->item(1 + i, 0)->flags() & ~Qt::ItemIsEditable );
+        ui->Table->item(1 + i, 0+2)->setFlags( ui->Table->item(1 + i, 0+2)->flags() & ~Qt::ItemIsEditable );
     }
 }
 //----------------------------------------------------------
