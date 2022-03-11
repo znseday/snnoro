@@ -33,6 +33,13 @@ void DialogEditSignalNodes::InitDialog_ForAll(SignalNodeType _snt, const std::ve
     else
         QMessageBox::critical(this, "Error", "SignalNodeType is Unknown");
 
+
+//    ui->Table->setItem(0, 0+0, new QTableWidgetItem("n"));
+//    ui->Table->setColumnWidth(0+2, 60);
+
+//    ui->Table->setItem(0, 0+1, new QTableWidgetItem("n"));
+//    ui->Table->setColumnWidth(0+2, 60);
+
     ui->Table->setItem(0, 0+2, new QTableWidgetItem("n"));
     ui->Table->setColumnWidth(0+2, 60);
     ui->Table->item(0, 0+2)->setFlags( ui->Table->item(0, 0+2)->flags() & ~Qt::ItemIsEditable );
@@ -76,25 +83,25 @@ void DialogEditSignalNodes::InitDialog_ForCurrent(SignalNodeType _snt, const std
     InitDialog_ForAll(_snt, _signalNodes);
 
     if (_snt == SignalNodeType::Sphere)
-        ui->Table->setColumnCount(5);
+        ui->Table->setColumnCount(5+2);
     else if (_snt == SignalNodeType::Cone)
     {
-        ui->Table->setColumnCount(7);
+        ui->Table->setColumnCount(7+2);
 
 //        ui->Table->setItem(0, 2, new QTableWidgetItem("Betha, deg"));
 //        ui->Table->setColumnWidth(2, 100);
 //        ui->Table->item(0, 2)->setFlags( ui->Table->item(0, 2)->flags() & ~Qt::ItemIsEditable );
 
-        ui->Table->setItem(0, 3, new QTableWidgetItem("Alpha, deg"));
-        ui->Table->setColumnWidth(3, 100);
-        ui->Table->item(0, 3)->setFlags( ui->Table->item(0, 3)->flags() & ~Qt::ItemIsEditable );
+        ui->Table->setItem(0, 3+2, new QTableWidgetItem("Alpha, deg"));
+        ui->Table->setColumnWidth(3+2, 100);
+        ui->Table->item(0, 3+2)->setFlags( ui->Table->item(0, 3+2)->flags() & ~Qt::ItemIsEditable );
     }
     else
         QMessageBox::critical(this, "Error", "SignalNodeType is Unknown");
 
-    int offCol = 0;
+    int offCol = 0+2;
     if (_snt == SignalNodeType::Cone)
-        offCol = 2;
+        offCol = 2+2;
 
     ui->Table->setItem(0, 2 + offCol, new QTableWidgetItem("x, m"));
     ui->Table->setColumnWidth(2 + offCol, 100);
@@ -119,7 +126,7 @@ void DialogEditSignalNodes::InitDialog_ForCurrent(SignalNodeType _snt, const std
         ui->Table->setItem(1 + i, 4 + offCol, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Pos.z() )));
 
         if (_snt == SignalNodeType::Cone)
-            ui->Table->setItem(1 + i, 3, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Alpha) )));
+            ui->Table->setItem(1 + i, 3+2, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Alpha) )));
 
         //ui->Table->item(1 + i, 0)->setFlags( ui->Table->item(1 + i, 0)->flags() & ~Qt::ItemIsEditable );
     }
@@ -131,7 +138,7 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForAll(SignalNodeType _s
     for (size_t i = 0; i < _signalNodes.size(); ++i)
     {
         bool isOk = false;
-        double R = ui->Table->item(1 + i, 1)->text().toDouble(&isOk);
+        double R = ui->Table->item(1 + i, 1+2)->text().toDouble(&isOk);
         if (isOk)
             _signalNodes.at(i).R = R;
         else
@@ -147,7 +154,7 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForAll(SignalNodeType _s
 //                qDebug() << "Alpha is not saved for " << i << " signal Node";
 
             isOk = false;
-            double Beta = ui->Table->item(1 + i, 2)->text().toDouble(&isOk);
+            double Beta = ui->Table->item(1 + i, 2+2)->text().toDouble(&isOk);
             if (isOk)
                 _signalNodes.at(i).Beta = qDegreesToRadians(Beta);
             else
@@ -163,9 +170,9 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForCurrent(SignalNodeTyp
 //    ChangeSignalNodesParameters_ForAll(SignalNodeType::Sphere, _signalNodes); // специально передаем Sphere, чтобы взять только R
     ChangeSignalNodesParameters_ForAll(_snt, _signalNodes); // специально передаем Sphere, чтобы взять только R
 
-    int offCol = 0;
+    int offCol = 0+2;
     if (_snt == SignalNodeType::Cone)
-        offCol = 2;
+        offCol = 2+2;
 
     for (size_t i = 0; i < _signalNodes.size(); ++i)
     {
@@ -197,7 +204,7 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForCurrent(SignalNodeTyp
         if (_snt == SignalNodeType::Cone)
         {
             bool isOk_Aplpha = false;
-            double Alpha = ui->Table->item(1 + i, 3)->text().toDouble(&isOk_Aplpha);
+            double Alpha = ui->Table->item(1 + i, 3+2)->text().toDouble(&isOk_Aplpha);
             if (!isOk_Aplpha || Alpha < -360 || Alpha > 360)
             {
                 qDebug() << "Alpha was not saved for " << i << " signal Node";
