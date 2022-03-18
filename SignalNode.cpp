@@ -8,7 +8,6 @@
 
 using namespace std;
 
-//void SignalNode::SetRandomCoord(const QRectF &_area)
 void SignalNode::SetRandomCoord(const Relief3D &_relief)
 { 
     const auto &_area = _relief.GetArea();
@@ -20,7 +19,6 @@ void SignalNode::SetRandomCoord(const Relief3D &_relief)
 }
 //----------------------------------------------------------
 
-//bool SignalNode::SetCoordForPos(const QRectF &_area, const Pos3d &_pos)
 bool SignalNode::SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos)
 {
     const auto &_area = _relief.GetArea();
@@ -103,7 +101,25 @@ QString SignalNode::ConvertSignalNodeTypeToString(SignalNodeType snt)
 }
 //----------------------------------------------------------
 
-ostream & operator<<(ostream & s, const SignalNode &ob)
+QJsonObject SignalNode::RepresentAsJsonObject() const
+{
+    QJsonObject nodeObject;
+    nodeObject.insert("R", (int)R);
+    nodeObject.insert("Beta", qRadiansToDegrees(Beta));
+    return nodeObject;
+}
+//----------------------------------------------------------
+
+void SignalNode::LoadFromJsonObject(const QJsonObject &_jsonObject)
+{
+    R = _jsonObject["R"].toDouble(-1);
+    Beta = qDegreesToRadians(_jsonObject["Beta"].toDouble(0));
+
+}
+//----------------------------------------------------------
+
+
+ostream & operator<<(ostream & s, const SignalNode &ob) // для отладки
 {
     s << "{" << ob.Pos.x() << "; " << ob.Pos.y() <<  "; " << ob.Pos.z() << "}" << "; R = " << ob.R;
     return s;

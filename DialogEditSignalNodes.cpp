@@ -16,6 +16,8 @@ public:
 };
 
 
+
+
 DialogEditSignalNodes::DialogEditSignalNodes(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogEditSignalNodes)
@@ -45,6 +47,9 @@ void DialogEditSignalNodes::InitDialog_ForAll(SignalNodeType _snt, const std::ve
         ui->Table->setColumnCount(3+2);
     else
         QMessageBox::critical(this, "Error", "SignalNodeType is Unknown");
+
+    CurNodeType = _snt;
+//    pNodes = &_signalNodes;
 
 //    ui->Table->setCellWidget(0, 0+0, new QPushButton("Load"));
 
@@ -84,11 +89,13 @@ void DialogEditSignalNodes::InitDialog_ForAll(SignalNodeType _snt, const std::ve
                 this, SLOT(SlotSaveButtonClicked()));
 
         ui->Table->setItem(1 + i, 0+2, new QTableWidgetItem(QString().setNum( i )));
-        ui->Table->setItem(1 + i, 1+2, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).R )));
+//        ui->Table->setItem(1 + i, 1+2, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).R )));
 
-        //ui->Table->setItem(1 + i, 2, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Alpha )));
-        if (_snt == SignalNodeType::Cone)
-            ui->Table->setItem(1 + i, 2+2, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Beta) )));
+//        if (_snt == SignalNodeType::Cone)
+//            ui->Table->setItem(1 + i, 2+2, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Beta) )));
+
+
+        SetRowInTableFromSignalNode(_signalNodes.at(i), i);
 
         ui->Table->item(1 + i, 0+2)->setFlags( ui->Table->item(1 + i, 0+2)->flags() & ~Qt::ItemIsEditable );
     }
@@ -113,10 +120,6 @@ void DialogEditSignalNodes::InitDialog_ForCurrent(SignalNodeType _snt, const std
     else if (_snt == SignalNodeType::Cone)
     {
         ui->Table->setColumnCount(7+2);
-
-//        ui->Table->setItem(0, 2, new QTableWidgetItem("Betha, deg"));
-//        ui->Table->setColumnWidth(2, 100);
-//        ui->Table->item(0, 2)->setFlags( ui->Table->item(0, 2)->flags() & ~Qt::ItemIsEditable );
 
         ui->Table->setItem(0, 3+2, new QTableWidgetItem("Alpha, deg"));
         ui->Table->setColumnWidth(3+2, 100);
@@ -143,9 +146,6 @@ void DialogEditSignalNodes::InitDialog_ForCurrent(SignalNodeType _snt, const std
 
     for (size_t i = 0; i < _signalNodes.size(); ++i)
     {
-        //ui->Table->setItem(1 + i, 0, new QTableWidgetItem(QString().setNum( i )));
-        //ui->Table->setItem(1 + i, 1, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).R )));
-
         ui->Table->setItem(1 + i, 2 + offCol, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Pos.x() )));
         ui->Table->setItem(1 + i, 3 + offCol, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Pos.y() )));
 
@@ -153,8 +153,6 @@ void DialogEditSignalNodes::InitDialog_ForCurrent(SignalNodeType _snt, const std
 
         if (_snt == SignalNodeType::Cone)
             ui->Table->setItem(1 + i, 3+2, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Alpha) )));
-
-        //ui->Table->item(1 + i, 0)->setFlags( ui->Table->item(1 + i, 0)->flags() & ~Qt::ItemIsEditable );
     }
 }
 //----------------------------------------------------------
@@ -163,29 +161,23 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForAll(SignalNodeType _s
 {
     for (size_t i = 0; i < _signalNodes.size(); ++i)
     {
-        bool isOk = false;
-        double R = ui->Table->item(1 + i, 1+2)->text().toDouble(&isOk);
-        if (isOk)
-            _signalNodes.at(i).R = R;
-        else
-            qDebug() << "R is not saved for " << i << " signal Node";
+        SetSignalNodeFormTable(_signalNodes.at(i), _snt, i);
+//        bool isOk = false;
+//        double R = ui->Table->item(1 + i, 1+2)->text().toDouble(&isOk);
+//        if (isOk)
+//            _signalNodes.at(i).R = R;
+//        else
+//            qDebug() << "R is not saved for " << i << " signal Node";
 
-        if (_snt == SignalNodeType::Cone)
-        {
+//        if (_snt == SignalNodeType::Cone)
+//        {
 //            isOk = false;
-//            double Alpha = ui->Table->item(1 + i, 2)->text().toDouble(&isOk);
+//            double Beta = ui->Table->item(1 + i, 2+2)->text().toDouble(&isOk);
 //            if (isOk)
-//                _signalNodes.at(i).Alpha = Alpha;
+//                _signalNodes.at(i).Beta = qDegreesToRadians(Beta);
 //            else
-//                qDebug() << "Alpha is not saved for " << i << " signal Node";
-
-            isOk = false;
-            double Beta = ui->Table->item(1 + i, 2+2)->text().toDouble(&isOk);
-            if (isOk)
-                _signalNodes.at(i).Beta = qDegreesToRadians(Beta);
-            else
-                qDebug() << "Betha is not saved for " << i << " signal Node";
-        }
+//                qDebug() << "Betha is not saved for " << i << " signal Node";
+//        }
     }
 }
 //----------------------------------------------------------
@@ -240,37 +232,105 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForCurrent(SignalNodeTyp
                 _signalNodes.at(i).Alpha = qDegreesToRadians(Alpha);
             }
         }
-
     }
 }
 //----------------------------------------------------------
 
 void DialogEditSignalNodes::SlotLoadButtonClicked()
 {
-//    const auto s = dynamic_cast<MyButtonWithNumber*>(this->sender());
-//    if (!s)
-//        qDebug() << "ERROR CAST";
-//    else
-//        qDebug() << __PRETTY_FUNCTION__ << s->GetNumber();
+    const auto s = dynamic_cast<MyButtonWithNumber*>(this->sender());
+    if (!s)
+    {
+        throw std::runtime_error("Unknown sender in DialogEditSignalNodes::SlotSaveButtonClicked");
+    }
 
     QString fileName = QFileDialog::getOpenFileName(this,
         "Open Signal Node file", ".", "Open Signal Node file (*.json)");
 
     if (fileName == "")
     {
-        qDebug() << "Warning: File name is not set. Abort saving.";
+        qDebug() << "Warning: File name is not set. Abort loading.";
         return;
     }
+
+    // to do: load sn
+
+    SignalNode sn;
+
+//    sn.LoadFromJsonObject(???)
+
+    QFile json(fileName);
+    if (json.open(QIODevice::ReadOnly))
+    {
+        QJsonParseError parseError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(json.readAll(), &parseError);
+        if (parseError.error == QJsonParseError::NoError)
+        {
+            if (jsonDoc.isObject())
+            {
+//                ParseJson(jsonDoc.object(), parseError);
+                const QJsonObject &jsonObject = jsonDoc.object();
+                const QJsonObject &nodeObject = jsonObject["SignalNode"].toObject();
+                sn.LoadFromJsonObject(nodeObject);
+            }
+        }
+        else
+        {
+            qDebug() << parseError.errorString();
+            return;
+        }
+    }
+    else
+    {
+        qDebug() << "json file not open";
+        return;
+    }
+
+    int i = s->GetNumber();
+
+    SetRowInTableFromSignalNode(sn, i);
+
+}
+//----------------------------------------------------------
+
+void DialogEditSignalNodes::SetSignalNodeFormTable(SignalNode &_sn, SignalNodeType _snt, int i)
+{
+    bool isOk = false;
+    double R = ui->Table->item(1 + i, 1+2)->text().toDouble(&isOk);
+    if (isOk)
+        _sn.R = R;
+    else
+        qDebug() << "R is not saved for " << i << " signal Node";
+
+    if (_snt == SignalNodeType::Cone)
+    {
+        isOk = false;
+        double Beta = ui->Table->item(1 + i, 2+2)->text().toDouble(&isOk);
+        if (isOk)
+            _sn.Beta = qDegreesToRadians(Beta);
+        else
+            qDebug() << "Betha is not saved for " << i << " signal Node";
+    }
+}
+//----------------------------------------------------------
+
+void DialogEditSignalNodes::SetRowInTableFromSignalNode(const SignalNode &_sn, int i)
+{
+    ui->Table->setItem(1 + i, 1+2, new QTableWidgetItem(QString().setNum( _sn.R )));
+
+    if (CurNodeType == SignalNodeType::Cone)
+        ui->Table->setItem(1 + i, 2+2,
+                           new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_sn.Beta) )));
 }
 //----------------------------------------------------------
 
 void DialogEditSignalNodes::SlotSaveButtonClicked()
 {
-//    const auto s = dynamic_cast<MyButtonWithNumber*>(this->sender());
-//    if (!s)
-//        qDebug() << "ERROR CAST";
-//    else
-//        qDebug() << __PRETTY_FUNCTION__ << s->GetNumber();
+    const auto s = dynamic_cast<MyButtonWithNumber*>(this->sender());
+    if (!s)
+    {
+        throw std::runtime_error("Unknown sender in DialogEditSignalNodes::SlotSaveButtonClicked");
+    }
 
     QString fileName = QFileDialog::getSaveFileName(this,
         "Save Signal Node file", ".", "Save Signal Node file (*.json)");
@@ -280,5 +340,61 @@ void DialogEditSignalNodes::SlotSaveButtonClicked()
         qDebug() << "Warning: File name is not set. Abort saving.";
         return;
     }
+
+    SignalNode sn;
+
+    int i = s->GetNumber();
+    qDebug() << "i =" << i;
+
+    SetSignalNodeFormTable(sn, CurNodeType, i);
+
+    // to do: save it
+    sn.RepresentAsJsonObject();
+
+    QJsonDocument jsonDoc;
+    QJsonObject resultObject;
+
+    resultObject.insert("SignalNode", sn.RepresentAsJsonObject());
+
+    jsonDoc.setObject(resultObject);
+
+    QFile jsonFile(fileName);
+    jsonFile.open(QFile::WriteOnly);
+    jsonFile.write(jsonDoc.toJson());
+
+//    bool isOk = false;
+//    double R = ui->Table->item(1 + i, 1+2)->text().toDouble(&isOk);
+//    if (isOk)
+//        sn.R = R;
+//    else
+//        qDebug() << "R is not saved for " << i << " signal Node";
+
+//    if (CurNodeType == SignalNodeType::Cone)
+//    {
+//        isOk = false;
+//        double Beta = ui->Table->item(1 + i, 2+2)->text().toDouble(&isOk);
+//        if (isOk)
+//            sn.Beta = qDegreesToRadians(Beta);
+//        else
+//            qDebug() << "Betha is not saved for " << i << " signal Node";
+//    }
+
+
+//    if (CurNodeType == SignalNodeType::Sphere)
+//    {
+
+//    }
+//    else if (CurNodeType == SignalNodeType::Cone)
+//    {
+
+//    }
+//    else
+//        QMessageBox::critical(this, "Error", "SignalNodeType is Unknown");
 }
 //----------------------------------------------------------
+
+
+
+
+
+

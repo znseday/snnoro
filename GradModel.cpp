@@ -779,10 +779,19 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     const QJsonArray &nodesArray = configObject["Nodes"].toArray();
     for (auto it = nodesArray.begin(); it != nodesArray.end();  ++it)
     {
-        const QJsonObject &nodeObject = it->toObject();
-        double R = nodeObject["R"].toDouble(-1);
-        double Beta = qDegreesToRadians(nodeObject["Beta"].toDouble(0));
-        Nodes.emplace_back(QVector3D(), R, 0, Beta);
+//        const QJsonObject &nodeObject = it->toObject();
+        Nodes.emplace_back(SignalNode());
+        Nodes.back().LoadFromJsonObject(it->toObject());
+
+//        double R = nodeObject["R"].toDouble(-1);
+//        double Beta = qDegreesToRadians(nodeObject["Beta"].toDouble(0));
+//        Nodes.emplace_back(QVector3D(), R, 0, Beta);
+
+//        Routes.back().Points.emplace_back(RoutePoint());
+
+//        Routes.back().AbonentDirectAccess().
+//                LoadFromJsonObject(routeObject["Abonent"].toObject());
+
     }
     if (SignalNodeCount != Nodes.size())
         throw std::runtime_error("SignalNodeCount != Nodes.size()");
@@ -866,13 +875,15 @@ QJsonArray MyGradModel::RepresentNodesAsJsonArray() const
 
      for (const auto &node : Nodes)
      {
-         QJsonObject nodeObject;
-         nodeObject.insert("R", (int)node.R);
-         nodeObject.insert("Beta", qRadiansToDegrees(node.Beta));
+//         QJsonObject nodeObject;
+//         nodeObject.insert("R", (int)node.R);
+//         nodeObject.insert("Beta", qRadiansToDegrees(node.Beta));
 
          // Сохранять другие характеристики? Если да, то из какой конфигурации?
 
-         nodesArray.append(nodeObject);
+//         nodesArray.append(nodeObject);
+
+        nodesArray.append(node.RepresentAsJsonObject());
      }
 
      return nodesArray;
