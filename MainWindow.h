@@ -105,6 +105,8 @@ private slots:
 
     void on_actionWorld_Show_Abonents_triggered();
 
+    void on_actionEdit_Change_Count_of_Nodes_triggered();
+
 private:
     Ui::MainWindow *ui;
 

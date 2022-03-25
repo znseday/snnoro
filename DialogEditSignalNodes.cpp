@@ -162,22 +162,6 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForAll(SignalNodeType _s
     for (size_t i = 0; i < _signalNodes.size(); ++i)
     {
         SetSignalNodeFormTable(_signalNodes.at(i), _snt, i);
-//        bool isOk = false;
-//        double R = ui->Table->item(1 + i, 1+2)->text().toDouble(&isOk);
-//        if (isOk)
-//            _signalNodes.at(i).R = R;
-//        else
-//            qDebug() << "R is not saved for " << i << " signal Node";
-
-//        if (_snt == SignalNodeType::Cone)
-//        {
-//            isOk = false;
-//            double Beta = ui->Table->item(1 + i, 2+2)->text().toDouble(&isOk);
-//            if (isOk)
-//                _signalNodes.at(i).Beta = qDegreesToRadians(Beta);
-//            else
-//                qDebug() << "Betha is not saved for " << i << " signal Node";
-//        }
     }
 }
 //----------------------------------------------------------
@@ -392,9 +376,4 @@ void DialogEditSignalNodes::SlotSaveButtonClicked()
 //        QMessageBox::critical(this, "Error", "SignalNodeType is Unknown");
 }
 //----------------------------------------------------------
-
-
-
-
-
 

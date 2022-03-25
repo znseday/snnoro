@@ -146,6 +146,8 @@
     <addaction name="actionEdit_Edit_Signal_Nodes_for_Current"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Edit_Routes"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_Change_Count_of_Nodes"/>
    </widget>
    <widget class="QMenu" name="menuDebug">
     <property name="title">
@@ -461,6 +463,14 @@
    </property>
    <property name="text">
     <string>Edit Routes...</string>
+   </property>
+  </action>
+  <action name="actionEdit_Change_Count_of_Nodes">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Change Count of Nodes...</string>
    </property>
   </action>
  </widget>

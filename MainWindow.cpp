@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QMessageBox>
 
+#include <QInputDialog>
+
 #include <limits>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -239,6 +241,7 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
+    ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
 
@@ -730,6 +733,7 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
+    ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
     ui->actionWorld_Show_Abonents->setEnabled(true);
@@ -920,5 +924,52 @@ void MainWindow::SlotReceiveShowAboReport()
     }
 
 
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Change_Count_of_Nodes_triggered()
+{
+    int curCount = GradModel.GetSignalNodes().size();
+    bool isOk = false;
+
+    int newCount = -777;
+
+    newCount = QInputDialog::getInt(this, "Count of Nodes", "Input new count",
+                         curCount, 1, 100, 1, &isOk);
+
+    qDebug() << newCount;
+
+
+    if (newCount == curCount)
+    {
+        return;
+    }
+
+    if (!isOk)
+    {
+        QMessageBox::critical(this, "Error", "Incorrect Count of Nodes");
+        return;
+    }
+
+
+    GradModel.SignalNodesDirectAccess().resize(newCount);
+
+    GradModel.ApplySignalNodesToAllConfigs();
+
+    mainGLWidget->repaint();
+
+
+//    DialogNewPopulationSize.InitDialog(GradModel.GetPopulationSize());
+
+//    if (DialogNewPopulationSize.exec() == QDialog::Accepted)
+//    {
+//        GradModel.CreatePopulation(DialogNewPopulationSize.GetNewPopulationSize());
+//        GradModel.MarkAsNotSaved();
+//        this->repaint();
+//    }
+//    else
+//    {
+//        // Rejected
+//    }
 }
 //-------------------------------------------------------------

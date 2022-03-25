@@ -52,6 +52,8 @@ protected:
 
     double RouteLength = 0;
 
+    double w = 1;
+
 public:
 
     std::vector<RoutePoint> Points;
@@ -80,6 +82,9 @@ public:
     void SetVforAbonent(double _v) {Abonent.v = _v;} // ?
 
     void CalcRouteLength();
+
+    double Get_w() const {return w;}
+    void Set_w(double _w) {w = _w;}
 };
 
 #endif // ROUTE_H

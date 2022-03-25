@@ -469,7 +469,6 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
         cnf.SetNodes(Nodes);
         if (IsRandomNodeCoords)
         {
-//            cnf.SetRandomNodeCoords(Relief.GetArea());
             cnf.SetRandomNodeCoords();
         }
     }
@@ -715,11 +714,14 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
             QString Name = routeObject["Name"].toString("No name");
 
+            double w = routeObject["Weight"].toDouble(1);
+
             size_t pointCount = routeObject["PointCount"].toDouble(-1);
 //            Routes.emplace_back(Route());
             Routes.emplace_back();
             Routes.back().Points.reserve(pointCount);
             Routes.back().SetName(Name);
+            Routes.back().Set_w(w);
             Routes.back().AbonentDirectAccess().
                     LoadFromJsonObject(routeObject["Abonent"].toObject());
 
@@ -846,6 +848,8 @@ QJsonArray MyGradModel::RepresentRoutesAsJsonArray() const
         QJsonObject routeObject;
 
         routeObject.insert("Name", r.GetName());
+        routeObject.insert("Weight", r.Get_w());
+
         routeObject.insert("Abonent", r.GetAbonent().RepresentAsJsonObject());
 
         routeObject.insert("PointCount", (int)r.Points.size());

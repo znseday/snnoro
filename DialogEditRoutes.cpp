@@ -9,17 +9,19 @@ DialogEditRoutes::DialogEditRoutes(QWidget *parent) :
 {
     ui->setupUi(this);
 }
+//----------------------------------------------------------
 
 DialogEditRoutes::~DialogEditRoutes()
 {
     delete ui;
 }
+//----------------------------------------------------------
 
 void DialogEditRoutes::InitDialog(const std::vector<Route> &_routes)
 {
     ui->Table->clear();
     ui->Table->setRowCount(1 + _routes.size());
-    ui->Table->setColumnCount(3);
+    ui->Table->setColumnCount(4);
 
     ui->Table->setItem(0, 0, new QTableWidgetItem("n"));
     ui->Table->setColumnWidth(0, 60);
@@ -29,9 +31,15 @@ void DialogEditRoutes::InitDialog(const std::vector<Route> &_routes)
     ui->Table->setColumnWidth(1, 100);
     ui->Table->item(0, 1)->setFlags( ui->Table->item(0, 1)->flags() & ~Qt::ItemIsEditable );
 
-    ui->Table->setItem(0, 2, new QTableWidgetItem("V abo, m/s"));
+    ui->Table->setItem(0, 2, new QTableWidgetItem("Weight"));
     ui->Table->setColumnWidth(2, 100);
     ui->Table->item(0, 2)->setFlags( ui->Table->item(0, 2)->flags() & ~Qt::ItemIsEditable );
+
+
+    ui->Table->setItem(0, 3, new QTableWidgetItem("V abo, m/s"));
+    ui->Table->setColumnWidth(3, 100);
+    ui->Table->item(0, 3)->setFlags( ui->Table->item(0, 3)->flags() & ~Qt::ItemIsEditable );
+
 
     for (size_t i = 0; i < _routes.size(); ++i)
     {
@@ -39,12 +47,16 @@ void DialogEditRoutes::InitDialog(const std::vector<Route> &_routes)
         ui->Table->setItem(1 + i, 1, new QTableWidgetItem(_routes.at(i).GetName() ));
 
         ui->Table->setItem(1 + i, 2,
+              new QTableWidgetItem(QString().setNum( _routes.at(i).Get_w() )));
+
+        ui->Table->setItem(1 + i, 3,
               new QTableWidgetItem(QString().setNum( _routes.at(i).GetAbonent().v )));
 
         ui->Table->item(1 + i, 0)->setFlags( ui->Table->item(1 + i, 0)->flags() & ~Qt::ItemIsEditable );
     }
 
 }
+//----------------------------------------------------------
 
 void DialogEditRoutes::ChangeRoutes(std::vector<Route> &_routes)
 {
@@ -58,7 +70,14 @@ void DialogEditRoutes::ChangeRoutes(std::vector<Route> &_routes)
 
 
         bool isOk = false;
-        double v = ui->Table->item(1 + i, 2)->text().toDouble(&isOk);
+        double w = ui->Table->item(1 + i, 2)->text().toDouble(&isOk);
+        if (isOk)
+            _routes.at(i).Set_w(w);
+        else
+            qDebug() << "Weight is not saved for " << i << " route abonent";
+
+        isOk = false;
+        double v = ui->Table->item(1 + i, 3)->text().toDouble(&isOk);
         if (isOk)
             _routes.at(i).SetVforAbonent(v);
         else
@@ -66,3 +85,4 @@ void DialogEditRoutes::ChangeRoutes(std::vector<Route> &_routes)
 
     }
 }
+//----------------------------------------------------------

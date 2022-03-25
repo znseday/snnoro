@@ -485,7 +485,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                     //    w = 1.1;
 
                     //y = pow(y, sqrt(w));
-                    y = w*y;//*(1-tanh(k_step*(x-sn.R)));
+                    y *= w;//*(1-tanh(k_step*(x-sn.R)));
 
                     if (_targetFuncSettings.IsUseCoveredFlag && !p1.IsCovered)
                     {
@@ -499,6 +499,8 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                     //y1 += Aarf * w * (1-tanh(k_step*(x-sn.R)));
                     //y1 += pow( Aarf *(1-tanh(k_step*(x-sn.R))) ,  sqrt(w));
                 }
+
+                y1 *= route.Get_w();
             }
         }
 
@@ -653,11 +655,16 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 
 
                 double w = p1.Weight;
-                y = w*y;//*(1-tanh(k_step*(x-sn.R)));
+                y *= w;//*(1-tanh(k_step*(x-sn.R)));
+
+                y *= Routes.at(std::get<0>(b)).Get_w(); // ?????????????????
+
 
                 y1 += y;
 
+
             }
+
         }
 
         return -y1;
