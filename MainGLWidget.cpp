@@ -313,7 +313,7 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
         }
 
         if (WorldMode == WorldModeType::DeletingRoute &&
-            pe->buttons() & Qt::MiddleButton)
+            pe->buttons() & Qt::RightButton) // было middle
         {
             double wx, wy, wz;
             bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);

@@ -6,6 +6,8 @@
 #include <cmath>
 #include <QDebug>
 
+#include "GradConfig.h"
+
 using namespace std;
 
 void SignalNode::SetRandomCoord(const Relief3D &_relief)
@@ -115,6 +117,177 @@ void SignalNode::LoadFromJsonObject(const QJsonObject &_jsonObject)
     R = _jsonObject["R"].toDouble(-1);
     Beta = qDegreesToRadians(_jsonObject["Beta"].toDouble(0));
 
+}
+//----------------------------------------------------------
+
+GLUquadric* SignalNode::Quadric()
+{
+    static GLUquadric* q = nullptr;
+    if (!q) q = gluNewQuadric();
+    return q;
+}
+//----------------------------------------------------------
+
+
+void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
+                          const Settings3dType & _settings3d) const
+{
+    constexpr float zOffset = 0.01f;
+    const auto & area = relief->GetArea();
+    double kx = 2.0/area.width();
+    double ky = 2.0/area.height();
+    double k = min(kx, ky);
+
+    double hW = area.width()/2.0;
+    double hH = area.height()/2.0;
+
+    double offsetX = area.x()+hW; // in meters
+    double offsetY = area.y()+hH; // in meters
+    double offsetZ = 0;
+
+    glPushMatrix();
+
+    double x = (Pos.x()-offsetX)*k;
+    double y = (Pos.y()-offsetY)*k;
+    double z;
+
+
+    if (relief->GetIsMathRelief())
+    {
+        glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
+    }
+    else
+    {
+        z = (Pos.z()-offsetZ)*relief->Get_kz();
+        glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
+    }
+    gluQuadricDrawStyle(Quadric(), GLU_FILL);
+    gluSphere(Quadric(), 0.02, 12, 12);
+    glPopMatrix();
+
+    const int nr = 32;
+    double dfi, fiStart;
+
+    if (_snt == SignalNodeType::Sphere)
+    {
+        dfi = 2.0*M_PI/nr;
+        fiStart = 0;
+    }
+    else if (_snt == SignalNodeType::Cone)
+    {
+        dfi = 2.0*Beta / nr;
+        fiStart = Alpha - Beta;
+    }
+    else
+    {
+        qDebug() << "Error: SignalNodeType is Unknown";
+        dfi = 2*M_PI/nr;
+        fiStart = 0;
+    }
+
+    glBegin(GL_LINE_STRIP);
+
+    if (_snt == SignalNodeType::Cone) // далее будет копипаст этого ифа
+    {
+        double x = (Pos.x()-offsetX)*k;
+        double y = (Pos.y()-offsetY)*k;
+        double z;
+
+        if (relief->GetIsMathRelief())
+        {
+            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
+        }
+        else
+        {
+            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
+            glVertex3f(x, y, z);
+        }
+    }
+
+    for (int i = 0; i <= nr; i++)
+    {
+        double xt = Pos.x() + R*cos(fiStart + i*dfi);
+        double yt = Pos.y() + R*sin(fiStart + i*dfi);
+        double x = (xt-offsetX)*k;
+        double y = (yt-offsetY)*k;
+        double z;
+
+        if (relief->GetIsMathRelief())
+        {
+            // z = ???;
+            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
+        }
+        else
+        {
+//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(xt, yt) : 0));
+            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
+            glVertex3f(x, y, z);
+        }
+    }
+
+    if (_snt == SignalNodeType::Cone) // здесь копипаст
+    {
+        double x = (Pos.x()-offsetX)*k;
+        double y = (Pos.y()-offsetY)*k;
+        double z;
+
+        if (relief->GetIsMathRelief())
+        {
+            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
+        }
+        else
+        {
+            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
+            glVertex3f(x, y, z);
+        }
+    }
+
+    glEnd();
+
+
+    glColor3f(0.9, 0.1, 0.9);
+    if (_snt == SignalNodeType::Cone) // здесь ellipse
+    {
+        glBegin(GL_LINE_STRIP);
+
+
+
+        const int nr = 32;
+        double dfi = 2.0*M_PI/(nr-1);
+
+        double asp_ab = M_PI / Beta;
+        double a = R*1.2;
+        double b = a / sqrt(asp_ab);
+
+        const double c = sqrt(abs(a*a - b*b));
+
+        for (int i = 0; i < nr; i++)
+        {
+            double xt = a*cos(fiStart + i*dfi) + c;
+            double yt = b*sin(fiStart + i*dfi);
+
+            double xt2 = xt*cos(-Alpha) + yt*sin(-Alpha);
+            double yt2 = yt*cos(-Alpha) - xt*sin(-Alpha);
+
+            xt = Pos.x() + xt2;
+            yt = Pos.y() + yt2;
+            double x = (xt-offsetX)*k;
+            double y = (yt-offsetY)*k;
+            double z;
+
+            if (relief->GetIsMathRelief())
+            {
+                glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
+            }
+            else
+            {
+                z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
+                glVertex3f(x, y, z);
+            }
+        }
+
+        glEnd();
+    }
 }
 //----------------------------------------------------------
 

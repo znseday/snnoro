@@ -13,7 +13,10 @@
 
 //#include "Relief.h"
 
+#include <GL/glu.h>
+
 class Relief3D;
+struct Settings3dType;
 
 enum class SignalNodeType
 {
@@ -77,6 +80,12 @@ public:
 
     QJsonObject RepresentAsJsonObject() const;
     void LoadFromJsonObject(const QJsonObject &_jsonObject);
+
+
+    static GLUquadric * Quadric();
+
+    void DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
+                  const Settings3dType & _settings3d) const;
 };
 
 

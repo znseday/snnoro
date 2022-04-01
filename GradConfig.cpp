@@ -262,115 +262,114 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
         }
     }
 
-    glColor3f(0.9, 0.1, 0.1);
-    glPointSize(3.0f);
-    glLineWidth(1.0f);
+
+
     for (const auto &node : Nodes)
     {
-//        glBegin(GL_POINTS);
-//        //cout << node << endl;
-//        glVertex3f((node.Pos.x()-offsetX)*k, (node.Pos.y()-offsetY)*k, 0);
+        glColor3f(0.9, 0.1, 0.1);
+        glPointSize(3.0f);
+        glLineWidth(1.0f);
+
+        node.DrawIn3D(_snt, Relief, Settings3d);
+
+//        glPushMatrix();
+
+//        double x = (node.Pos.x()-offsetX)*k;
+//        double y = (node.Pos.y()-offsetY)*k;
+//        double z;
+
+
+//        if (Relief->GetIsMathRelief())
+//        {
+//            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
+//        }
+//        else
+//        {
+//            z = (node.Pos.z()-offsetZ)*Relief->Get_kz();
+//            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
+//        }
+//        gluQuadricDrawStyle(Quadric(), GLU_FILL);
+//        gluSphere(Quadric(), 0.02, 12, 12);
+//        glPopMatrix();
+
+//        const int nr = 32;
+//        double dfi, fiStart;
+
+//        if (_snt == SignalNodeType::Sphere)
+//        {
+//            dfi = 2.0*M_PI/nr;
+//            fiStart = 0;
+//        }
+//        else if (_snt == SignalNodeType::Cone)
+//        {
+//            dfi = 2.0*node.Beta / nr;
+//            fiStart = node.Alpha - node.Beta;
+//        }
+//        else
+//        {
+//            qDebug() << "Error: SignalNodeType is Unknown";
+//            dfi = 2*M_PI/nr;
+//            fiStart = 0;
+//        }
+
+//        glBegin(GL_LINE_STRIP);
+
+//        if (_snt == SignalNodeType::Cone) // далее будет копипаст этого ифа
+//        {
+//            double x = (node.Pos.x()-offsetX)*k;
+//            double y = (node.Pos.y()-offsetY)*k;
+//            double z;
+
+//            if (Relief->GetIsMathRelief())
+//            {
+//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
+//            }
+//            else
+//            {
+//                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(node.Pos.x(), node.Pos.y()) : 0);
+//                glVertex3f(x, y, z);
+//            }
+//        }
+
+//        for (int i = 0; i <= nr; i++)
+//        {
+//            double xt = node.Pos.x() + node.R*cos(fiStart + i*dfi);
+//            double yt = node.Pos.y() + node.R*sin(fiStart + i*dfi);
+//            double x = (xt-offsetX)*k;
+//            double y = (yt-offsetY)*k;
+//            double z;
+
+//            if (Relief->GetIsMathRelief())
+//            {
+//                // z = ???;
+//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
+//            }
+//            else
+//            {
+////                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(xt, yt) : 0));
+//                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
+//                glVertex3f(x, y, z);
+//            }
+//        }
+
+//        if (_snt == SignalNodeType::Cone) // здесь копипаст
+//        {
+//            double x = (node.Pos.x()-offsetX)*k;
+//            double y = (node.Pos.y()-offsetY)*k;
+//            double z;
+
+//            if (Relief->GetIsMathRelief())
+//            {
+//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
+//            }
+//            else
+//            {
+//                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(node.Pos.x(), node.Pos.y()) : 0);
+//                glVertex3f(x, y, z);
+//            }
+//        }
+
 //        glEnd();
-
-        glPushMatrix();
-        double x = (node.Pos.x()-offsetX)*k;
-        double y = (node.Pos.y()-offsetY)*k;
-        double z;
-
-
-        if (Relief->GetIsMathRelief())
-        {
-            // z = ???;
-            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-        }
-        else
-        {
-//            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(node.Pos.x(), node.Pos.y()) : 0));
-            z = (node.Pos.z()-offsetZ)*Relief->Get_kz();
-            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
-        }
-        gluQuadricDrawStyle(Quadric(), GLU_FILL);
-        gluSphere(Quadric(), 0.02, 12, 12);
-        glPopMatrix();
-
-        const int nr = 32;
-        double dfi, fiStart;
-
-        if (_snt == SignalNodeType::Sphere)
-        {
-            dfi = 2.0*M_PI/nr;
-            fiStart = 0;
-        }
-        else if (_snt == SignalNodeType::Cone)
-        {
-            dfi = 2.0*node.Beta / nr;
-            fiStart = node.Alpha - node.Beta;
-        }
-        else
-        {
-            qDebug() << "Error: SignalNodeType is Unknown";
-            dfi = 2*M_PI/nr;
-            fiStart = 0;
-        }
-
-        glBegin(GL_LINE_STRIP);
-
-        if (_snt == SignalNodeType::Cone) // далее будет копипаст этого ифа
-        {
-            double x = (node.Pos.x()-offsetX)*k;
-            double y = (node.Pos.y()-offsetY)*k;
-            double z;
-
-            if (Relief->GetIsMathRelief())
-            {
-                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(node.Pos.x(), node.Pos.y()) : 0);
-                glVertex3f(x, y, z);
-            }
-        }
-
-        for (int i = 0; i <= nr; i++)
-        {
-            double xt = node.Pos.x() + node.R*cos(fiStart + i*dfi);
-            double yt = node.Pos.y() + node.R*sin(fiStart + i*dfi);
-            double x = (xt-offsetX)*k;
-            double y = (yt-offsetY)*k;
-            double z;
-
-            if (Relief->GetIsMathRelief())
-            {
-                // z = ???;         
-                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(xt, yt) : 0));
-                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
-                glVertex3f(x, y, z);
-            }
-        }
-
-        if (_snt == SignalNodeType::Cone) // здесь копипаст
-        {
-            double x = (node.Pos.x()-offsetX)*k;
-            double y = (node.Pos.y()-offsetY)*k;
-            double z;
-
-            if (Relief->GetIsMathRelief())
-            {
-                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(node.Pos.x(), node.Pos.y()) : 0);
-                glVertex3f(x, y, z);
-            }
-        }
-
-        glEnd();
 
     }
 
@@ -445,6 +444,13 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
 
     auto targetFunction = [this, &_targetFuncSettings](const vector<double>& params)
     {
+        double sum_w_of_routes = 0;
+        for (auto & route : Routes)
+        {
+            sum_w_of_routes += route.Get_w();
+        }
+
+
         double y1 = 0;
         for (size_t k = 0; k < Nodes.size()*2; k += 2)
         {
@@ -500,7 +506,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                     //y1 += pow( Aarf *(1-tanh(k_step*(x-sn.R))) ,  sqrt(w));
                 }
 
-                y1 *= route.Get_w();
+                y1 *= (route.Get_w() / sum_w_of_routes);
             }
         }
 
