@@ -468,7 +468,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                 for (auto & p1 : route.Points)
                 {
 
-                    double y = _targetFuncSettings.Aarf * sn.accessRateF(p1.Pos);
+                    double y = _targetFuncSettings.Aarf * sn.accessRateSphere(p1.Pos);
 
                     if (_targetFuncSettings.IsUseLineBetweenTwoPoints)
                     {
@@ -650,7 +650,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
             {
                 const RoutePoint & p1 = Routes.at(std::get<0>(b)).Points.at(std::get<1>(b));
 
-                double y = _targetFuncSettings.Aarf * sn.accessRateF(p1.Pos);
+                double y = _targetFuncSettings.Aarf * sn.accessRateSphere(p1.Pos);
 
                 y *= IsLineBetweenTwoPoints(sn.Pos, p1.Pos) ;
 
@@ -890,7 +890,7 @@ void MyConfig::CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings)
                 double distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
                 if (distToPoint < Nodes[iNode].R)
                 {
-                    double arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
+                    double arf = Nodes[iNode].accessRateSphere(Routes[iRoute].Points[iPoint].Pos);
 
                     if (_targetFuncSettings.IsUseLineBetweenTwoPoints )
                     {
@@ -1043,7 +1043,7 @@ void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints)
         double y1 = 0;
         for (const auto & sn : Nodes)
         {
-            double y = sn.accessRateF(abo.Pos);
+            double y = sn.accessRateSphere(abo.Pos);
 
             if (_isUseLineBetweenTwoPoints)
             {

@@ -65,7 +65,7 @@ bool SignalNode::SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos)
 }
 //----------------------------------------------------------
 
-double SignalNode::accessRateF(const QVector3D &p) const
+double SignalNode::accessRateSphere(const QVector3D &p) const
 {
     // это квадрат расстояния между текущей позицией и p
     double d2 = (p.x()-Pos.x())*(p.x()-Pos.x()) +
@@ -74,6 +74,27 @@ double SignalNode::accessRateF(const QVector3D &p) const
 
     double y = exp(-d2/(2.0*R*R));
     return y;
+}
+//----------------------------------------------------------
+
+double SignalNode::accessRateCone(const QVector3D &p) const
+{
+    auto [a, b, c] = CalcEllispe_abc();
+
+    double xt = c;
+    double yt = 0;
+
+    double xt2 = xt*cos(-Alpha) + yt*sin(-Alpha);
+    double yt2 = yt*cos(-Alpha) - xt*sin(-Alpha);
+
+    QVector2D q = Pos.toVector2D() - QVector2D(xt2, yt2); // знак q ?
+
+    double x = Pos.x()-q.x(); // Возможно, это центр эллипса
+    double y = Pos.y()-q.y(); // Возможно, это центр эллипса
+
+    double d2 = (x-p.x())*(x-p.x())/(a*a) + (y-p.y())*(y-p.y())/(b*b);
+    double res = exp(-d2/(2.0*R*R)); // R??? или a b ???
+    return res;
 }
 //----------------------------------------------------------
 
@@ -100,6 +121,16 @@ QString SignalNode::ConvertSignalNodeTypeToString(SignalNodeType snt)
     default:
         return "Unknown";
     }
+}
+//----------------------------------------------------------
+
+std::tuple<double, double, double> SignalNode::CalcEllispe_abc() const
+{
+    double asp_ab = M_PI / Beta;
+    double a = R*1.2;
+    double b = a / sqrt(asp_ab);
+    double c = sqrt(abs(a*a - b*b));
+    return {a, b, c};
 }
 //----------------------------------------------------------
 
@@ -255,11 +286,12 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         const int nr = 32;
         double dfi = 2.0*M_PI/(nr-1);
 
-        double asp_ab = M_PI / Beta;
-        double a = R*1.2;
-        double b = a / sqrt(asp_ab);
+//        double asp_ab = M_PI / Beta;
+//        double a = R*1.2;
+//        double b = a / sqrt(asp_ab);
+//        const double c = sqrt(abs(a*a - b*b));
 
-        const double c = sqrt(abs(a*a - b*b));
+        auto [a, b, c] = CalcEllispe_abc();
 
         for (int i = 0; i < nr; i++)
         {

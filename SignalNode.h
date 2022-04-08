@@ -61,26 +61,16 @@ public:
     void SetRandomAlpha() {Alpha = rand()/(double)RAND_MAX*2.0*M_PI;}
     bool SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos);
 
-    double accessRateF(const QVector3D &p) const;
+    double accessRateSphere(const QVector3D &p) const;
+    double accessRateCone(const QVector3D &p) const;
 
     friend std::ostream & operator<<(std::ostream & s, const SignalNode &ob);
-
-//    QVector2D accessGradF(const QVector3D &p, double *y_ = nullptr) const // используем ли мы это где-то?
-//    {
-//        double y = accessRateF(p);
-//        double R2 = R * R, k = y / R2;
-//        if (y_)
-//            *y_ = y / R;
-
-//        return k * QVector2D(-p.x() + Pos.x(), -p.y() + Pos.y()); // вот тут еще осталось непонятным что мы делаем
-//    }
 
     static SignalNodeType ConvertStringToSignalNodeType(QString &str);
     static QString ConvertSignalNodeTypeToString(SignalNodeType snt);
 
     QJsonObject RepresentAsJsonObject() const;
     void LoadFromJsonObject(const QJsonObject &_jsonObject);
-
 
     static GLUquadric * Quadric();
 
