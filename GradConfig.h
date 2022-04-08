@@ -45,8 +45,8 @@ protected:
 
     Relief3D *Relief = nullptr;
 
-    void InitNodeCoordsFromParams(const std::vector<double> & _params);
-    void InitParamsFromNodeCoords(const int _param_count);
+    void InitNodeCoordsFromParams(const std::vector<double> & _params, SignalNodeType _snt);
+    void InitParamsFromNodeCoords(const int _param_count, SignalNodeType _snt);
 
     struct StatsStruct
     {
@@ -89,10 +89,12 @@ public:
 
     bool StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoGD,
                           const TargetFuncSettingsStruct &_targetFuncSettings,
+                          SignalNodeType _snt,
                           IGradDrawable *pGLWidget = nullptr);
 
     bool StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoGD,
                                const TargetFuncSettingsStruct &_targetFuncSettings,
+                               SignalNodeType _snt,
                                IGradDrawable *pGLWidget = nullptr);
     void CancelGradDescent();
 
@@ -103,7 +105,7 @@ public:
     void CalcPointStats();
     const StatsStruct & GetStats() const {return Stats;}
 
-    void CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings);
+    void CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings, SignalNodeType _snt);
 
     void FillExternVportModlAndProj(GLint _vport[4], GLdouble _modl[16], GLdouble _proj[16]) const;
 
@@ -111,7 +113,7 @@ public:
 
     void TestTwoLines() const;
 
-    void CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints);
+    void CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints, SignalNodeType _snt);
 
 //signals:
 

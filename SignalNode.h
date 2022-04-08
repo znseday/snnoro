@@ -69,6 +69,8 @@ public:
     static SignalNodeType ConvertStringToSignalNodeType(QString &str);
     static QString ConvertSignalNodeTypeToString(SignalNodeType snt);
 
+    std::tuple<double, double, double> CalcEllispe_abc() const;
+
     QJsonObject RepresentAsJsonObject() const;
     void LoadFromJsonObject(const QJsonObject &_jsonObject);
 

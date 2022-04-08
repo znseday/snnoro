@@ -389,6 +389,7 @@ void MyConfig::CancelGradDescent()
 
 bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoGD,
                                 const TargetFuncSettingsStruct &_targetFuncSettings,
+                                SignalNodeType _snt,
                                 IGradDrawable *pGLWidget)
 {
     cout << endl << "Grad Descent Started" << endl;
@@ -399,48 +400,20 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
     }
     Stats.Reset();
 
-    const int param_count = Nodes.size()*2;
+    int param_count;
+    if (_snt == SignalNodeType::Sphere)
+        param_count = Nodes.size()*2;
+    else if (_snt == SignalNodeType::Cone)
+        param_count = Nodes.size()*3;
+    else
+        throw std::runtime_error("Unknown _snt");
+
+
     size_t rCount = 0;
     for (const auto & route : Routes)
         rCount += route.Points.size();
     rCount *= Nodes.size();
     cout << "rCount = " << rCount << endl;
-
-//    auto targetFunction = [this, rCount](const vector<double>& params)
-//    {
-//        vector<double> rs(rCount);
-//        size_t i = 0;
-
-//        for (size_t k = 0; k < Nodes.size()*2; k += 2)
-//        {
-//            for (const auto & route : Routes)
-//            {
-//                for (const auto & p : route.Points)
-//                {
-//                    rs[i++] = (p.Weight) * ( (p.Pos.x()-params[k])*(p.Pos.x()-params[k]) + (p.Pos.y()-params[k+1])*(p.Pos.y()-params[k+1]));
-//                }
-//            }
-//        }
-//        return accumulate(rs.begin(), rs.end(), 0);
-//    };
-
-//    auto targetFunction = [this](const vector<double>& params)
-//    {
-//        double y = 0;
-//        for (size_t k = 0; k < Nodes.size()*2; k += 2)
-//        {
-//            for (const auto & route : Routes)
-//            {
-//                for (const auto & p1 : route.Points)
-//                {
-//                    SignalNode sn(QVector3D(params[k], params[k+1], 0), Nodes[k/2].R);
-//                    y += p1.Weight*sn.accessRateF(p1.Pos);
-//                }
-//            }
-//        }
-//        y = -y*1e8;
-//        return y;
-//    };
 
     auto targetFunction = [this, &_targetFuncSettings](const vector<double>& params)
     {
@@ -450,15 +423,11 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
             sum_w_of_routes += route.Get_w();
         }
 
-
         double y1 = 0;
         for (size_t k = 0; k < Nodes.size()*2; k += 2)
         {
-//            SignalNode sn(QVector3D(params[k], params[k+1], 0), Nodes[k/2].R);
-
             SignalNode sn(QVector3D(params[k],
                                     params[k+1],
-                                    //Nodes[k/2].Pos.z() // ??????
                                     Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
                           Nodes[k/2].R);
 
@@ -475,63 +444,37 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                         y *= IsLineBetweenTwoPoints(sn.Pos, p1.Pos);
                     }
 
-//                    double y; // = _targetFuncSettings.Aarf * sn.accessRateF(p1.Pos);
 
-//                    if ( IsLineBetweenTwoPoints(sn.Pos, p1.Pos) )
-//                        y = _targetFuncSettings.Aarf * sn.accessRateF(p1.Pos);
-//                    else
-//                        y = 0;
-
-//                    (1-tanh(k_step*(x-R12)))
-//                    double x = (sn.Pos.x()-p1.Pos.x())*(sn.Pos.x()-p1.Pos.x()) + (sn.Pos.y()-p1.Pos.y())*(sn.Pos.y()-p1.Pos.y());
-                    //double x = sn.Pos.distanceToPoint(p1.Pos);
-                    //x = sqrt(x);
                     double w = p1.Weight;
-                    //if (w > 0.95)
-                    //    w = 1.1;
 
-                    //y = pow(y, sqrt(w));
                     y *= w;//*(1-tanh(k_step*(x-sn.R)));
 
                     if (_targetFuncSettings.IsUseCoveredFlag && !p1.IsCovered)
                     {
-//                        y = pow(y, 1.1);
                         y *= 2;
-                        //y += 100*Aarf;
                     }
 
                     y1 += y;
-
-                    //y1 += Aarf * w * (1-tanh(k_step*(x-sn.R)));
-                    //y1 += pow( Aarf *(1-tanh(k_step*(x-sn.R))) ,  sqrt(w));
                 }
 
                 y1 *= (route.Get_w() / sum_w_of_routes);
             }
         }
 
-        //if (_targetFuncSettings.IsUseCoveredFlag)
-        //{
-            FindCoveredPointsUsingParams(params);
-
-        //}
+        FindCoveredPointsUsingParams(params);
 
         double y2 = 0;
         for (size_t k1 = 0; k1 < (Nodes.size()-1)*2; k1 += 2)
         {
             for (size_t k2 = k1+2; k2 < Nodes.size()*2; k2 += 2)
             {
-//                SignalNode sn1(QVector3D(params[k1], params[k1+1], 0), Nodes[k1/2].R);
                 SignalNode sn1(QVector3D(params[k1],
                                          params[k1+1],
-//                                         Nodes[k1/2].Pos.z()
                                          Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
                                Nodes[k1/2].R);
 
-//                SignalNode sn2(QVector3D(params[k2], params[k2+1], 0), Nodes[k2/2].R);
                 SignalNode sn2(QVector3D(params[k2],
                                          params[k2+1],
-//                                            Nodes[k2/2].Pos.z()
                                          Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
                                Nodes[k2/2].R);
 
@@ -540,15 +483,14 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
 
                 R12 -= _targetFuncSettings.R_nodeOverlap;
 
-                //=(1-TANH($I$4*(B3-$I$1)))
                 double step = (1-tanh(_targetFuncSettings.k_step_ot*(x-R12)));
                 y2 += _targetFuncSettings.A2 * log(_targetFuncSettings.p*(_targetFuncSettings.offX+x))*step;
-                //y2 += A2*exp(p*(-x))*(1-tanh(k_step_ot*(x-R12)));
             }
         }
 
         return -(y1+y2);
     };
+
 
     GradDesc = _protoGD;
 
@@ -556,17 +498,14 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
 
     if (nDraw > 0)
     {
-        GradDesc.SetCallback([this, pGLWidget]()
+        GradDesc.SetCallback([this, pGLWidget, _snt]()
         {
             if (!IsGradCalculating)
                 GradDesc.Stop();
 
-            //cout << "Last Cost = " << GradDesc.GetLastCost() << endl;
-            InitNodeCoordsFromParams(GradDesc.GetParams());
-            //QApplication::processEvents();
+            InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
             pGLWidget->Repaint();
             QApplication::processEvents();
-            //Sleep(16);
         });
     }
     else
@@ -579,7 +518,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
         });
     }
 
-    InitParamsFromNodeCoords(param_count);
+    InitParamsFromNodeCoords(param_count, _snt);
 
     IsGradCalculating = true;
     tf_gd_lib::GradErrorType res = GradDesc.Go();
@@ -605,7 +544,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
         break;
     }
 
-    InitNodeCoordsFromParams(GradDesc.GetParams());
+    InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
 
     CalcPointStats();
 
@@ -615,7 +554,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
     cout << "Iters: " << GradDesc.GetLastIters() << " out of " << GradDesc.GetMaxIters() << endl;
     cout << "Time: " << GradDesc.GetLastTime() << " out of " << GradDesc.GetMaxTime() << endl;
 
-    CalcBonds(_targetFuncSettings);
+    CalcBonds(_targetFuncSettings, _snt);
 
     cout << "Grad Descent Finished" << endl << endl;
 
@@ -627,21 +566,26 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
 
 bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoGD,
                                      const TargetFuncSettingsStruct &_targetFuncSettings,
+                                     SignalNodeType _snt,
                                      IGradDrawable *pGLWidget)
 {
     cout << endl << "Grad Descent Started" << endl;
 
-    const int param_count = Nodes.size()*2;
+    int param_count;
+    if (_snt == SignalNodeType::Sphere)
+        param_count = Nodes.size()*2;
+    else if (_snt == SignalNodeType::Cone)
+        param_count = Nodes.size()*3;
+    else
+        throw std::runtime_error("Unknown _snt");
 
     auto targetFunction = [this, &_targetFuncSettings](const vector<double>& params)
     {
         double y1 = 0;
         for (size_t k = 0; k < Nodes.size()*2; k += 2)
         {
-//            SignalNode sn(QVector3D(params[k], params[k+1], 0), Nodes[k/2].R);
             SignalNode sn(QVector3D(params[k],
                                     params[k+1],
-                                  //Nodes[k/2].Pos.z() // ??????
                                   Relief->CalcRealZbyRealXY(params[k], params[k+1]) ),
                           Nodes[k/2].R);
 
@@ -665,12 +609,8 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 
                 y *= Routes.at(std::get<0>(b)).Get_w(); // ?????????????????
 
-
                 y1 += y;
-
-
             }
-
         }
 
         return -y1;
@@ -682,16 +622,13 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 
     if (nDraw > 0)
     {
-        GradDesc.SetCallback([this, pGLWidget]()
+        GradDesc.SetCallback([this, pGLWidget, _snt]()
         {
             if (!IsGradCalculating)
                 GradDesc.Stop();
-            //cout << "Last Cost = " << GradDesc.GetLastCost() << endl;
-            InitNodeCoordsFromParams(GradDesc.GetParams());
-            //QApplication::processEvents();
+            InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
             pGLWidget->Repaint();
             QApplication::processEvents();
-            //Sleep(16);
         });
     }
     else
@@ -704,7 +641,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
         });
     }
 
-    InitParamsFromNodeCoords(param_count);
+    InitParamsFromNodeCoords(param_count, _snt);
 
     IsGradCalculating = true;
     tf_gd_lib::GradErrorType res = GradDesc.Go();
@@ -731,7 +668,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
     }
 
     int iRoute = 0;
-    for (/*const*/ auto & route : Routes)
+    for (/*const*/ auto & route : Routes) // сделать это всё и для Cone !!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     {
         int iPoint = 0;
         for (/*const*/ auto & p1 : route.Points)
@@ -739,7 +676,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
             p1.IsCovered = false;
             for (size_t k = 0; k < Nodes.size(); ++k)
             {
-                if (p1.Pos.distanceToPoint(Nodes[k].Pos) < Nodes[k].R)
+                if (p1.Pos.distanceToPoint(Nodes[k].Pos) < Nodes[k].R) // А для Cone ??????!!!!!!
                 {
                     p1.IsCovered = true;
                     break;
@@ -758,7 +695,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
     cout << "Iters: " << GradDesc.GetLastIters() << " out of " << GradDesc.GetMaxIters() << endl;
     cout << "Time: " << GradDesc.GetLastTime() << " out of " << GradDesc.GetMaxTime() << endl;
 
-    InitNodeCoordsFromParams(GradDesc.GetParams());
+    InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
 
     cout << "Final Grad Descent Finished" << endl << endl;
 
@@ -766,20 +703,39 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 }
 //----------------------------------------------------------
 
-void MyConfig::InitNodeCoordsFromParams(const std::vector<double> & _params)
+void MyConfig::InitNodeCoordsFromParams(const std::vector<double> & _params, SignalNodeType _snt)
 {
-    for (size_t i = 0; i < _params.size(); i+=2)
+    if (_snt == SignalNodeType::Sphere)
     {
-        Nodes.at(i/2).Pos.setX(_params[i]);
-        Nodes.at(i/2).Pos.setY(_params[i+1]);
+        for (size_t i = 0; i < _params.size(); i+=2)
+        {
+            Nodes.at(i/2).Pos.setX(_params[i]);
+            Nodes.at(i/2).Pos.setY(_params[i+1]);
 
-        Nodes.at(i/2).Pos.setZ( Relief->CalcRealZbyRealXY(_params[i], _params[i+1]) );
+            Nodes.at(i/2).Pos.setZ( Relief->CalcRealZbyRealXY(_params[i], _params[i+1]) );
+        }
     }
+    else if (_snt == SignalNodeType::Cone)
+    {
+        for (size_t i = 0; i < _params.size(); i+=3)
+        {
+            Nodes.at(i/3).Pos.setX(_params[i]);
+            Nodes.at(i/3).Pos.setY(_params[i+1]);
+            Nodes.at(i/3).Pos.setZ( Relief->CalcRealZbyRealXY(_params[i], _params[i+1]) );
+
+            Nodes.at(i/3).Alpha = _params[i+2];
+        }
+    }
+    else
+        throw std::runtime_error("Unknown _snt in MyConfig::InitNodeCoordsFromParams");
 }
 //----------------------------------------------------------
 
-void MyConfig::InitParamsFromNodeCoords(const int _param_count)
+void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _snt)
 {
+    if (!(_snt == SignalNodeType::Sphere || _snt == SignalNodeType::Cone))
+        throw std::runtime_error("Unknown _snt in MyConfig::InitParamsFromNodeCoords");
+
     vector<double> params(_param_count);
     vector<double> min_constrains(_param_count);
     vector<double> max_constrains(_param_count);
@@ -793,21 +749,22 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count)
     double max_x = area.left();
     double min_y = area.bottom();
     double max_y = area.top();
-    for (const auto & route : Routes)
-    {
-        for (const auto & p1 : route.Points)
-        {
-            if (p1.Pos.x() < min_x)
-                min_x = p1.Pos.x();
-            if (p1.Pos.y() < min_y)
-                min_y = p1.Pos.y();
 
-            if (p1.Pos.x() > max_x)
-                max_x = p1.Pos.x();
-            if (p1.Pos.y() > max_y)
-                max_y = p1.Pos.y();
-        }
-    }
+//    for (const auto & route : Routes)
+//    {
+//        for (const auto & p1 : route.Points)
+//        {
+//            if (p1.Pos.x() < min_x)
+//                min_x = p1.Pos.x();
+//            if (p1.Pos.y() < min_y)
+//                min_y = p1.Pos.y();
+
+//            if (p1.Pos.x() > max_x)
+//                max_x = p1.Pos.x();
+//            if (p1.Pos.y() > max_y)
+//                max_y = p1.Pos.y();
+//        }
+//    }
 
     size_t i = 0;
     for (const auto & node : Nodes)
@@ -829,6 +786,18 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count)
         rel_constrains[i] = 50; // not used yet
         type_constrains[i] = false; // use absolute constrains
         i++;
+
+        if (_snt == SignalNodeType::Cone)
+        {
+            params[i] = node.Alpha;
+            min_constrains[i] = -2*M_PI; // ???
+            max_constrains[i] = +2*M_PI; // ???
+//            min_constrains[i] = min_y;
+//            max_constrains[i] = max_y;
+            rel_constrains[i] = 50; // not used yet
+            type_constrains[i] = false; // use absolute constrains
+            i++;
+        }
     }
 
     GradDesc.SetParams(params);
@@ -879,7 +848,7 @@ bool MyConfig::CheckIsAllCovered() const
 }
 //----------------------------------------------------------
 
-void MyConfig::CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings)
+void MyConfig::CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings, SignalNodeType _snt)
 {
     for (size_t iNode = 0; iNode < Nodes.size(); ++iNode)
     {
@@ -887,29 +856,60 @@ void MyConfig::CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings)
         {
             for (size_t iPoint = 0; iPoint < Routes[iRoute].Points.size(); ++iPoint)
             {
-                double distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
-                if (distToPoint < Nodes[iNode].R)
+                double distToPoint;
+
+                if (_snt == SignalNodeType::Sphere)
                 {
-                    double arf = Nodes[iNode].accessRateSphere(Routes[iRoute].Points[iPoint].Pos);
+                    distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
 
-                    if (_targetFuncSettings.IsUseLineBetweenTwoPoints )
+                    if (distToPoint < Nodes[iNode].R)
                     {
-                        arf *= IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos);
+                        double arf = Nodes[iNode].accessRateSphere(Routes[iRoute].Points[iPoint].Pos);
 
-//                      if ( IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos) )
-//                          arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
-//                      else
-//                          arf = 0;
+                        if (_targetFuncSettings.IsUseLineBetweenTwoPoints )
+                        {
+                            arf *= IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos);
 
+    //                      if ( IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos) )
+    //                          arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
+    //                      else
+    //                          arf = 0;
+                        }
+
+                        Nodes[iNode].Bonds.emplace(iRoute, iPoint, arf, distToPoint/Nodes[iNode].R);
                     }
-
-                    Nodes[iNode].Bonds.emplace(iRoute, iPoint, arf, distToPoint/Nodes[iNode].R);
                 }
+                else if (_snt == SignalNodeType::Cone)
+                {
+                    // to do (to test)
+
+//                    distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
+//                    distToPoint = для Cone (учесть, что центр в другом месте)
+
+                    if (distToPoint < Nodes[iNode].R) // R переделать на другой критерий
+                    {
+                        double arf = Nodes[iNode].accessRateCone(Routes[iRoute].Points[iPoint].Pos);
+
+                        if (_targetFuncSettings.IsUseLineBetweenTwoPoints)
+                        {
+                            // Что делать с этим?
+                            arf *= IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos);
+
+    //                      if ( IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos) )
+    //                          arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
+    //                      else
+    //                          arf = 0;
+                        }
+
+                        // Строчкой ниже R на что заменить?
+                        Nodes[iNode].Bonds.emplace(iRoute, iPoint, arf, distToPoint/Nodes[iNode].R);
+                    }
+                }
+                else
+                    throw std::runtime_error("Unknown _snt in MyConfig::CalcBonds");
             }
         }
     }
-
-    //IsLineBetweenTwoPoints({1000, 1000, 1000}, {6000, 6000, 2000});// To delete!!!!!
 }
 //----------------------------------------------------------
 
@@ -1035,7 +1035,7 @@ void MyConfig::CalcPointStats()
 }
 //----------------------------------------------------------
 
-void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints)
+void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints, SignalNodeType _snt)
 {
     for (auto & route : Routes)
     {
@@ -1043,18 +1043,23 @@ void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints)
         double y1 = 0;
         for (const auto & sn : Nodes)
         {
-            double y = sn.accessRateSphere(abo.Pos);
+            double y;// = sn.accessRateSphere(abo.Pos);
+            if (_snt == SignalNodeType::Sphere)
+                y = sn.accessRateSphere(abo.Pos);
+            else if (_snt == SignalNodeType::Cone)
+                y = sn.accessRateCone(abo.Pos);
+            else
+                throw std::runtime_error("Unknown _snt in MyConfig::CalcAccessRateForAbos");
 
             if (_isUseLineBetweenTwoPoints)
             {
-                y *= IsLineBetweenTwoPoints(sn.Pos, abo.Pos);
+                y *= IsLineBetweenTwoPoints(sn.Pos, abo.Pos); // осторожно для Cone!
             }
 
             y1 += y;
         }
         abo.accessRate = y1;
     }
-
 }
 //----------------------------------------------------------
 

@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <set>
 
+#include "SignalNode.h"
+
 class MyConfig;
 //class MyGradModel;
 
@@ -22,7 +24,8 @@ public:
     void InitDialog();
     void AddTimePoint(int t/*const MyConfig &_cnfg*/);
 
-    void CalcTable(const MyConfig &_cnfg, bool _isUseLineBetweenTwoPoints);
+    void CalcTable(const MyConfig &_cnfg, bool _isUseLineBetweenTwoPoints,
+                   SignalNodeType _snt);
 
 private:
     Ui::DialogAboReport *ui;
