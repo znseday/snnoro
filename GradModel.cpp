@@ -263,7 +263,7 @@ void MyGradModel::OnKeyPress(QKeyEvent *pe)
 
 int MyGradModel::CalcCurViewPortNumber(int ClientX, int ClientY) const
 {
-    size_t i = 0;
+    //size_t i = 0;
     int iCurInd = -1;
     for (const auto & v : ViewPorts)
     {
@@ -272,12 +272,21 @@ int MyGradModel::CalcCurViewPortNumber(int ClientX, int ClientY) const
         if ( !v.isValid() )
             throw std::runtime_error("!v.isValid() ");
 
-        if ( v.contains(ClientX, ClientY) )
-            iCurInd = i;
+        ++iCurInd;
+        if (iCurInd >= (int)nDraws)
+            return -1;
 
-        i++;
+        if ( v.contains(ClientX, ClientY) )
+        {
+//            iCurInd = i;
+            return iCurInd;
+        }
+
+        //i++;
     }
-    return iCurInd;
+
+//    return iCurInd;
+    return -1;
 }
 //----------------------------------------------------------
 
@@ -593,13 +602,18 @@ void MyGradModel::DrawSeveralConfigs()
     if (ViewPorts.size() > Configs.size())
     {
         cout << "WARNING: ViewPorts.size() > Configs.size()" << endl;
-        //nDraws = Configs.size();
+        nDraws = Configs.size(); // ?
     }
 
     //DrawOnlyOne = false;
 
     for (size_t i = 0; i < min(ViewPorts.size(), Configs.size()); ++i)
     {
+//        qDebug() << "ViewPorts.size() = " << ViewPorts.size();
+//        qDebug() << "Configs.size() = " << Configs.size();
+//        qDebug() << "i = " << i;
+//        if (i >= ViewPorts.size())
+//            qDebug() << "!!!!!!!!!!!!";
         const QRect & rect = ViewPorts.at(i);
         int x = rect.left();
         int y = rect.top();
@@ -610,8 +624,6 @@ void MyGradModel::DrawSeveralConfigs()
 //        glGetIntegerv(GL_VIEWPORT, vport);
 
         DrawOneConfig(i, false);
-
-        //break;
     }
 }
 //----------------------------------------------------------
@@ -998,6 +1010,8 @@ void MyGradModel::CreatePopulation(size_t _count)
 
     Configs.resize(_count, protoConfig);
 
+    nDraws = min(nDraws, Configs.size());
+
     for (auto & cnf : Configs)
     {
 //        cnf.SetArea(Area);
@@ -1025,7 +1039,7 @@ void MyGradModel::CancelGradDescent()
 
 bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
 {
-    int iDraw = nDraws;
+    int iDraw = nDraws; // ?
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     IsGradCalculating = true;
@@ -1033,7 +1047,7 @@ bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
     {
         if (!IsGradCalculating)
             break;
-        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings, pGLWidget);
+        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings, NodesType, pGLWidget);
         --iDraw;
     }
 
@@ -1071,7 +1085,8 @@ bool MyGradModel::StartGradDescent_Phase_1_for_Current(IGradDrawable *pGLWidget)
 
     IsGradCalculating = true;
 
-    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc, TargetFuncSettings, pGLWidget);
+    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc, TargetFuncSettings,
+                                            NodesType, pGLWidget);
 
 //    for (auto & c : Configs)
 //    {
@@ -1116,7 +1131,8 @@ bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
     {
         if (!IsGradCalculating)
             break;
-        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings, pGLWidget);
+        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings,
+                                NodesType, pGLWidget);
         --iDraw;
     }
 
@@ -1152,7 +1168,8 @@ bool MyGradModel::StartGradDescent_Phase_2_for_Current(IGradDrawable *pGLWidget)
 
     IsGradCalculating = true;
 
-    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc, TargetFuncSettings, pGLWidget);
+    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc, TargetFuncSettings,
+                                                 NodesType, pGLWidget);
 
     cout << "Cost After Grad:" << endl;
     cout << Configs.at(iCurConfig).GradDesc.GetLastCost() << endl;
@@ -1191,7 +1208,7 @@ void MyGradModel::CalcBonds()
     for (auto & c : Configs)
     {
         c.CalcPointStats();
-        c.CalcBonds(TargetFuncSettings);
+        c.CalcBonds(TargetFuncSettings, NodesType);
     }
 }
 //----------------------------------------------------------
@@ -1300,8 +1317,8 @@ void MyGradModel::ReCalcAboAccessRate()
 {
     for (auto & c : Configs)
     {
-//        c.CalcAccessRateForAbos(false); // Заменить на мембер или типа того !!!!!!!
-        c.CalcAccessRateForAbos(TargetFuncSettings.IsUseLineBetweenTwoPoints); // Заменить на мембер или типа того !!!!!!!
+        c.CalcAccessRateForAbos(TargetFuncSettings.IsUseLineBetweenTwoPoints,
+                                NodesType); // Заменить на мембер или типа того ?
     }
 }
 //----------------------------------------------------------

@@ -78,16 +78,11 @@ bool MainGLWidget::MouseToWorld(int clientX, int clientY, GLdouble &_worldX, GLd
 
         //qDebug() << "iCurViewPort =" << iCurViewPort;
 
-//        const QRect & rect = GradModel.GetViewPorts().at(iCurViewPort);
-//        int x = rect.left();
-//        int y = rect.top();
-
-//        vport[0] = x;
-//        vport[1] = this->height() - 1 - y - rect.height();
-//        vport[2] = rect.width();
-//        vport[3] = rect.height();
-
         //qDebug() << vport[0] << vport[1] << vport[2] << vport[3];
+
+
+//        if (iCurViewPort >= (int)GradModel.GetConfigs().size())
+//            qDebug() << "!!!!!!!!!!!!!!!";
 
         GradModel.GetConfigs().at(iCurViewPort).FillExternVportModlAndProj(vport, modl, proj);
 

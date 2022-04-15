@@ -910,7 +910,8 @@ void MainWindow::SlotReceiveShowAboReport()
 
     try
     {
-        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettings.IsUseLineBetweenTwoPoints);
+        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettings.IsUseLineBetweenTwoPoints,
+                               GradModel.GetNodesType());
 
         dlgAboReport.setWindowTitle
                 (QString("iActiveConfig = %1").arg(GradModel.Get_iCurConfig()));

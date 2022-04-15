@@ -745,10 +745,15 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
 
     const auto & area = Relief->GetArea();
 
-    double min_x = area.right();
-    double max_x = area.left();
-    double min_y = area.bottom();
-    double max_y = area.top();
+//    double min_x = area.right();
+//    double max_x = area.left();
+//    double min_y = area.bottom();
+//    double max_y = area.top();
+
+    double min_x = area.left();
+    double max_x = area.right();
+    double min_y = area.top();
+    double max_y = area.bottom();
 
 //    for (const auto & route : Routes)
 //    {
@@ -883,7 +888,8 @@ void MyConfig::CalcBonds(const TargetFuncSettingsStruct &_targetFuncSettings, Si
                 {
                     // to do (to test)
 
-//                    distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
+                    // ????
+                    distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
 //                    distToPoint = для Cone (учесть, что центр в другом месте)
 
                     if (distToPoint < Nodes[iNode].R) // R переделать на другой критерий
