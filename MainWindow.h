@@ -107,6 +107,10 @@ private slots:
 
     void on_actionEdit_Change_Count_of_Nodes_triggered();
 
+    void on_actionDebug_Get_Last_Cost_For_Current_triggered();
+
+    void on_actionGrad_SetDrawCount_Custom_triggered();
+
 private:
     Ui::MainWindow *ui;
 

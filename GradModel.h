@@ -71,6 +71,7 @@ public:
     MyGradModel();
 
     void Set_nDraws(size_t _nDraws);
+    size_t Get_nDraw() const {return nDraws;}
 
     bool IsDrawOnlyOne() const {return DrawOnlyOne;}
     const std::vector<QRect> & GetViewPorts() const {return ViewPorts;}
@@ -153,10 +154,13 @@ public:
     MyConfig & CurrentConfigAccess();
 
     void TestTwoLines();
+    void TestGetLastCostForCurrent();
 
     void SetIsDrawAbonents(bool _isDrawAbo) {IsDrawAbonents = _isDrawAbo;}
 
     void ReCalcAboAccessRate();
+
+
 };
 
 #endif // MYGRADMODEL_H

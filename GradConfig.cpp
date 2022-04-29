@@ -445,9 +445,8 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                     }
 
 
-                    double w = p1.Weight;
-
-                    y *= w;//*(1-tanh(k_step*(x-sn.R)));
+                    double w = p1.Weight;  // !!!!!!!!!!!!!!
+                    y *= w;                   //*(1-tanh(k_step*(x-sn.R)));
 
                     if (_targetFuncSettings.IsUseCoveredFlag && !p1.IsCovered)
                     {
@@ -457,7 +456,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                     y1 += y;
                 }
 
-                y1 *= (route.Get_w() / sum_w_of_routes);
+//                y1 *= (route.Get_w() / sum_w_of_routes); // !!!!!!!!!!!
             }
         }
 
@@ -488,7 +487,8 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
             }
         }
 
-        return -(y1+y2);
+        return -(y1+y2); // !!!!!!!!!!!!!!!!!!!!!!!!!
+//        return -y1;
     };
 
 
@@ -544,7 +544,6 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
         break;
     }
 
-    InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
 
     CalcPointStats();
 
@@ -553,6 +552,8 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
 
     cout << "Iters: " << GradDesc.GetLastIters() << " out of " << GradDesc.GetMaxIters() << endl;
     cout << "Time: " << GradDesc.GetLastTime() << " out of " << GradDesc.GetMaxTime() << endl;
+
+    InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
 
     CalcBonds(_targetFuncSettings, _snt);
 
@@ -596,7 +597,10 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 
                 double y = _targetFuncSettings.Aarf * sn.accessRateSphere(p1.Pos);
 
-                y *= IsLineBetweenTwoPoints(sn.Pos, p1.Pos) ;
+                if (_targetFuncSettings.IsUseLineBetweenTwoPoints)
+                {
+                    y *= IsLineBetweenTwoPoints(sn.Pos, p1.Pos);
+                }
 
 //                if ( IsLineBetweenTwoPoints(sn.Pos, p1.Pos) )
 //                    y = _targetFuncSettings.Aarf * sn.accessRateF(p1.Pos);
@@ -604,10 +608,10 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 //                    y = 0;
 
 
-                double w = p1.Weight;
+                double w = p1.Weight;                   // 11111111111111111111
                 y *= w;//*(1-tanh(k_step*(x-sn.R)));
 
-                y *= Routes.at(std::get<0>(b)).Get_w(); // ?????????????????
+//                y *= Routes.at(std::get<0>(b)).Get_w(); // ?????????????????
 
                 y1 += y;
             }
@@ -745,31 +749,31 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
 
     const auto & area = Relief->GetArea();
 
-//    double min_x = area.right();
-//    double max_x = area.left();
-//    double min_y = area.bottom();
-//    double max_y = area.top();
+    double min_x = area.right();   // Для поиска
+    double max_x = area.left();
+    double min_y = area.bottom();
+    double max_y = area.top();
 
-    double min_x = area.left();
-    double max_x = area.right();
-    double min_y = area.top();
-    double max_y = area.bottom();
+//    double min_x = area.left(); // для жесткий ограничений без поиска
+//    double max_x = area.right();
+//    double min_y = area.top();
+//    double max_y = area.bottom();
 
-//    for (const auto & route : Routes)
-//    {
-//        for (const auto & p1 : route.Points)
-//        {
-//            if (p1.Pos.x() < min_x)
-//                min_x = p1.Pos.x();
-//            if (p1.Pos.y() < min_y)
-//                min_y = p1.Pos.y();
+    for (const auto & route : Routes)
+    {
+        for (const auto & p1 : route.Points)
+        {
+            if (p1.Pos.x() < min_x)
+                min_x = p1.Pos.x();
+            if (p1.Pos.y() < min_y)
+                min_y = p1.Pos.y();
 
-//            if (p1.Pos.x() > max_x)
-//                max_x = p1.Pos.x();
-//            if (p1.Pos.y() > max_y)
-//                max_y = p1.Pos.y();
-//        }
-//    }
+            if (p1.Pos.x() > max_x)
+                max_x = p1.Pos.x();
+            if (p1.Pos.y() > max_y)
+                max_y = p1.Pos.y();
+        }
+    }
 
     size_t i = 0;
     for (const auto & node : Nodes)

@@ -974,3 +974,39 @@ void MainWindow::on_actionEdit_Change_Count_of_Nodes_triggered()
 //    }
 }
 //-------------------------------------------------------------
+
+void MainWindow::on_actionDebug_Get_Last_Cost_For_Current_triggered()
+{
+    GradModel.TestGetLastCostForCurrent();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionGrad_SetDrawCount_Custom_triggered()
+{
+    bool isOk = false;
+    int newDrawCount = QInputDialog::getInt(this, "Count of Viewports", "Input new count",
+                          GradModel.Get_nDraw(), 1, 100, 1, &isOk);
+
+//    qDebug() << newDrawCount;
+    if (!isOk)
+    {
+        qDebug() << "Count of Viewports input canceled by user";
+        return;
+    }
+
+    if (newDrawCount > 0 && newDrawCount <= 100)
+    {
+        GradModel.Set_nDraws(newDrawCount);
+        GradModel.SetDrawOnlyOne(false);
+        mainGLWidget->repaint();
+    }
+    else
+    {
+        QMessageBox::critical(this, "Incorrect input", "Invalid value for Count of Viewports");
+    }
+}
+//-------------------------------------------------------------
+
+
+
+

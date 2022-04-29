@@ -52,7 +52,7 @@
      <x>0</x>
      <y>0</y>
      <width>589</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -96,6 +96,7 @@
      <addaction name="actionGradSetDraw4"/>
      <addaction name="actionGradSetDraw6"/>
      <addaction name="actionGradSetDraw9"/>
+     <addaction name="actionGrad_SetDrawCount_Custom"/>
     </widget>
     <addaction name="actionGradSwitch_Show_One_All"/>
     <addaction name="menuCount_of_Viewports"/>
@@ -154,6 +155,8 @@
      <string>Debug</string>
     </property>
     <addaction name="actionTwoLines"/>
+    <addaction name="separator"/>
+    <addaction name="actionDebug_Get_Last_Cost_For_Current"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOld_Tables"/>
@@ -471,6 +474,16 @@
    </property>
    <property name="text">
     <string>Change Count of Nodes...</string>
+   </property>
+  </action>
+  <action name="actionDebug_Get_Last_Cost_For_Current">
+   <property name="text">
+    <string>Get Last Cost For Current</string>
+   </property>
+  </action>
+  <action name="actionGrad_SetDrawCount_Custom">
+   <property name="text">
+    <string>Custom...</string>
    </property>
   </action>
  </widget>

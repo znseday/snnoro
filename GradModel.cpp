@@ -1039,8 +1039,12 @@ void MyGradModel::CancelGradDescent()
 
 bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
 {
-    int iDraw = nDraws; // ?
+    int iDraw = nDraws;
     QApplication::setOverrideCursor(Qt::WaitCursor);
+
+//    cout << "Costs Before GradDesc:" << endl;
+//    for (auto & c : Configs)
+//        cout << c.GradDesc.GetLastCost() << endl;
 
     IsGradCalculating = true;
     for (auto & c : Configs)
@@ -1051,7 +1055,7 @@ bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
         --iDraw;
     }
 
-    cout << "Costd Before Sort:" << endl;
+    cout << "Costs Before Sort:" << endl;
     for (auto & c : Configs)
         cout << c.GradDesc.GetLastCost() << endl;
 
@@ -1060,7 +1064,7 @@ bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
             return a.GradDesc.GetLastCost() < b.GradDesc.GetLastCost();
         } );
 
-    cout << "Costd After Sort:" << endl;
+    cout << "Costs After Sort:" << endl;
     for (auto & c : Configs)
         cout << c.GradDesc.GetLastCost() << endl;
 
@@ -1125,6 +1129,11 @@ bool MyGradModel::RemoveUncovered(IGradDrawable *pGLWidget)
 bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
 {
     int iDraw = nDraws;
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+//    cout << "Costs Before GradDesc:" << endl;
+//    for (auto & c : Configs)
+//        cout << c.GradDesc.GetLastCost() << endl;
 
     IsGradCalculating = true;
     for (auto & c : Configs)
@@ -1136,7 +1145,7 @@ bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
         --iDraw;
     }
 
-    cout << "Cost Before Sort (StartFinalGradDescent):" << endl;
+    cout << "Costs Before Sort (StartFinalGradDescent):" << endl;
     for (auto & c : Configs)
         cout << c.GradDesc.GetLastCost() << endl;
 
@@ -1145,12 +1154,13 @@ bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
             return a.GradDesc.GetLastCost() < b.GradDesc.GetLastCost();
         } );
 
-    cout << "Cost After Sort (StartFinalGradDescent):" << endl;
+    cout << "Costs After Sort (StartFinalGradDescent):" << endl;
     for (auto & c : Configs)
         cout << c.GradDesc.GetLastCost() << endl;
 
 //    pGLWidget->repaint();
     pGLWidget->Repaint();
+    QApplication::restoreOverrideCursor();
 
     return true;
 }
@@ -1310,6 +1320,16 @@ void MyGradModel::TestTwoLines()
 
     c.TestTwoLines();
 
+}
+//----------------------------------------------------------
+
+
+void MyGradModel::TestGetLastCostForCurrent()
+{
+//    cout << "iCurConfig = " << iCurConfig;
+    cout << "Last Cost for " << iCurConfig << " = ";
+    cout << Configs.at(iCurConfig).GradDesc.GetLastCost();
+    cout << endl;
 }
 //----------------------------------------------------------
 
