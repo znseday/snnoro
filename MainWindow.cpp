@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     lblWorldX = new QLabel("n/a");
     lblWorldY = new QLabel("n/a");
     lblWorldZ = new QLabel("n/a");
+    lbl_iCurConfig = new QLabel("n/a");
 
     lblGlX->setFixedWidth(120);
     lblGlY->setFixedWidth(120);
@@ -33,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     lblWorldX->setFixedWidth(150);
     lblWorldY->setFixedWidth(150);
     lblWorldZ->setFixedWidth(150);
+    lbl_iCurConfig->setFixedWidth(120);
 
     ui->statusbar->addWidget(lblGlX);
     ui->statusbar->addWidget(lblGlY);
@@ -40,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addWidget(lblWorldX);
     ui->statusbar->addWidget(lblWorldY);
     ui->statusbar->addWidget(lblWorldZ);
+    ui->statusbar->addWidget(lbl_iCurConfig);
 
     mainGLWidget = new MainGLWidget(WorkMode, GradModel, WorldMode);
 
@@ -59,6 +62,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(mainGLWidget, SIGNAL(SignalRouteDeleted(bool)),
             this, SLOT(SlotReceiveRouteDeleted(bool)));
+
+    connect(mainGLWidget, SIGNAL(Signal_iCurConfigChanged(int)),
+            this, SLOT(SlotReceive_iCurConfigChanged(int)));
 
     mainGLWidget->setFocus();
 
@@ -923,8 +929,12 @@ void MainWindow::SlotReceiveShowAboReport()
         QMessageBox::critical(this, "Error", QString("Active config is not selected\n") + e.what());
         return;
     }
+}
+//-------------------------------------------------------------
 
-
+void MainWindow::SlotReceive_iCurConfigChanged(int i)
+{
+    lbl_iCurConfig->setText("iCurConfig: " + QString().setNum(i));
 }
 //-------------------------------------------------------------
 

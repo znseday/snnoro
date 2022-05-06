@@ -294,6 +294,8 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
         if (pe->buttons() & Qt::LeftButton)
         {
             GradModel.OnMousePress(pe);
+
+            emit Signal_iCurConfigChanged(GradModel.Get_iCurConfig());
         }
 
         if (WorldMode == WorldModeType::AddingRoutePoints &&

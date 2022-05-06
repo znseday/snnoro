@@ -146,6 +146,8 @@ private:
     QLabel *lblWorldY;
     QLabel *lblWorldZ;
 
+    QLabel *lbl_iCurConfig;
+
     bool IsGradDescFileSavedSuccessfully = false;
     void TryToSaveGradDescToFile();
     bool CheckIsSavedAndSaveIfNecessary();
@@ -159,6 +161,8 @@ public slots:
 
     void SlotReceiveAddTimePointToReport(int t);
     void SlotReceiveShowAboReport();
+
+    void SlotReceive_iCurConfigChanged(int i);
 
     // QPaintDevice interface
 public:

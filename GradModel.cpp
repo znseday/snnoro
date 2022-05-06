@@ -525,6 +525,9 @@ void MyGradModel::OnMousePress(QMouseEvent *pe)
     if (!DrawOnlyOne)
     {
         iCurConfig = CalcCurViewPortNumber(pe->pos().x(), pe->pos().y());
+
+        // emit signal about iCurConfig ?
+
 //        size_t i = 0;
 //        for (const auto & v : ViewPorts)
 //        {

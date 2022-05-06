@@ -78,6 +78,7 @@ public slots:
 signals:
     void SignalSendWorldCoords(double wx, double wy, double wz, bool wExists);
     void SignalRouteDeleted(bool);
+    void Signal_iCurConfigChanged(int);
 
 };
 
