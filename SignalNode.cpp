@@ -98,7 +98,7 @@ double SignalNode::accessRateCone(const QVector3D &p) const
 }
 //----------------------------------------------------------
 
-SignalNodeType SignalNode::ConvertStringToSignalNodeType(QString &str)
+SignalNodeType SignalNode::ConvertStringToSignalNodeType(QString &str) // static member-function
 {
     if (str.toUpper() == "SPHERE")
         return SignalNodeType::Sphere;
@@ -109,7 +109,7 @@ SignalNodeType SignalNode::ConvertStringToSignalNodeType(QString &str)
 }
 //----------------------------------------------------------
 
-QString SignalNode::ConvertSignalNodeTypeToString(SignalNodeType snt)
+QString SignalNode::ConvertSignalNodeTypeToString(SignalNodeType snt) // static member-function
 {
     switch (snt)
     {
@@ -277,11 +277,9 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
 
 
     glColor3f(0.9, 0.1, 0.9);
-    if (_snt == SignalNodeType::Cone) // здесь ellipse
+    if (false && _snt == SignalNodeType::Cone) // здесь ellipse // !!!!!!!!!! false !!!!
     {
         glBegin(GL_LINE_STRIP);
-
-
 
         const int nr = 32;
         double dfi = 2.0*M_PI/(nr-1);

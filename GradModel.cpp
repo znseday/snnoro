@@ -850,6 +850,9 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     TargetFuncSettings.IsUseLineBetweenTwoPoints = targetFuncObject["IsUseLineBetweenTwoPoints"].toBool(false);
 
+    QString TargetFuncTypeStr = targetFuncObject["TargetFuncType"].toString();
+    TargetFuncSettings.TargetFuncType = ConvertStringToTargetFuncType(TargetFuncTypeStr);
+
     return ConfigCount;
 }
 //----------------------------------------------------------
@@ -1265,6 +1268,10 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
     TargetFunctionSettingsObject.insert("p", TargetFuncSettings.p);
     TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettings.IsUseLineBetweenTwoPoints);
 
+    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettings.TargetFuncType);
+    TargetFunctionSettingsObject.insert("TargetFuncType", TargetFuncTypeStr);
+
+
     mainObject.insert("TargetFunctionSettings", TargetFunctionSettingsObject);
 
     QJsonObject ConfigurationObject;
@@ -1273,8 +1280,10 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
     ConfigurationObject.insert("Routes", RepresentRoutesAsJsonArray());
 
     ConfigurationObject.insert("SignalNodeCount", (int)Nodes.size());
+
     QString NodesTypeStr = SignalNode::ConvertSignalNodeTypeToString(NodesType);
     ConfigurationObject.insert("SignalNodeType", NodesTypeStr);
+
     ConfigurationObject.insert("Nodes", RepresentNodesAsJsonArray());
 
     ConfigurationObject.insert("TargetCostFunction", "MyFunction"); // Not used
@@ -1342,6 +1351,33 @@ void MyGradModel::ReCalcAboAccessRate()
     {
         c.CalcAccessRateForAbos(TargetFuncSettings.IsUseLineBetweenTwoPoints,
                                 NodesType); // Заменить на мембер или типа того ?
+    }
+}
+//----------------------------------------------------------
+
+TargetFuncEnum MyGradModel::ConvertStringToTargetFuncType(QString &str) // static member-function
+{
+    if (str.toUpper() == "ADDITIVE")
+        return TargetFuncEnum::Additive;
+    else if (str.toUpper() == "PROBABILISTIC")
+        return TargetFuncEnum::Probabilistic;
+    else
+        return TargetFuncEnum::Empty;
+}
+//----------------------------------------------------------
+
+QString MyGradModel::ConvertTargetFuncTypeToString(TargetFuncEnum snt) // static member-function
+{
+    switch (snt)
+    {
+    case TargetFuncEnum::Additive:
+        return "Additive";
+    case TargetFuncEnum::Probabilistic:
+        return "Probabilistic";
+    case TargetFuncEnum::Empty:
+        return "Empty";
+    default:
+        return "Unknown";
     }
 }
 //----------------------------------------------------------

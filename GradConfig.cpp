@@ -271,106 +271,6 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
         glLineWidth(1.0f);
 
         node.DrawIn3D(_snt, Relief, Settings3d);
-
-//        glPushMatrix();
-
-//        double x = (node.Pos.x()-offsetX)*k;
-//        double y = (node.Pos.y()-offsetY)*k;
-//        double z;
-
-
-//        if (Relief->GetIsMathRelief())
-//        {
-//            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-//        }
-//        else
-//        {
-//            z = (node.Pos.z()-offsetZ)*Relief->Get_kz();
-//            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
-//        }
-//        gluQuadricDrawStyle(Quadric(), GLU_FILL);
-//        gluSphere(Quadric(), 0.02, 12, 12);
-//        glPopMatrix();
-
-//        const int nr = 32;
-//        double dfi, fiStart;
-
-//        if (_snt == SignalNodeType::Sphere)
-//        {
-//            dfi = 2.0*M_PI/nr;
-//            fiStart = 0;
-//        }
-//        else if (_snt == SignalNodeType::Cone)
-//        {
-//            dfi = 2.0*node.Beta / nr;
-//            fiStart = node.Alpha - node.Beta;
-//        }
-//        else
-//        {
-//            qDebug() << "Error: SignalNodeType is Unknown";
-//            dfi = 2*M_PI/nr;
-//            fiStart = 0;
-//        }
-
-//        glBegin(GL_LINE_STRIP);
-
-//        if (_snt == SignalNodeType::Cone) // далее будет копипаст этого ифа
-//        {
-//            double x = (node.Pos.x()-offsetX)*k;
-//            double y = (node.Pos.y()-offsetY)*k;
-//            double z;
-
-//            if (Relief->GetIsMathRelief())
-//            {
-//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-//            }
-//            else
-//            {
-//                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(node.Pos.x(), node.Pos.y()) : 0);
-//                glVertex3f(x, y, z);
-//            }
-//        }
-
-//        for (int i = 0; i <= nr; i++)
-//        {
-//            double xt = node.Pos.x() + node.R*cos(fiStart + i*dfi);
-//            double yt = node.Pos.y() + node.R*sin(fiStart + i*dfi);
-//            double x = (xt-offsetX)*k;
-//            double y = (yt-offsetY)*k;
-//            double z;
-
-//            if (Relief->GetIsMathRelief())
-//            {
-//                // z = ???;
-//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-//            }
-//            else
-//            {
-////                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(xt, yt) : 0));
-//                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
-//                glVertex3f(x, y, z);
-//            }
-//        }
-
-//        if (_snt == SignalNodeType::Cone) // здесь копипаст
-//        {
-//            double x = (node.Pos.x()-offsetX)*k;
-//            double y = (node.Pos.y()-offsetY)*k;
-//            double z;
-
-//            if (Relief->GetIsMathRelief())
-//            {
-//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-//            }
-//            else
-//            {
-//                z = zOffset + (Settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(node.Pos.x(), node.Pos.y()) : 0);
-//                glVertex3f(x, y, z);
-//            }
-//        }
-
-//        glEnd();
-
     }
 
     glPopMatrix();
@@ -415,7 +315,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
     rCount *= Nodes.size();
     cout << "rCount = " << rCount << endl;
 
-    auto targetFunction = [this, &_targetFuncSettings](const vector<double>& params)
+    auto targetFunctionAdditive = [this, &_targetFuncSettings](const vector<double>& params)
     {
         double sum_w_of_routes = 0;
         for (auto & route : Routes)
@@ -456,7 +356,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                     y1 += y;
                 }
 
-//                y1 *= (route.Get_w() / sum_w_of_routes); // !!!!!!!!!!!
+                y1 *= (route.Get_w() / sum_w_of_routes);
             }
         }
 
@@ -487,14 +387,95 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
             }
         }
 
-        return -(y1+y2); // !!!!!!!!!!!!!!!!!!!!!!!!!
+        return -(y1+y2);
+//        return -y1;
+    };
+
+
+    auto targetFunctionProbabilistic = [this, &_targetFuncSettings](const vector<double>& params)
+    {
+        double sum_w_of_routes = 0;
+        for (auto & route : Routes)
+            sum_w_of_routes += route.Get_w();
+
+        double y1 = 0;
+        for (size_t k = 0; k < Nodes.size()*2; k += 2)
+        {
+            SignalNode sn(QVector3D(params[k],
+                                    params[k+1],
+                                    Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                          Nodes[k/2].R);
+
+
+            for (auto & route : Routes) // все точки всех маршрутов
+            {
+                for (auto & p1 : route.Points) // цикл по одному маршруту
+                {
+
+                    double y = _targetFuncSettings.Aarf * sn.accessRateSphere(p1.Pos);
+
+                    if (_targetFuncSettings.IsUseLineBetweenTwoPoints)
+                    {
+                        y *= IsLineBetweenTwoPoints(sn.Pos, p1.Pos);
+                    }
+
+
+                    double w = p1.Weight;  // !!!!!!!!!!!!!!
+                    y *= w;                   //*(1-tanh(k_step*(x-sn.R)));
+
+                    if (_targetFuncSettings.IsUseCoveredFlag && !p1.IsCovered)
+                    {
+                        y *= 2;
+                    }
+
+                    y1 += y;
+                }
+
+                y1 *= (route.Get_w() / sum_w_of_routes);
+            }
+        }
+
+        FindCoveredPointsUsingParams(params);
+
+        double y2 = 0;
+        for (size_t k1 = 0; k1 < (Nodes.size()-1)*2; k1 += 2)
+        {
+            for (size_t k2 = k1+2; k2 < Nodes.size()*2; k2 += 2)
+            {
+                SignalNode sn1(QVector3D(params[k1],
+                                         params[k1+1],
+                                         Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
+                               Nodes[k1/2].R);
+
+                SignalNode sn2(QVector3D(params[k2],
+                                         params[k2+1],
+                                         Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
+                               Nodes[k2/2].R);
+
+                double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
+                double R12 = sn1.R + sn2.R;
+
+                R12 -= _targetFuncSettings.R_nodeOverlap;
+
+                double step = (1-tanh(_targetFuncSettings.k_step_ot*(x-R12)));
+                y2 += _targetFuncSettings.A2 * log(_targetFuncSettings.p*(_targetFuncSettings.offX+x))*step;
+            }
+        }
+
+        return -(y1+y2);
 //        return -y1;
     };
 
 
     GradDesc = _protoGD;
 
-    GradDesc.SetUseUserTargetFunction(targetFunction);
+    if (_targetFuncSettings.TargetFuncType == TargetFuncEnum::Additive)
+        GradDesc.SetUseUserTargetFunction(targetFunctionAdditive);
+    else if (_targetFuncSettings.TargetFuncType == TargetFuncEnum::Probabilistic)
+        GradDesc.SetUseUserTargetFunction(targetFunctionProbabilistic);
+    else
+        throw std::runtime_error("Unknown or Empty TargetFuncEnum in StartGradDescent");
+
 
     if (nDraw > 0)
     {

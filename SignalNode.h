@@ -25,7 +25,7 @@ enum class SignalNodeType
     Unknown
 };
 
-
+// Передлать этот юзинг на норм структуру!!!!!!
 using BondsType = std::set<std::tuple<size_t, size_t, double, double>>;
 
 class SignalNode
@@ -68,6 +68,8 @@ public:
 
     static SignalNodeType ConvertStringToSignalNodeType(QString &str);
     static QString ConvertSignalNodeTypeToString(SignalNodeType snt);
+
+
 
     std::tuple<double, double, double> CalcEllispe_abc() const;
 

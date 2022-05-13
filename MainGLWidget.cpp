@@ -6,9 +6,6 @@
 #include <QOpenGLFunctions>
 #include <QDebug>
 
-#include "View.h"
-#include "Model.h"
-
 
 #include <iostream>
 
@@ -17,16 +14,14 @@ using namespace std;
 MainGLWidget::MainGLWidget(WorkModeType &_workMode, MyGradModel &_gradModel, WorldModeType &_worldMode, QWidget *parent)
     : QOpenGLWidget(parent), WorkMode(_workMode), WorldMode(_worldMode), GradModel(_gradModel)
 {
-    MainTimer = new QTimer(this);
-    connect(MainTimer, SIGNAL(timeout()),
-                 this, SLOT(slotReceiveMainTimerTimeout()));
+//    MainTimer = new QTimer(this);
 }
 //----------------------------------------------------------
 
-void MainGLWidget::StartMainTimer()
-{
-    MainTimer->start(17);
-}
+//void MainGLWidget::StartMainTimer()
+//{
+//    MainTimer->start(17);
+//}
 //----------------------------------------------------------
 
 void MainGLWidget::Repaint()
@@ -35,17 +30,17 @@ void MainGLWidget::Repaint()
 }
 //----------------------------------------------------------
 
-void MainGLWidget::slotReceiveMainTimerTimeout()
-{
-    if (!View::Instance().IsInit())
-        return;
-    if (!Model::Instance().IsInited())
-        return;
+//void MainGLWidget::slotReceiveMainTimerTimeout()
+//{
+//    if (!View::Instance().IsInit())
+//        return;
+//    if (!Model::Instance().IsInited())
+//        return;
 
-    Model::Instance().dynamics();
+//    Model::Instance().dynamics();
 
-    this->repaint();
-}
+//    this->repaint();
+//}
 //----------------------------------------------------------
 
 bool MainGLWidget::MouseToWorld(int clientX, int clientY, GLdouble &_worldX, GLdouble &_worldY, GLdouble &_worldZ)
@@ -126,16 +121,7 @@ void MainGLWidget::resizeGL(int w, int h)
     format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
     MyFBO = new QOpenGLFramebufferObject(QSize(width(), height()), format);
 
-    if (WorkMode == WorkModeType::OldWork)
-    {
-        if (!View::Instance().IsInit())
-            return;
-        if (!Model::Instance().IsInited())
-            return;
-
-        View::Instance().reshape(w, h);
-    }
-    else if (WorkMode == WorkModeType::GradWork)
+    if (WorkMode == WorkModeType::GradWork)
     {
 //        if (MyFBO)
 //            delete MyFBO;
@@ -155,16 +141,7 @@ void MainGLWidget::paintGL()
     if (WorkMode == WorkModeType::Nothing)
         return;
 
-    if (WorkMode == WorkModeType::OldWork)
-    {
-        if (!View::Instance().IsInit())
-            return;
-        if (!Model::Instance().IsInited())
-            return;
-        //cout << __PRETTY_FUNCTION__ << endl;
-        View::Instance().display();
-    }
-    else if (WorkMode == WorkModeType::GradWork)
+    if (WorkMode == WorkModeType::GradWork)
     {
 //        GradModel.OnResize(this->width(), this->height());
 
@@ -175,11 +152,7 @@ void MainGLWidget::paintGL()
         ctx->extraFunctions()->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, MyFBO->handle());
         ctx->extraFunctions()->glBlitFramebuffer(0, 0, width(), height(), 0, 0, MyFBO->width(), MyFBO->height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-        //glGetIntegerv(GL_VIEWPORT, vport);
-//        glGetDoublev(GL_MODELVIEW_MATRIX, modl);
-//        glGetDoublev(GL_PROJECTION_MATRIX, proj);
-
-        cout << __PRETTY_FUNCTION__ << endl;
+//        cout << __PRETTY_FUNCTION__ << endl;
     }
 }
 //----------------------------------------------------------
@@ -195,47 +168,7 @@ void MainGLWidget::keyPressEvent(QKeyEvent *pe)
     if (WorkMode == WorkModeType::Nothing)
         return;
 
-    if (WorkMode == WorkModeType::OldWork)
-    {
-        if (!View::Instance().IsInit())
-            return;
-
-        switch (pe->key())
-        {
-        case Qt::Key_Up:
-            Model::Instance().beta += 7.5;
-            break;
-        case Qt::Key_Down:
-            Model::Instance().beta -= 7.5;
-            break;
-        case Qt::Key_Left:
-            Model::Instance().alpha += 5;
-            break;
-        case Qt::Key_Right:
-            Model::Instance().alpha -= 5;
-            break;
-        case Qt::Key_F:
-//            if (Model::Instance().nCView > 1)
-//            {
-//                Model::Instance().nCView = 1;
-//            }
-//            else // 1
-//            {
-//                Model::Instance().nCView = 4;
-//            }
-
-            break;
-
-        case Qt::Key_P:
-        //    Model::Instance().fDrawCfg3d = !Model::Instance().fDrawCfg3d;
-            break;
-
-        case Qt::Key_Escape:
-
-            break;
-        }
-    }
-    else if (WorkMode == WorkModeType::GradWork)
+    if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.OnKeyPress(pe);
     }
@@ -244,27 +177,10 @@ void MainGLWidget::keyPressEvent(QKeyEvent *pe)
 }
 //----------------------------------------------------------
 
-void MainGLWidget::keyReleaseEvent(QKeyEvent *pe)
+void MainGLWidget::keyReleaseEvent([[maybe_unused]] QKeyEvent *pe)
 {
     if (WorkMode == WorkModeType::Nothing)
         return;
-
-    if (WorkMode == WorkModeType::OldWork)
-    {
-        if (!View::Instance().IsInit())
-            return;
-        switch(pe->key())
-        {
-        case Qt::Key_Up:
-            break;
-        case Qt::Key_Down:
-            break;
-        case Qt::Key_Left:
-            break;
-        case Qt::Key_Right:
-            break;
-        }
-    }
 }
 //----------------------------------------------------------
 
@@ -273,23 +189,7 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
     if (WorkMode == WorkModeType::Nothing)
         return;
 
-    if (WorkMode == WorkModeType::OldWork)
-    {
-        if (!View::Instance().IsInit())
-            return;
-
-        this->setFocus();
-
-    //    OldX = pe->x();
-    //    OldY = pe->y();
-
-        double x, y;
-        View::Instance().mapCoords(pe->pos().x(), pe->pos().y(), x, y);
-        bool IsUpdated = Model::Instance().onMouseClick(x, y);
-        if (IsUpdated)
-            this->repaint();
-    }
-    else if (WorkMode == WorkModeType::GradWork)
+    if (WorkMode == WorkModeType::GradWork)
     {
         if (pe->buttons() & Qt::LeftButton)
         {
@@ -335,37 +235,7 @@ void MainGLWidget::mouseMoveEvent(QMouseEvent *pe)
     if (WorkMode == WorkModeType::Nothing)
         return;
 
-    if (WorkMode == WorkModeType::OldWork)
-    {
-        if (!View::Instance().IsInit())
-            return;
-
-    //    CurrentX = pe->x();
-    //    CurrentY = pe->y();
-
-    //    int dx = CurrentX - OldX;
-    //    int dy = CurrentY - OldY;
-
-        double x, y;
-        View::Instance().mapCoords(pe->pos().x(), pe->pos().y(), x, y);
-        bool IsUpdated = Model::Instance().onMouseMove(x, y);
-        if (IsUpdated)
-            this->repaint(); // тестировать!
-
-        if (QApplication::keyboardModifiers() == Qt::ControlModifier) // Отследить состояние клавиши Ctrl
-        {
-        }
-        else if (QApplication::keyboardModifiers() == Qt::AltModifier)
-        {
-        }
-        else
-        {
-        }
-
-        OldX = CurrentX;
-        OldY = CurrentY;
-    }
-    else if (WorkMode == WorkModeType::GradWork)
+    if (WorkMode == WorkModeType::GradWork)
     {
         if (IsShowCoordsAlways || WorldMode != WorldModeType::Nothing)
         {
@@ -399,11 +269,7 @@ void MainGLWidget::wheelEvent(QWheelEvent *pe)
     if (WorkMode == WorkModeType::Nothing)
         return;
 
-    if (WorkMode == WorkModeType::OldWork)
-    {
-
-    }
-    else if (WorkMode == WorkModeType::GradWork)
+    if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.OnMouseWheel(pe);
         this->repaint();

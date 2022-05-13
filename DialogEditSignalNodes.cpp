@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QFileDialog>
 
+#include "Relief.h"
+
 class MyButtonWithNumber : public QPushButton
 {
 protected:
@@ -14,7 +16,7 @@ public:
         QPushButton(c, p), Number(n) {}
     int GetNumber() const {return Number;}
 };
-
+//----------------------------------------------------------
 
 
 
@@ -345,35 +347,6 @@ void DialogEditSignalNodes::SlotSaveButtonClicked()
     QFile jsonFile(fileName);
     jsonFile.open(QFile::WriteOnly);
     jsonFile.write(jsonDoc.toJson());
-
-//    bool isOk = false;
-//    double R = ui->Table->item(1 + i, 1+2)->text().toDouble(&isOk);
-//    if (isOk)
-//        sn.R = R;
-//    else
-//        qDebug() << "R is not saved for " << i << " signal Node";
-
-//    if (CurNodeType == SignalNodeType::Cone)
-//    {
-//        isOk = false;
-//        double Beta = ui->Table->item(1 + i, 2+2)->text().toDouble(&isOk);
-//        if (isOk)
-//            sn.Beta = qDegreesToRadians(Beta);
-//        else
-//            qDebug() << "Betha is not saved for " << i << " signal Node";
-//    }
-
-
-//    if (CurNodeType == SignalNodeType::Sphere)
-//    {
-
-//    }
-//    else if (CurNodeType == SignalNodeType::Cone)
-//    {
-
-//    }
-//    else
-//        QMessageBox::critical(this, "Error", "SignalNodeType is Unknown");
 }
 //----------------------------------------------------------
 

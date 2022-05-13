@@ -5,9 +5,6 @@
 
 #include "MainGLWidget.h"
 
-#include "FormGeneral.h"
-#include "FormConfigInfo.h"
-
 #include "Types.h"
 
 #include "GradModel.h"
@@ -44,13 +41,6 @@ public:
 
 private slots:
     void on_actionFileExit_triggered();
-
-    void on_actionFileStart_Old_triggered();
-    void on_actionOldTablesGeneral_triggered();
-    void on_actionOldTablesConfig_0_triggered();
-    void on_actionOldTablesConfig_1_triggered();
-    void on_actionOldTablesConfig_2_triggered();
-    void on_actionOldTablesConfig_3_triggered();
     void on_actionFileOpen_Grad_Descent_triggered();
     void on_actionGradSetDraw2_triggered();
     void on_actionGradSetDraw3_triggered();
@@ -115,9 +105,6 @@ private:
     Ui::MainWindow *ui;
 
     MainGLWidget *mainGLWidget = nullptr;
-
-    FormGeneral *formGeneral = nullptr;
-    FormConfigInfo *formConfigInfo[4] = {nullptr};
 
     WorkModeType WorkMode = WorkModeType::Nothing;
     WorldModeType WorldMode = WorldModeType::Nothing;

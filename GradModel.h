@@ -160,6 +160,8 @@ public:
 
     void ReCalcAboAccessRate();
 
+    static TargetFuncEnum ConvertStringToTargetFuncType(QString &str);
+    static QString ConvertTargetFuncTypeToString(TargetFuncEnum snt);
 
 };
 

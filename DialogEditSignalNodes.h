@@ -4,7 +4,8 @@
 #include <QDialog>
 
 #include "SignalNode.h"
-#include "Relief.h"
+//#include "Relief.h"
+class Relief3D;
 
 namespace Ui {
 class DialogEditSignalNodes;

@@ -61,8 +61,6 @@
     </property>
     <addaction name="separator"/>
     <addaction name="separator"/>
-    <addaction name="actionFileStart_Old"/>
-    <addaction name="separator"/>
     <addaction name="actionFileNew_Grad_Config"/>
     <addaction name="separator"/>
     <addaction name="actionFileOpen_Grad_Descent"/>
@@ -71,17 +69,6 @@
     <addaction name="actionFileSave_Grad_Config_As"/>
     <addaction name="separator"/>
     <addaction name="actionFileExit"/>
-   </widget>
-   <widget class="QMenu" name="menuOld_Tables">
-    <property name="title">
-     <string>Old Tables</string>
-    </property>
-    <addaction name="actionOldTablesGeneral"/>
-    <addaction name="separator"/>
-    <addaction name="actionOldTablesConfig_0"/>
-    <addaction name="actionOldTablesConfig_1"/>
-    <addaction name="actionOldTablesConfig_2"/>
-    <addaction name="actionOldTablesConfig_3"/>
    </widget>
    <widget class="QMenu" name="menuGrad">
     <property name="title">
@@ -159,7 +146,6 @@
     <addaction name="actionDebug_Get_Last_Cost_For_Current"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuOld_Tables"/>
    <addaction name="menuGrad"/>
    <addaction name="menuWorld"/>
    <addaction name="menuRelief"/>
@@ -170,51 +156,6 @@
   <action name="actionFileExit">
    <property name="text">
     <string>Exit</string>
-   </property>
-  </action>
-  <action name="actionFileStart_Old">
-   <property name="text">
-    <string>Start &amp;Old</string>
-   </property>
-  </action>
-  <action name="actionOldTablesGeneral">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>General</string>
-   </property>
-  </action>
-  <action name="actionOldTablesConfig_0">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Config 0</string>
-   </property>
-  </action>
-  <action name="actionOldTablesConfig_1">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Config 1</string>
-   </property>
-  </action>
-  <action name="actionOldTablesConfig_2">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Config 2</string>
-   </property>
-  </action>
-  <action name="actionOldTablesConfig_3">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Config 3</string>
    </property>
   </action>
   <action name="actionFileOpen_Grad_Descent">

@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="tabGradDesc">
         <attribute name="title">
@@ -31,7 +31,7 @@
            <x>10</x>
            <y>10</y>
            <width>171</width>
-           <height>273</height>
+           <height>294</height>
           </rect>
          </property>
          <layout class="QFormLayout" name="formLayout">
@@ -176,7 +176,7 @@
            <x>10</x>
            <y>10</y>
            <width>170</width>
-           <height>221</height>
+           <height>232</height>
           </rect>
          </property>
          <layout class="QFormLayout" name="formLayout_2">
@@ -300,6 +300,40 @@
          </layout>
         </widget>
        </widget>
+       <widget class="QWidget" name="tabTargetFuncSelector">
+        <attribute name="title">
+         <string>Func Selector</string>
+        </attribute>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>115</width>
+           <height>93</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Target Func</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QRadioButton" name="rbTargetFuncAdditive">
+            <property name="text">
+             <string>Additive</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rbTargetFuncProbabilistic">
+            <property name="text">
+             <string>Probabilistic</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -351,7 +385,4 @@
    </hints>
   </connection>
  </connections>
- <buttongroups>
-  <buttongroup name="buttonGroup"/>
- </buttongroups>
 </ui>

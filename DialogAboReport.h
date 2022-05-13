@@ -4,10 +4,10 @@
 #include <QDialog>
 #include <set>
 
-#include "SignalNode.h"
+//#include "SignalNode.h"
+enum class SignalNodeType;
 
 class MyConfig;
-//class MyGradModel;
 
 namespace Ui {
 class DialogAboReport;
@@ -22,21 +22,16 @@ public:
     ~DialogAboReport();
 
     void InitDialog();
-    void AddTimePoint(int t/*const MyConfig &_cnfg*/);
+    void AddTimePoint(int t);
 
     void CalcTable(const MyConfig &_cnfg, bool _isUseLineBetweenTwoPoints,
-                   SignalNodeType _snt);
+                   const SignalNodeType &_snt);
 
 private:
     Ui::DialogAboReport *ui;
 
     std::set<int> TimePoints;
 
-    // QPaintDevice interface
-//public:
-//    QPaintEngine *paintEngine() const override;
-
-    // QWidget interface
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 };

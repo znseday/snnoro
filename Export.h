@@ -9,20 +9,20 @@
 
 #include <QTableWidget>
 
-struct ExportGeneralInfo
-{
-    int id = -1;
-    double w = -1;
-    double w0 = -1;
-    QString LastOp = "unknown";
-};
+//struct ExportGeneralInfo
+//{
+//    int id = -1;
+//    double w = -1;
+//    double w0 = -1;
+//    QString LastOp = "unknown";
+//};
 
-struct ExportGeneralData
-{
-    double Time = -1;
+//struct ExportGeneralData
+//{
+//    double Time = -1;
 
-    std::vector<ExportGeneralInfo> GeneralInfos;
-};
+//    std::vector<ExportGeneralInfo> GeneralInfos;
+//};
 
 struct ExportDetailedInfo
 {

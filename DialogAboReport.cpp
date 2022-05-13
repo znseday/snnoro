@@ -2,7 +2,7 @@
 #include "ui_DialogAboReport.h"
 
 #include "GradConfig.h"
-//#include "GradModel.h"
+
 #include <QKeyEvent>
 
 #include "Export.h"
@@ -45,17 +45,6 @@ void DialogAboReport::InitDialog()
     ui->Table->setColumnWidth(3, 100);
     ui->Table->item(0, 3)->setFlags( ui->Table->item(0, 3)->flags() & ~Qt::ItemIsEditable );
 
-
-//    for (size_t i = 0; i < _routes.size(); ++i)
-//    {
-//        ui->Table->setItem(1 + i, 0, new QTableWidgetItem(QString().setNum( i )));
-//        ui->Table->setItem(1 + i, 1, new QTableWidgetItem(_routes.at(i).GetName() ));
-
-//        ui->Table->setItem(1 + i, 2,
-//              new QTableWidgetItem(QString().setNum( _routes.at(i).GetAbonent().v )));
-
-//        ui->Table->item(1 + i, 0)->setFlags( ui->Table->item(1 + i, 0)->flags() & ~Qt::ItemIsEditable );
-//    }
 }
 //----------------------------------------------------------
 
@@ -69,7 +58,7 @@ void DialogAboReport::AddTimePoint(int t /*const MyConfig &_cnfg*/)
 // чтобы ее было не жалко портить при расчете accessrate
 // void DialogAboReport::CalcTable(MyGradModel &_gradModel)
 void DialogAboReport::CalcTable(const MyConfig &_cnfg, bool _isUseLineBetweenTwoPoints,
-                                SignalNodeType _snt)
+                                const SignalNodeType &_snt)
 {
     MyConfig tempConfig(_cnfg);
 

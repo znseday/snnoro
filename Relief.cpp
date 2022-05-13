@@ -15,9 +15,6 @@ using namespace std;
 //bool IsUseReliefRandomSeed = true;
 //unsigned ReliefRandomSeed = 100;
 
-//double A_r1 = 0.01;
-//double A_r2 = 0.02;
-
 ostream & operator<<(ostream &s, const ReliefMatInfoStruct ob)
 {
     s << "IsUseReliefRandomSeed = " << ob.IsUseReliefRandomSeed << endl;
