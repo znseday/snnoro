@@ -7,8 +7,12 @@
 #include <QMessageBox>
 
 #include <QInputDialog>
+#include <QCloseEvent>
 
 #include <limits>
+
+#include "FormGradGeneral.h"
+#include "MainGLWidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

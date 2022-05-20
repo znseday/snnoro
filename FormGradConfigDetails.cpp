@@ -3,8 +3,10 @@
 
 
 #include "Export.h"
+#include "GradConfig.h"
 
 #include <QMessageBox>
+#include <QKeyEvent>
 
 //static constexpr int stGT = 1;
 //static constexpr int enGT = 4;

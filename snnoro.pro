@@ -66,7 +66,6 @@ HEADERS += \
     GradModel.h \
     MainGLWidget.h \
     MainWindow.h \
-    MathUtil.h \
     MathUtils.h \
     Relief.h \
     Route.h \

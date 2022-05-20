@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 
-#include "MainGLWidget.h"
+//#include "MainGLWidget.h"
+class MainGLWidget;
 
 #include "Types.h"
 
@@ -15,12 +16,15 @@
 #include "DialogEditSignalNodes.h"
 #include "DialogEditRoutes.h"
 
-#include "FormGradGeneral.h"
+
+class FormGradGeneral;
 
 #include "FormRelief.h"
 
 #include "FormAboCalc.h"
 #include "DialogAboReport.h"
+
+class QCloseEvent;
 
 namespace Ui {
 class MainWindow;

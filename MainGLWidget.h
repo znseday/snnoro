@@ -2,12 +2,17 @@
 #define MAINGLWIDGET_H
 
 #include <QOpenGLWidget>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QTimer>
+//#include <QKeyEvent>
+//#include <QMouseEvent>
+//#include <QWheelEvent>
+class QKeyEvent;
+class QMouseEvent;
+class QWheelEvent;
 
-#include <QOpenGLFramebufferObject>
+//#include <QTimer>
+
+//#include <QOpenGLFramebufferObject>
+class QOpenGLFramebufferObject;
 //#include <QOpenGLFunctions>
 
 #include "Types.h"

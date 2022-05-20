@@ -7,7 +7,8 @@
 #include <QVector2D>
 #include <QString>
 
-#include <QTableWidget>
+//#include <QTableWidget>
+class QTableWidget;
 
 //struct ExportGeneralInfo
 //{

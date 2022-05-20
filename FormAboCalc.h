@@ -2,7 +2,7 @@
 #define FORMABOCALC_H
 
 #include <QDialog>
-//#include "DialogAboReport.h"
+
 
 namespace Ui {
 class FormAboCalc;

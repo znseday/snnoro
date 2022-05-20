@@ -8,12 +8,16 @@
 #include "GradConfig.h"
 #include "Types.h"
 
-#include <QJsonObject>
-#include <QJsonDocument>
+//#include <QJsonObject>
+class QJsonObject;
+//#include <QJsonDocument>
 #include <QString>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QWheelEvent>
+//#include <QKeyEvent>
+//#include <QMouseEvent>
+//#include <QWheelEvent>
+class QKeyEvent;
+class QMouseEvent;
+class QWheelEvent;
 
 #include "Relief.h"
 

@@ -4,6 +4,8 @@
 #include <QString>
 #include <QMessageBox>
 
+#include "GradModel.h"
+
 DialogGradConfig::DialogGradConfig(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogGradConfig)

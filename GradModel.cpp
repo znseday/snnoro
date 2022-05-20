@@ -3,14 +3,19 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
 #include <QDebug>
 #include <QApplication>
 #include <QMessageBox>
 #include <QInputDialog>
-#include <QFileInfo>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 
 #include <iostream>
@@ -880,6 +885,9 @@ QJsonArray MyGradModel::RepresentRoutesAsJsonArray() const
             pointObject.insert("x", p.Pos.x());
             pointObject.insert("y", p.Pos.y());
             pointObject.insert("z", p.Pos.z());
+
+            pointObject.insert("w", p.Weight);
+
             pointsArray.append(pointObject);
         }
 

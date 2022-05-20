@@ -2,9 +2,11 @@
 #define FORMGRADCONFIGDETAILS_H
 
 #include <QWidget>
-#include <QKeyEvent>
+//#include <QKeyEvent>
+class QKeyEvent;
 
-#include "GradConfig.h"
+//#include "GradConfig.h"
+class MyConfig;
 
 namespace Ui {
 class FormGradConfigDetails;

@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <set>
 
-//#include "SignalNode.h"
 enum class SignalNodeType;
 
 class MyConfig;

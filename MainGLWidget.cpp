@@ -5,7 +5,10 @@
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions>
 #include <QDebug>
-
+#include <QOpenGLFramebufferObject>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 #include <iostream>
 

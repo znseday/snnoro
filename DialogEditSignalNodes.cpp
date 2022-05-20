@@ -4,6 +4,8 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include "Relief.h"
 

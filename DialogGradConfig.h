@@ -1,9 +1,12 @@
 #ifndef DIALOGGRADCONFIG_H
 #define DIALOGGRADCONFIG_H
 
+#include "Types.h"
 #include <QDialog>
 
-#include "GradModel.h"
+//#include "GradModel.h"
+class MyGradModel;
+#include "UnitGradDescent.h"
 
 namespace Ui {
 class DialogGradConfig;

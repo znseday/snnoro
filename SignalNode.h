@@ -5,8 +5,9 @@
 #include <set>
 
 #include "Types.h"
-#include <QVector2D>
-#include <QVector3D>
+//#include <QVector2D>
+//#include <QVector3D>
+class QVector3D;
 #include <QRectF>
 
 #include <QJsonObject>

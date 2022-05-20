@@ -170,7 +170,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             glPopMatrix();
         }
 
-        if (isDrawAbonents)
+        if (/*false && */isDrawAbonents)
         {
             const auto & abo = r.GetAbonent();
             double x = (abo.Pos.x()-offsetX)*k;
@@ -337,7 +337,7 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                 for (auto & p1 : route.Points)
                 {
 
-                    double y = _targetFuncSettings.Aarf * sn.accessRateSphere(p1.Pos);
+                    double y = /*_targetFuncSettings.Aarf * */ sn.accessRateSphere(p1.Pos);
 
                     if (_targetFuncSettings.IsUseLineBetweenTwoPoints)
                     {
@@ -386,6 +386,8 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                 y2 += _targetFuncSettings.A2 * log(_targetFuncSettings.p*(_targetFuncSettings.offX+x))*step;
             }
         }
+
+        y1 *= _targetFuncSettings.Aarf;
 
         return -(y1+y2);
 //        return -y1;
@@ -399,20 +401,20 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
             sum_w_of_routes += route.Get_w();
 
         double y1 = 0;
-        for (size_t k = 0; k < Nodes.size()*2; k += 2)
+
+        for (auto & route : Routes) // все точки всех маршрутов
         {
-            SignalNode sn(QVector3D(params[k],
-                                    params[k+1],
-                                    Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                          Nodes[k/2].R);
-
-
-            for (auto & route : Routes) // все точки всех маршрутов
+            for (auto & p1 : route.Points) // цикл по точкаи одного маршрута
             {
-                for (auto & p1 : route.Points) // цикл по одному маршруту
+                double s = 0;
+                for (size_t k = 0; k < Nodes.size()*2; k += 2)
                 {
+                    SignalNode sn(QVector3D(params[k],
+                                                params[k+1],
+                                                Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                      Nodes[k/2].R);
 
-                    double y = _targetFuncSettings.Aarf * sn.accessRateSphere(p1.Pos);
+                    double y = /* _targetFuncSettings.Aarf * */ sn.accessRateSphere(p1.Pos);
 
                     if (_targetFuncSettings.IsUseLineBetweenTwoPoints)
                     {
@@ -421,18 +423,29 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
 
 
                     double w = p1.Weight;  // !!!!!!!!!!!!!!
-                    y *= w;                   //*(1-tanh(k_step*(x-sn.R)));
+//                    y *= w;                   //*(1-tanh(k_step*(x-sn.R)));
+
+//                    qDebug() << "p1 =" << p1.Pos << ": w =" << w;
 
                     if (_targetFuncSettings.IsUseCoveredFlag && !p1.IsCovered)
                     {
                         y *= 2;
                     }
 
-                    y1 += y;
+                    if (k == 0)
+                        s = y;
+                    else
+                    {
+                        s = s + y - s*y;
+                    }
+
                 }
 
-                y1 *= (route.Get_w() / sum_w_of_routes);
+                y1 += s;
+
             }
+
+            y1 *= (route.Get_w() / sum_w_of_routes);
         }
 
         FindCoveredPointsUsingParams(params);
@@ -461,6 +474,8 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                 y2 += _targetFuncSettings.A2 * log(_targetFuncSettings.p*(_targetFuncSettings.offX+x))*step;
             }
         }
+
+        y1 *= _targetFuncSettings.Aarf;
 
         return -(y1+y2);
 //        return -y1;

@@ -2,9 +2,11 @@
 #define FORMGRADGENERAL_H
 
 #include <QWidget>
-#include <QKeyEvent>
+//#include <QKeyEvent>
+class QKeyEvent;
 
-#include "GradConfig.h"
+//#include "GradConfig.h"
+class MyConfig;
 
 #include "FormGradConfigDetails.h"
 
