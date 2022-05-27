@@ -27,7 +27,22 @@ enum class SignalNodeType
 };
 
 // Передлать этот юзинг на норм структуру!!!!!!
-using BondsType = std::set<std::tuple<size_t, size_t, double, double>>;
+
+struct BondType
+{
+    size_t iRoute;
+    size_t iPoint;
+    double arf;
+    double relDist;
+    BondType() = delete;
+    BondType(size_t _iRoute, size_t _iPoint, double _arf, double _relDist)
+        : iRoute(_iRoute), iPoint(_iPoint), arf(_arf), relDist(_relDist) {}
+};
+bool operator<(const BondType &lhs, const BondType &rhs);
+
+//Каждый сигнальный узел будет иметь свой set<BondType>
+using BondsType = std::set<BondType>;
+//using BondsType = std::set<std::tuple<size_t, size_t, double, double>>;
 
 class SignalNode
 {
@@ -38,7 +53,6 @@ public:
     double Alpha = 0;
     double Beta = 0;  // св-во оборудования
 
-//    std::set<std::pair<size_t, size_t>> Bonds;
     BondsType Bonds;
 
     SignalNode() = default;

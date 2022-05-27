@@ -3,23 +3,18 @@
 
 
 #include <vector>
+#include <QString>
 
 #include "Route.h"
 #include "GradConfig.h"
 #include "Types.h"
 
-//#include <QJsonObject>
+#include "Relief.h"
+
 class QJsonObject;
-//#include <QJsonDocument>
-#include <QString>
-//#include <QKeyEvent>
-//#include <QMouseEvent>
-//#include <QWheelEvent>
 class QKeyEvent;
 class QMouseEvent;
 class QWheelEvent;
-
-#include "Relief.h"
 
 
 class MyGradModel

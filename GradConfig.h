@@ -57,7 +57,7 @@ protected:
         void Reset();
     } Stats;
 
-    void FindCoveredPointsUsingParams(const std::vector<double>& params);
+    void FindCoveredPointsUsingParams(const std::vector<double>& params, SignalNodeType _snt);
 
 public:
 

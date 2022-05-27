@@ -10,6 +10,16 @@
 
 using namespace std;
 
+bool operator<(const BondType &lhs, const BondType &rhs)
+{
+//    if (lhs.iRoute < rhs.iRoute)
+//        return true;
+//    else if (lhs.iRoute > rhs.iRoute)
+//        return
+
+}
+//----------------------------------------------------------
+
 void SignalNode::SetRandomCoord(const Relief3D &_relief)
 { 
     const auto &_area = _relief.GetArea();
@@ -127,7 +137,9 @@ QString SignalNode::ConvertSignalNodeTypeToString(SignalNodeType snt) // static 
 std::tuple<double, double, double> SignalNode::CalcEllispe_abc() const
 {
     double asp_ab = M_PI / Beta;
-    double a = R*1.2;
+//    double a = R*1.2;
+    double a = R;
+
     double b = a / sqrt(asp_ab);
     double c = sqrt(abs(a*a - b*b));
     return {a, b, c};
@@ -277,7 +289,7 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
 
 
     glColor3f(0.9, 0.1, 0.9);
-    if (false && _snt == SignalNodeType::Cone) // здесь ellipse // !!!!!!!!!! false !!!!
+    if (/*false &&*/ _snt == SignalNodeType::Cone) // здесь ellipse // !!!!!!!!!! false !!!!
     {
         glBegin(GL_LINE_STRIP);
 

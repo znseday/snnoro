@@ -141,6 +141,13 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     QString fileName = QFileDialog::getOpenFileName(this,
         "Open Config file", ".", "Config Files (*.json)");
 
+
+    if (fileName.isEmpty())
+    {
+        qDebug() << "Canceled by user";
+        return;
+    }
+
     if (!GradModel.LoadFromFile(fileName))
     {
         qDebug() << (fileName + " not found");

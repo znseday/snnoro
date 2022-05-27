@@ -448,6 +448,8 @@ void MyGradModel::NewGradModelBulk()
     nDraws = 1;
     IsGradCalculating = false;
 
+    TargetFuncSettings.TargetFuncType = TargetFuncEnum::Additive;
+
     //IsSaved = false;
 
     ProtoGradDesc.SetIsUseUserTargetFunction(true);
