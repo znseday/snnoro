@@ -3,10 +3,8 @@
 
 #include <QMainWindow>
 
-#include "MainGLWidget.h"
-
-#include "FormGeneral.h"
-#include "FormConfigInfo.h"
+//#include "MainGLWidget.h"
+class MainGLWidget;
 
 #include "Types.h"
 
@@ -18,11 +16,15 @@
 #include "DialogEditSignalNodes.h"
 #include "DialogEditRoutes.h"
 
-#include "FormGradGeneral.h"
+
+class FormGradGeneral;
 
 #include "FormRelief.h"
 
 #include "FormAboCalc.h"
+#include "DialogAboReport.h"
+
+class QCloseEvent;
 
 namespace Ui {
 class MainWindow;
@@ -43,13 +45,6 @@ public:
 
 private slots:
     void on_actionFileExit_triggered();
-
-    void on_actionFileStart_Old_triggered();
-    void on_actionOldTablesGeneral_triggered();
-    void on_actionOldTablesConfig_0_triggered();
-    void on_actionOldTablesConfig_1_triggered();
-    void on_actionOldTablesConfig_2_triggered();
-    void on_actionOldTablesConfig_3_triggered();
     void on_actionFileOpen_Grad_Descent_triggered();
     void on_actionGradSetDraw2_triggered();
     void on_actionGradSetDraw3_triggered();
@@ -104,13 +99,16 @@ private slots:
 
     void on_actionWorld_Show_Abonents_triggered();
 
+    void on_actionEdit_Change_Count_of_Nodes_triggered();
+
+    void on_actionDebug_Get_Last_Cost_For_Current_triggered();
+
+    void on_actionGrad_SetDrawCount_Custom_triggered();
+
 private:
     Ui::MainWindow *ui;
 
     MainGLWidget *mainGLWidget = nullptr;
-
-    FormGeneral *formGeneral = nullptr;
-    FormConfigInfo *formConfigInfo[4] = {nullptr};
 
     WorkModeType WorkMode = WorkModeType::Nothing;
     WorldModeType WorldMode = WorldModeType::Nothing;
@@ -129,6 +127,7 @@ private:
     FormRelief formRelief;
 
     FormAboCalc formAboCalc;
+    DialogAboReport dlgAboReport;
 
     QLabel *lblGlX;
     QLabel *lblGlY;
@@ -137,6 +136,8 @@ private:
     QLabel *lblWorldX;
     QLabel *lblWorldY;
     QLabel *lblWorldZ;
+
+    QLabel *lbl_iCurConfig;
 
     bool IsGradDescFileSavedSuccessfully = false;
     void TryToSaveGradDescToFile();
@@ -148,6 +149,11 @@ public slots:
 
     void SlotReceiveAboTime(int t);
     void SlotReceiveFormAboCalcClose();
+
+    void SlotReceiveAddTimePointToReport(int t);
+    void SlotReceiveShowAboReport();
+
+    void SlotReceive_iCurConfigChanged(int i);
 
     // QPaintDevice interface
 public:

@@ -2,13 +2,17 @@
 #define FORMRELIEF_H
 
 #include <QMainWindow>
+
 #include <QImage>
 #include <QLabel>
-#include <QTableWidgetItem>
-#include <QColorDialog>
-#include <QMouseEvent>
+//#include <QTableWidgetItem>
+class QTableWidgetItem;
 
-#include <Relief.h>
+#include <QColorDialog>
+
+class QMouseEvent;
+
+#include "Relief.h"
 //#include <vector>
 
 struct rgbaType

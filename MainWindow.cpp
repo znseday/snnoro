@@ -1,14 +1,18 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-#include "Model.h"
-#include "View.h"
 
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
 
+#include <QInputDialog>
+#include <QCloseEvent>
+
 #include <limits>
+
+#include "FormGradGeneral.h"
+#include "MainGLWidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     lblWorldX = new QLabel("n/a");
     lblWorldY = new QLabel("n/a");
     lblWorldZ = new QLabel("n/a");
+    lbl_iCurConfig = new QLabel("n/a");
 
     lblGlX->setFixedWidth(120);
     lblGlY->setFixedWidth(120);
@@ -31,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     lblWorldX->setFixedWidth(150);
     lblWorldY->setFixedWidth(150);
     lblWorldZ->setFixedWidth(150);
+    lbl_iCurConfig->setFixedWidth(120);
 
     ui->statusbar->addWidget(lblGlX);
     ui->statusbar->addWidget(lblGlY);
@@ -38,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addWidget(lblWorldX);
     ui->statusbar->addWidget(lblWorldY);
     ui->statusbar->addWidget(lblWorldZ);
+    ui->statusbar->addWidget(lbl_iCurConfig);
 
     mainGLWidget = new MainGLWidget(WorkMode, GradModel, WorldMode);
 
@@ -58,30 +65,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mainGLWidget, SIGNAL(SignalRouteDeleted(bool)),
             this, SLOT(SlotReceiveRouteDeleted(bool)));
 
+    connect(mainGLWidget, SIGNAL(Signal_iCurConfigChanged(int)),
+            this, SLOT(SlotReceive_iCurConfigChanged(int)));
+
     mainGLWidget->setFocus();
 
-    formGeneral = new FormGeneral();
-    formGeneral->resize(1100, 500);
-    QObject::connect(&Model::Instance(), SIGNAL(signalSendGeneralData(ExportGeneralData)),
-                     formGeneral, SLOT(slotReceiveGeneralData(ExportGeneralData)));
 
-
-    for (size_t i = 0; i < 4; ++i)
-    {
-        formConfigInfo[i] = new FormConfigInfo();
-        formConfigInfo[i]->resize(1350, 500);
-        formConfigInfo[i]->Set_nConfig(i);
-
-        QObject::connect(&Model::Instance(), SIGNAL(signalSendDetailedInfo(ExportDetailedInfo)),
-                         formConfigInfo[i], SLOT(slotReceiveDetailedInfo(ExportDetailedInfo)));
-
-    }
 
     formGradGeneral = new FormGradGeneral(GradModel.GetConfigs());
 
     formGradGeneral->setWindowTitle("Grad descent Results");
-
-    //on_actionFileStart_Grad_Descent_triggered();
 
 
     connect(&formAboCalc, SIGNAL(SignalSendAboTime(int)),
@@ -90,7 +83,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&formAboCalc, SIGNAL(SignalFormAboCalcClose()),
             this, SLOT(SlotReceiveFormAboCalcClose()));
 
+
+    connect(&formAboCalc, SIGNAL(SignalAddTimePointToReport(int)),
+            this, SLOT(SlotReceiveAddTimePointToReport(int)));
+
+    connect(&formAboCalc, SIGNAL(SignalShowAboReport()),
+            this, SLOT(SlotReceiveShowAboReport()));
+
     mainGLWidget->setMouseTracking(true);
+
+    dlgAboReport.InitDialog();
+
+//    on_actionFileStart_Grad_Descent_triggered();
+
+//    on_actionFileOpen_Grad_Descent_triggered();
 }
 //-------------------------------------------------------------
 
@@ -98,6 +104,8 @@ void MainWindow::AfterShow()
 {
     //on_actionFileOpen_Grad_Descent_triggered();
     on_actionWorld_Show_Coords_toggled(true);
+
+    on_actionFileOpen_Grad_Descent_triggered();
 }
 //-------------------------------------------------------------
 
@@ -114,13 +122,6 @@ int MainWindow::GetGLHeight() const
 
 MainWindow::~MainWindow()
 {
-    if (formGeneral)
-        delete formGeneral;
-
-    for (size_t i = 0; i < 4; ++i)
-        if (formConfigInfo[i])
-            delete formConfigInfo[i];
-
     delete ui;
 }
 //-------------------------------------------------------------
@@ -128,90 +129,24 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionFileExit_triggered()
 {
     QApplication::closeAllWindows();
-
 //    this->close();
-}
-//-------------------------------------------------------------
-
-void MainWindow::on_actionFileStart_Old_triggered()
-{
-    // Запустить всю историю вместо main
-
-    Model::Instance().start();
-
-    View& view = View::Instance();
-    view.initialize();
-    view.setModel(&Model::Instance());
-    view.reshape(GetGLWidth(), GetGLHeight());
-    view.update();
-
-    WorkMode = WorkModeType::OldWork;
-
-    mainGLWidget->StartMainTimer();
-    ui->actionFileStart_Old->setEnabled(false);
-    ui->actionFileOpen_Grad_Descent->setEnabled(false);
-    ui->actionFileNew_Grad_Config->setEnabled(false);
-
-    ui->actionOldTablesGeneral->setEnabled(true);
-    ui->actionOldTablesConfig_0->setEnabled(true);
-    ui->actionOldTablesConfig_1->setEnabled(true);
-    ui->actionOldTablesConfig_2->setEnabled(true);
-    ui->actionOldTablesConfig_3->setEnabled(true);
-
-    ui->menuGrad->setEnabled(false);
-    ui->menuEdit->setEnabled(false);
-    ui->menuWorld->setEnabled(false);
-}
-//-------------------------------------------------------------
-
-void MainWindow::on_actionOldTablesGeneral_triggered()
-{
-    // Отобразить общую таблицу
-
-    formGeneral->ShowTable();
-    formGeneral->show();
-}
-//-------------------------------------------------------------
-
-void MainWindow::on_actionOldTablesConfig_0_triggered()
-{
-    // Отобразить детализированную таблицу для конфигурации 0 
-    formConfigInfo[0]->ShowTable();
-    formConfigInfo[0]->show();
-}
-
-void MainWindow::on_actionOldTablesConfig_1_triggered()
-{
-    // Отобразить детализированную таблицу для конфигурации 1
-    formConfigInfo[1]->ShowTable();
-    formConfigInfo[1]->show();
-}
-
-void MainWindow::on_actionOldTablesConfig_2_triggered()
-{
-    // Отобразить детализированную таблицу для конфигурации 2
-    formConfigInfo[2]->ShowTable();
-    formConfigInfo[2]->show();
-}
-
-void MainWindow::on_actionOldTablesConfig_3_triggered()
-{
-    // Отобразить детализированную таблицу для конфигурации 3
-    formConfigInfo[3]->ShowTable();
-    formConfigInfo[3]->show();
 }
 //-------------------------------------------------------------
 
 void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
 {
-    // Решение статической задачи градиентном спуском
-    //GradModel.SetWidthAndHeight(this->width(), this->height());
-
     if (!CheckIsSavedAndSaveIfNecessary())
         return;
 
     QString fileName = QFileDialog::getOpenFileName(this,
         "Open Config file", ".", "Config Files (*.json)");
+
+
+    if (fileName.isEmpty())
+    {
+        qDebug() << "Canceled by user";
+        return;
+    }
 
     if (!GradModel.LoadFromFile(fileName))
     {
@@ -220,7 +155,6 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     }
 
     WorkMode = WorkModeType::GradWork;
-    ui->actionFileStart_Old->setEnabled(false);
 
     ui->actionFileSave_Grad_Config->setEnabled(true);
     ui->actionFileSave_Grad_Config_As->setEnabled(true);
@@ -228,9 +162,9 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
+    ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
-
     ui->actionWorld_Show_Abonents->setEnabled(true);
 
     GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
@@ -263,17 +197,6 @@ void MainWindow::on_actionGradSwitch_Show_One_All_triggered()
         GradModel.SwitchDrawOnlyOne();
         mainGLWidget->repaint();
     }
-    else if (WorkMode == WorkModeType::OldWork)
-    {
-        if (Model::Instance().nCView > 1)
-        {
-            Model::Instance().nCView = 1;
-        }
-        else // 1
-        {
-            Model::Instance().nCView = 4;
-        }
-    }
 }
 //-------------------------------------------------------------
 
@@ -283,10 +206,6 @@ void MainWindow::on_actionGradSwitch_Pespective_for_Current_triggered()
     {
         GradModel.SwitchPerspective();
         mainGLWidget->repaint();
-    }
-    else if (WorkMode == WorkModeType::OldWork)
-    {
-        Model::Instance().fDrawCfg3d = !Model::Instance().fDrawCfg3d;
     }
 }
 //-------------------------------------------------------------
@@ -357,9 +276,6 @@ void MainWindow::on_actionGradStop_triggered()
 
 void MainWindow::on_actionGradSettings_triggered()
 {
-//    DialogGradSettings.show();
-//    DialogGradSettings.exec();
-
     DialogGradSettings.InitDialog(GradModel);
 
     if (DialogGradSettings.exec() == QDialog::Accepted)
@@ -454,21 +370,7 @@ void MainWindow::on_actionFileSave_Grad_Config_triggered()
 
 void MainWindow::on_actionWorld_Show_Coords_toggled(bool _toggled)
 {
-    //QMessageBox::information(this, "on_actionWorld_Show_Coords_toggled", QString().setNum(_toggled));
-
-//    mainGLWidget->setMouseTracking(true);
     mainGLWidget->SetIsShowCoordsAlways(_toggled);
-
-//    if (_toggled)
-//    {
-//        mainGLWidget->setMouseTracking(true);
-////        if (WorldMode == WorldModeType::Nothing)
-////            WorldMode = WorldModeType::ShowCoords;
-//    }
-//    else
-//    {
-//        mainGLWidget->setMouseTracking(true);
-    //    }
 }
 //-------------------------------------------------------------
 
@@ -482,14 +384,10 @@ void MainWindow::SlotReceiveWorldCoords(double wx, double wy, double wz, bool wE
         {
             throw std::logic_error("wx == nan in SlotReceiveWorldCoords");
         }
-//        if (wy == std::numeric_limits<double>::quiet_NaN() ||
-//            wy == std::numeric_limits<double>::signaling_NaN() )
         if (std::isnan(wy))
         {
             throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
         }
-//        if (wz == std::numeric_limits<double>::quiet_NaN() ||
-//            wz == std::numeric_limits<double>::signaling_NaN() )
         if (std::isnan(wz))
         {
             throw std::logic_error("wz == nan in SlotReceiveWorldCoords");
@@ -628,12 +526,6 @@ void MainWindow::on_actionFileSave_Grad_Config_As_triggered()
     GradModel.ChangeFileName(fileName);
 
     TryToSaveGradDescToFile();
-
-//    if ( !GradModel.SaveToFile() )
-//    {
-//        QMessageBox::critical(this, "Error", "Failure to save GradDesc File");
-//        return;
-//    }
 }
 //-------------------------------------------------------------
 
@@ -681,14 +573,8 @@ bool MainWindow::CheckIsSavedAndSaveIfNecessary()
 
 void MainWindow::on_actionFileNew_Grad_Config_triggered()
 {
-//    WorkMode = WorkModeType::GradWord;
-    ui->actionFileStart_Old->setEnabled(false);
-
     if (!CheckIsSavedAndSaveIfNecessary())
         return;
-
-//    GradModel.NewGradModelBulk();
-//    GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
     // Здесь сделать что-нибудь еще: новая конфигурация
     //DialogGradConfigNew.InitDialog(GradModel);
@@ -705,9 +591,8 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
         }       
     }
     else
-    {
-        // Rejected
-        return;
+    {     
+        return;   // Rejected
     }
 
     WorkMode = WorkModeType::GradWork;
@@ -719,6 +604,7 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
+    ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
     ui->actionWorld_Show_Abonents->setEnabled(true);
@@ -796,7 +682,6 @@ void MainWindow::on_actionEdit_Edit_Signal_Nodes_for_Current_triggered()
 
 void MainWindow::on_actionTwoLines_triggered()
 {
-    //
     GradModel.TestTwoLines();
 }
 //-------------------------------------------------------------
@@ -871,8 +756,109 @@ void MainWindow::SlotReceiveAboTime(int t) // in sec
 
 void MainWindow::SlotReceiveFormAboCalcClose()
 {
+    dlgAboReport.InitDialog(); // ?
+
     GradModel.SetIsDrawAbonents(false);
     mainGLWidget->repaint();
 }
 //-------------------------------------------------------------
+
+void MainWindow::SlotReceiveAddTimePointToReport(int t)
+{
+    dlgAboReport.AddTimePoint(t);
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveShowAboReport()
+{
+    try
+    {
+        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettings.IsUseLineBetweenTwoPoints,
+                               GradModel.GetNodesType());
+
+        dlgAboReport.setWindowTitle
+                (QString("iActiveConfig = %1").arg(GradModel.Get_iCurConfig()));
+
+        dlgAboReport.exec();
+    }
+    catch (const std::out_of_range &e)
+    {
+        QMessageBox::critical(this, "Error", QString("Active config is not selected\n") + e.what());
+        return;
+    }
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceive_iCurConfigChanged(int i)
+{
+    lbl_iCurConfig->setText("iCurConfig: " + QString().setNum(i));
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Change_Count_of_Nodes_triggered()
+{
+    int curCount = GradModel.GetSignalNodes().size();
+    bool isOk = false;
+
+    int newCount = -777;
+
+    newCount = QInputDialog::getInt(this, "Count of Nodes", "Input new count",
+                         curCount, 1, 100, 1, &isOk);
+
+    qDebug() << newCount;
+
+
+    if (newCount == curCount)
+    {
+        return;
+    }
+
+    if (!isOk)
+    {
+        QMessageBox::critical(this, "Error", "Incorrect Count of Nodes");
+        return;
+    }
+
+
+    GradModel.SignalNodesDirectAccess().resize(newCount);
+
+    GradModel.ApplySignalNodesToAllConfigs();
+
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionDebug_Get_Last_Cost_For_Current_triggered()
+{
+    GradModel.TestGetLastCostForCurrent();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionGrad_SetDrawCount_Custom_triggered()
+{
+    bool isOk = false;
+    int newDrawCount = QInputDialog::getInt(this, "Count of Viewports", "Input new count",
+                          GradModel.Get_nDraw(), 1, 100, 1, &isOk);
+
+    if (!isOk)
+    {
+        qDebug() << "Count of Viewports input canceled by user";
+        return;
+    }
+
+    if (newDrawCount > 0 && newDrawCount <= 100)
+    {
+        GradModel.Set_nDraws(newDrawCount);
+        GradModel.SetDrawOnlyOne(false);
+        mainGLWidget->repaint();
+    }
+    else
+    {
+        QMessageBox::critical(this, "Incorrect input", "Invalid value for Count of Viewports");
+    }
+}
+//-------------------------------------------------------------
+
+
+
 

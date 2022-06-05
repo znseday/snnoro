@@ -3,15 +3,17 @@
 
 #include <vector>
 #include <GL/gl.h>
-#include <QVector2D>
-#include <QVector3D>
+//#include <QVector2D>
+//#include <QVector3D>
 #include <QColor>
 
 #include "Types.h"
 #include <iostream>
 #include <map>
 #include <QRectF>
-#include <QJsonDocument>
+
+class QJsonObject;
+class QJsonParseError;
 
 struct ReliefMatInfoStruct
 {

@@ -3,6 +3,7 @@
 
 #include <QDialog>
 
+
 namespace Ui {
 class FormAboCalc;
 }
@@ -32,8 +33,12 @@ private slots:
 
     void on_SliderTime_valueChanged(int value);
 
+    void on_btnShowReport_clicked();
+
 private:
     Ui::FormAboCalc *ui;
+
+//    DialogAboReport dlgAboReport;
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -45,6 +50,8 @@ signals:
     void SignalSendAboTime(int);
     void SignalFormAboCalcClose();
 
+    void SignalAddTimePointToReport(int);
+    void SignalShowAboReport();
 };
 
 #endif // FORMABOCALC_H

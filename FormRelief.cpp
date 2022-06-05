@@ -11,6 +11,7 @@
 #include <QJsonObject>
 #include <QFile>
 #include <QJsonArray>
+#include <QMouseEvent>
 
 void MyPicSrcWidget::mousePressEvent(QMouseEvent *pe)
 {

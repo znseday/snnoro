@@ -4,6 +4,8 @@
 #include <QString>
 #include <QMessageBox>
 
+#include "GradModel.h"
+
 DialogGradConfig::DialogGradConfig(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogGradConfig)
@@ -47,6 +49,15 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
         ui->rbSignalCone->setChecked(true);
     else
         QMessageBox::warning(this, "Warning", "SignalNodeType is Unknown");
+
+
+    if (_gm.TargetFuncSettings.TargetFuncType == TargetFuncEnum::Additive)
+        ui->rbTargetFuncAdditive->setChecked(true);
+    else if (_gm.TargetFuncSettings.TargetFuncType == TargetFuncEnum::Probabilistic)
+        ui->rbTargetFuncProbabilistic->setChecked(true);
+    else
+        QMessageBox::warning(this, "Warning", "TargetFuncType is Unknown");
+
 }
 //------------------------------------------------------------------
 
@@ -87,5 +98,13 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
         _gm.SetNodesType(SignalNodeType::Sphere);
     else
         _gm.SetNodesType(SignalNodeType::Unknown);
+
+
+    if (ui->rbTargetFuncAdditive->isChecked())
+        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Additive;
+    else if (ui->rbTargetFuncProbabilistic->isChecked())
+        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Probabilistic;
+    else
+        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Empty;
 }
 //------------------------------------------------------------------

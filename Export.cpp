@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QTableWidget>
 
 void CopySelectedTableToClipboard(QTableWidget *_table)
 {

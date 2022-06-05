@@ -3,8 +3,10 @@
 
 
 #include "Export.h"
+#include "GradConfig.h"
 
 #include <QMessageBox>
+#include <QKeyEvent>
 
 //static constexpr int stGT = 1;
 //static constexpr int enGT = 4;
@@ -84,10 +86,10 @@ bool FormGradConfigDetails::ShowTable(const MyConfig &_config, size_t number)
             ui->Table->setRowCount(row + 1);
 
             ui->Table->setItem(row, 0, new QTableWidgetItem(QString().setNum(iNode)));
-            ui->Table->setItem(row, 1, new QTableWidgetItem(QString().setNum(std::get<0>(b))));
-            ui->Table->setItem(row, 2, new QTableWidgetItem(QString().setNum(std::get<1>(b))));
-            ui->Table->setItem(row, 3, new QTableWidgetItem(QString().setNum(std::get<2>(b))));
-            ui->Table->setItem(row, 4, new QTableWidgetItem(QString().setNum(std::get<3>(b))));
+            ui->Table->setItem(row, 1, new QTableWidgetItem(QString().setNum(b.iRoute)));
+            ui->Table->setItem(row, 2, new QTableWidgetItem(QString().setNum(b.iPoint)));
+            ui->Table->setItem(row, 3, new QTableWidgetItem(QString().setNum(b.arf)));
+            ui->Table->setItem(row, 4, new QTableWidgetItem(QString().setNum(b.relDist)));
         }
     }
 

@@ -5,13 +5,19 @@
 #include <set>
 
 #include "Types.h"
-#include <QVector2D>
-#include <QVector3D>
+//#include <QVector2D>
+//#include <QVector3D>
+class QVector3D;
 #include <QRectF>
+
+#include <QJsonObject>
 
 //#include "Relief.h"
 
+#include <GL/glu.h>
+
 class Relief3D;
+struct Settings3dType;
 
 enum class SignalNodeType
 {
@@ -20,19 +26,33 @@ enum class SignalNodeType
     Unknown
 };
 
+// Передлать этот юзинг на норм структуру!!!!!!
 
-using BondsType = std::set<std::tuple<size_t, size_t, double, double>>;
+struct BondType
+{
+    size_t iRoute;
+    size_t iPoint;
+    double arf;
+    double relDist;
+    BondType() = delete;
+    BondType(size_t _iRoute, size_t _iPoint, double _arf, double _relDist)
+        : iRoute(_iRoute), iPoint(_iPoint), arf(_arf), relDist(_relDist) {}
+};
+bool operator<(const BondType &lhs, const BondType &rhs);
+
+//Каждый сигнальный узел будет иметь свой set<BondType>
+using BondsType = std::set<BondType>;
+//using BondsType = std::set<std::tuple<size_t, size_t, double, double>>;
 
 class SignalNode
 {
 public:
 
     Pos3d Pos;
-    double R = 0;
+    double R = 0;     // св-во оборудования
     double Alpha = 0;
-    double Beta = 0;
+    double Beta = 0;  // св-во оборудования
 
-//    std::set<std::pair<size_t, size_t>> Bonds;
     BondsType Bonds;
 
     SignalNode() = default;
@@ -56,22 +76,25 @@ public:
     void SetRandomAlpha() {Alpha = rand()/(double)RAND_MAX*2.0*M_PI;}
     bool SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos);
 
-    double accessRateF(const QVector3D &p) const;
+    double accessRateSphere(const QVector3D &p) const;
+    double accessRateCone(const QVector3D &p) const;
 
     friend std::ostream & operator<<(std::ostream & s, const SignalNode &ob);
 
-//    QVector2D accessGradF(const QVector3D &p, double *y_ = nullptr) const // используем ли мы это где-то?
-//    {
-//        double y = accessRateF(p);
-//        double R2 = R * R, k = y / R2;
-//        if (y_)
-//            *y_ = y / R;
-
-//        return k * QVector2D(-p.x() + Pos.x(), -p.y() + Pos.y()); // вот тут еще осталось непонятным что мы делаем
-//    }
-
     static SignalNodeType ConvertStringToSignalNodeType(QString &str);
     static QString ConvertSignalNodeTypeToString(SignalNodeType snt);
+
+
+
+    std::tuple<double, double, double> CalcEllispe_abc() const;
+
+    QJsonObject RepresentAsJsonObject() const;
+    void LoadFromJsonObject(const QJsonObject &_jsonObject);
+
+    static GLUquadric * Quadric();
+
+    void DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
+                  const Settings3dType & _settings3d) const;
 };
 
 

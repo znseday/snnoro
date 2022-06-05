@@ -23,7 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        Configuration.cpp \
+        DialogAboReport.cpp \
         DialogChangePopulationSize.cpp \
         DialogEditRoutes.cpp \
         DialogEditSignalNodes.cpp \
@@ -31,25 +31,18 @@ SOURCES += \
         DialogNewGradConfig.cpp \
         Export.cpp \
         FormAboCalc.cpp \
-        FormConfigInfo.cpp \
-        FormGeneral.cpp \
         FormGradConfigDetails.cpp \
         FormGradGeneral.cpp \
         FormRelief.cpp \
-        FormSettingsSelector.cpp \
         GradConfig.cpp \
         GradModel.cpp \
         MainGLWidget.cpp \
         MainWindow.cpp \
         MathUtils.cpp \
-        Model.cpp \
         Relief.cpp \
         Route.cpp \
-        Settings.cpp \
         SignalNode.cpp \
         Test_tf_gd_lib.cpp \
-        View.cpp \
-        View3d.cpp \
         main.cpp
 
 # Default rules for deployment.
@@ -58,7 +51,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    Configuration.h \
+    DialogAboReport.h \
     DialogChangePopulationSize.h \
     DialogEditRoutes.h \
     DialogEditSignalNodes.h \
@@ -66,45 +59,31 @@ HEADERS += \
     DialogNewGradConfig.h \
     Export.h \
     FormAboCalc.h \
-    FormConfigInfo.h \
-    FormGeneral.h \
     FormGradConfigDetails.h \
     FormGradGeneral.h \
     FormRelief.h \
-    FormSettingsSelector.h \
     GradConfig.h \
     GradModel.h \
-    IModel.h \
-    IView.h \
     MainGLWidget.h \
     MainWindow.h \
-    MathUtil.h \
     MathUtils.h \
-    Model.h \
     Relief.h \
     Route.h \
-    Settings.h \
     SignalNode.h \
-    Sota.h \
     Test_tf_gd_lib.h \
-    Trajectory.h \
-    Types.h \
-    View.h \
-    View3d.h
+    Types.h
 
 FORMS += \
+    DialogAboReport.ui \
     DialogChangePopulationSize.ui \
     DialogEditRoutes.ui \
     DialogEditSignalNodes.ui \
     DialogGradConfig.ui \
     DialogNewGradConfig.ui \
     FormAboCalc.ui \
-    FormConfigInfo.ui \
-    FormGeneral.ui \
     FormGradConfigDetails.ui \
     FormGradGeneral.ui \
     FormRelief.ui \
-    FormSettingsSelector.ui \
     MainWindow.ui
 
 

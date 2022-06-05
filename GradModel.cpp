@@ -3,14 +3,19 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
 #include <QDebug>
 #include <QApplication>
 #include <QMessageBox>
 #include <QInputDialog>
-#include <QFileInfo>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 
 #include <iostream>
@@ -263,7 +268,7 @@ void MyGradModel::OnKeyPress(QKeyEvent *pe)
 
 int MyGradModel::CalcCurViewPortNumber(int ClientX, int ClientY) const
 {
-    size_t i = 0;
+    //size_t i = 0;
     int iCurInd = -1;
     for (const auto & v : ViewPorts)
     {
@@ -272,12 +277,21 @@ int MyGradModel::CalcCurViewPortNumber(int ClientX, int ClientY) const
         if ( !v.isValid() )
             throw std::runtime_error("!v.isValid() ");
 
-        if ( v.contains(ClientX, ClientY) )
-            iCurInd = i;
+        ++iCurInd;
+        if (iCurInd >= (int)nDraws)
+            return -1;
 
-        i++;
+        if ( v.contains(ClientX, ClientY) )
+        {
+//            iCurInd = i;
+            return iCurInd;
+        }
+
+        //i++;
     }
-    return iCurInd;
+
+//    return iCurInd;
+    return -1;
 }
 //----------------------------------------------------------
 
@@ -434,6 +448,8 @@ void MyGradModel::NewGradModelBulk()
     nDraws = 1;
     IsGradCalculating = false;
 
+    TargetFuncSettings.TargetFuncType = TargetFuncEnum::Additive;
+
     //IsSaved = false;
 
     ProtoGradDesc.SetIsUseUserTargetFunction(true);
@@ -469,7 +485,6 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
         cnf.SetNodes(Nodes);
         if (IsRandomNodeCoords)
         {
-//            cnf.SetRandomNodeCoords(Relief.GetArea());
             cnf.SetRandomNodeCoords();
         }
     }
@@ -517,6 +532,9 @@ void MyGradModel::OnMousePress(QMouseEvent *pe)
     if (!DrawOnlyOne)
     {
         iCurConfig = CalcCurViewPortNumber(pe->pos().x(), pe->pos().y());
+
+        // emit signal about iCurConfig ?
+
 //        size_t i = 0;
 //        for (const auto & v : ViewPorts)
 //        {
@@ -594,13 +612,18 @@ void MyGradModel::DrawSeveralConfigs()
     if (ViewPorts.size() > Configs.size())
     {
         cout << "WARNING: ViewPorts.size() > Configs.size()" << endl;
-        //nDraws = Configs.size();
+        nDraws = Configs.size(); // ?
     }
 
     //DrawOnlyOne = false;
 
     for (size_t i = 0; i < min(ViewPorts.size(), Configs.size()); ++i)
     {
+//        qDebug() << "ViewPorts.size() = " << ViewPorts.size();
+//        qDebug() << "Configs.size() = " << Configs.size();
+//        qDebug() << "i = " << i;
+//        if (i >= ViewPorts.size())
+//            qDebug() << "!!!!!!!!!!!!";
         const QRect & rect = ViewPorts.at(i);
         int x = rect.left();
         int y = rect.top();
@@ -611,8 +634,6 @@ void MyGradModel::DrawSeveralConfigs()
 //        glGetIntegerv(GL_VIEWPORT, vport);
 
         DrawOneConfig(i, false);
-
-        //break;
     }
 }
 //----------------------------------------------------------
@@ -715,11 +736,14 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
             QString Name = routeObject["Name"].toString("No name");
 
+            double w = routeObject["Weight"].toDouble(1);
+
             size_t pointCount = routeObject["PointCount"].toDouble(-1);
 //            Routes.emplace_back(Route());
             Routes.emplace_back();
             Routes.back().Points.reserve(pointCount);
             Routes.back().SetName(Name);
+            Routes.back().Set_w(w);
             Routes.back().AbonentDirectAccess().
                     LoadFromJsonObject(routeObject["Abonent"].toObject());
 
@@ -779,10 +803,19 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     const QJsonArray &nodesArray = configObject["Nodes"].toArray();
     for (auto it = nodesArray.begin(); it != nodesArray.end();  ++it)
     {
-        const QJsonObject &nodeObject = it->toObject();
-        double R = nodeObject["R"].toDouble(-1);
-        double Beta = qDegreesToRadians(nodeObject["Beta"].toDouble(0));
-        Nodes.emplace_back(QVector3D(), R, 0, Beta);
+//        const QJsonObject &nodeObject = it->toObject();
+        Nodes.emplace_back(SignalNode());
+        Nodes.back().LoadFromJsonObject(it->toObject());
+
+//        double R = nodeObject["R"].toDouble(-1);
+//        double Beta = qDegreesToRadians(nodeObject["Beta"].toDouble(0));
+//        Nodes.emplace_back(QVector3D(), R, 0, Beta);
+
+//        Routes.back().Points.emplace_back(RoutePoint());
+
+//        Routes.back().AbonentDirectAccess().
+//                LoadFromJsonObject(routeObject["Abonent"].toObject());
+
     }
     if (SignalNodeCount != Nodes.size())
         throw std::runtime_error("SignalNodeCount != Nodes.size()");
@@ -824,6 +857,9 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     TargetFuncSettings.IsUseLineBetweenTwoPoints = targetFuncObject["IsUseLineBetweenTwoPoints"].toBool(false);
 
+    QString TargetFuncTypeStr = targetFuncObject["TargetFuncType"].toString();
+    TargetFuncSettings.TargetFuncType = ConvertStringToTargetFuncType(TargetFuncTypeStr);
+
     return ConfigCount;
 }
 //----------------------------------------------------------
@@ -837,6 +873,8 @@ QJsonArray MyGradModel::RepresentRoutesAsJsonArray() const
         QJsonObject routeObject;
 
         routeObject.insert("Name", r.GetName());
+        routeObject.insert("Weight", r.Get_w());
+
         routeObject.insert("Abonent", r.GetAbonent().RepresentAsJsonObject());
 
         routeObject.insert("PointCount", (int)r.Points.size());
@@ -849,6 +887,9 @@ QJsonArray MyGradModel::RepresentRoutesAsJsonArray() const
             pointObject.insert("x", p.Pos.x());
             pointObject.insert("y", p.Pos.y());
             pointObject.insert("z", p.Pos.z());
+
+            pointObject.insert("w", p.Weight);
+
             pointsArray.append(pointObject);
         }
 
@@ -866,13 +907,15 @@ QJsonArray MyGradModel::RepresentNodesAsJsonArray() const
 
      for (const auto &node : Nodes)
      {
-         QJsonObject nodeObject;
-         nodeObject.insert("R", (int)node.R);
-         nodeObject.insert("Beta", qRadiansToDegrees(node.Beta));
+//         QJsonObject nodeObject;
+//         nodeObject.insert("R", (int)node.R);
+//         nodeObject.insert("Beta", qRadiansToDegrees(node.Beta));
 
          // Сохранять другие характеристики? Если да, то из какой конфигурации?
 
-         nodesArray.append(nodeObject);
+//         nodesArray.append(nodeObject);
+
+        nodesArray.append(node.RepresentAsJsonObject());
      }
 
      return nodesArray;
@@ -893,6 +936,21 @@ QJsonObject MyGradModel::RepresentReliefInfoAsJsonObject() const
     ReliefInfoObject.insert("ReliefCoeffs", ReliefCoeffsObject);
 
     return ReliefInfoObject;
+}
+//----------------------------------------------------------
+
+const MyConfig & MyGradModel::GetActiveConfig() const
+{
+    if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
+    {
+        throw std::out_of_range("iCurConfig < 0 || iCurConfig >= (int)Configs.size()");
+    }
+    else
+    {
+        return Configs[iCurConfig];
+    }
+
+//    return Configs.at(iCurConfig);
 }
 //----------------------------------------------------------
 
@@ -968,6 +1026,8 @@ void MyGradModel::CreatePopulation(size_t _count)
 
     Configs.resize(_count, protoConfig);
 
+    nDraws = min(nDraws, Configs.size());
+
     for (auto & cnf : Configs)
     {
 //        cnf.SetArea(Area);
@@ -998,16 +1058,20 @@ bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
     int iDraw = nDraws;
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
+//    cout << "Costs Before GradDesc:" << endl;
+//    for (auto & c : Configs)
+//        cout << c.GradDesc.GetLastCost() << endl;
+
     IsGradCalculating = true;
     for (auto & c : Configs)
     {
         if (!IsGradCalculating)
             break;
-        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings, pGLWidget);
+        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings, NodesType, pGLWidget);
         --iDraw;
     }
 
-    cout << "Costd Before Sort:" << endl;
+    cout << "Costs Before Sort:" << endl;
     for (auto & c : Configs)
         cout << c.GradDesc.GetLastCost() << endl;
 
@@ -1016,7 +1080,7 @@ bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
             return a.GradDesc.GetLastCost() < b.GradDesc.GetLastCost();
         } );
 
-    cout << "Costd After Sort:" << endl;
+    cout << "Costs After Sort:" << endl;
     for (auto & c : Configs)
         cout << c.GradDesc.GetLastCost() << endl;
 
@@ -1041,7 +1105,8 @@ bool MyGradModel::StartGradDescent_Phase_1_for_Current(IGradDrawable *pGLWidget)
 
     IsGradCalculating = true;
 
-    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc, TargetFuncSettings, pGLWidget);
+    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc, TargetFuncSettings,
+                                            NodesType, pGLWidget);
 
 //    for (auto & c : Configs)
 //    {
@@ -1080,17 +1145,23 @@ bool MyGradModel::RemoveUncovered(IGradDrawable *pGLWidget)
 bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
 {
     int iDraw = nDraws;
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+//    cout << "Costs Before GradDesc:" << endl;
+//    for (auto & c : Configs)
+//        cout << c.GradDesc.GetLastCost() << endl;
 
     IsGradCalculating = true;
     for (auto & c : Configs)
     {
         if (!IsGradCalculating)
             break;
-        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings, pGLWidget);
+        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings,
+                                NodesType, pGLWidget);
         --iDraw;
     }
 
-    cout << "Cost Before Sort (StartFinalGradDescent):" << endl;
+    cout << "Costs Before Sort (StartFinalGradDescent):" << endl;
     for (auto & c : Configs)
         cout << c.GradDesc.GetLastCost() << endl;
 
@@ -1099,12 +1170,13 @@ bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
             return a.GradDesc.GetLastCost() < b.GradDesc.GetLastCost();
         } );
 
-    cout << "Cost After Sort (StartFinalGradDescent):" << endl;
+    cout << "Costs After Sort (StartFinalGradDescent):" << endl;
     for (auto & c : Configs)
         cout << c.GradDesc.GetLastCost() << endl;
 
 //    pGLWidget->repaint();
     pGLWidget->Repaint();
+    QApplication::restoreOverrideCursor();
 
     return true;
 }
@@ -1122,7 +1194,8 @@ bool MyGradModel::StartGradDescent_Phase_2_for_Current(IGradDrawable *pGLWidget)
 
     IsGradCalculating = true;
 
-    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc, TargetFuncSettings, pGLWidget);
+    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc, TargetFuncSettings,
+                                                 NodesType, pGLWidget);
 
     cout << "Cost After Grad:" << endl;
     cout << Configs.at(iCurConfig).GradDesc.GetLastCost() << endl;
@@ -1161,7 +1234,7 @@ void MyGradModel::CalcBonds()
     for (auto & c : Configs)
     {
         c.CalcPointStats();
-        c.CalcBonds(TargetFuncSettings);
+        c.CalcBonds(TargetFuncSettings, NodesType);
     }
 }
 //----------------------------------------------------------
@@ -1205,6 +1278,10 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
     TargetFunctionSettingsObject.insert("p", TargetFuncSettings.p);
     TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettings.IsUseLineBetweenTwoPoints);
 
+    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettings.TargetFuncType);
+    TargetFunctionSettingsObject.insert("TargetFuncType", TargetFuncTypeStr);
+
+
     mainObject.insert("TargetFunctionSettings", TargetFunctionSettingsObject);
 
     QJsonObject ConfigurationObject;
@@ -1213,8 +1290,10 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
     ConfigurationObject.insert("Routes", RepresentRoutesAsJsonArray());
 
     ConfigurationObject.insert("SignalNodeCount", (int)Nodes.size());
+
     QString NodesTypeStr = SignalNode::ConvertSignalNodeTypeToString(NodesType);
     ConfigurationObject.insert("SignalNodeType", NodesTypeStr);
+
     ConfigurationObject.insert("Nodes", RepresentNodesAsJsonArray());
 
     ConfigurationObject.insert("TargetCostFunction", "MyFunction"); // Not used
@@ -1266,12 +1345,49 @@ void MyGradModel::TestTwoLines()
 }
 //----------------------------------------------------------
 
+
+void MyGradModel::TestGetLastCostForCurrent()
+{
+//    cout << "iCurConfig = " << iCurConfig;
+    cout << "Last Cost for " << iCurConfig << " = ";
+    cout << Configs.at(iCurConfig).GradDesc.GetLastCost();
+    cout << endl;
+}
+//----------------------------------------------------------
+
 void MyGradModel::ReCalcAboAccessRate()
 {
     for (auto & c : Configs)
     {
-//        c.CalcAccessRateForAbos(false); // Заменить на мембер или типа того !!!!!!!
-        c.CalcAccessRateForAbos(TargetFuncSettings.IsUseLineBetweenTwoPoints); // Заменить на мембер или типа того !!!!!!!
+        c.CalcAccessRateForAbos(TargetFuncSettings.IsUseLineBetweenTwoPoints,
+                                NodesType); // Заменить на мембер или типа того ?
+    }
+}
+//----------------------------------------------------------
+
+TargetFuncEnum MyGradModel::ConvertStringToTargetFuncType(QString &str) // static member-function
+{
+    if (str.toUpper() == "ADDITIVE")
+        return TargetFuncEnum::Additive;
+    else if (str.toUpper() == "PROBABILISTIC")
+        return TargetFuncEnum::Probabilistic;
+    else
+        return TargetFuncEnum::Empty;
+}
+//----------------------------------------------------------
+
+QString MyGradModel::ConvertTargetFuncTypeToString(TargetFuncEnum snt) // static member-function
+{
+    switch (snt)
+    {
+    case TargetFuncEnum::Additive:
+        return "Additive";
+    case TargetFuncEnum::Probabilistic:
+        return "Probabilistic";
+    case TargetFuncEnum::Empty:
+        return "Empty";
+    default:
+        return "Unknown";
     }
 }
 //----------------------------------------------------------

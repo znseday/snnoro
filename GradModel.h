@@ -3,19 +3,18 @@
 
 
 #include <vector>
+#include <QString>
 
 #include "Route.h"
 #include "GradConfig.h"
 #include "Types.h"
 
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QString>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QWheelEvent>
-
 #include "Relief.h"
+
+class QJsonObject;
+class QKeyEvent;
+class QMouseEvent;
+class QWheelEvent;
 
 
 class MyGradModel
@@ -65,10 +64,13 @@ public:
     TargetFuncSettingsStruct TargetFuncSettings;
 
     const std::vector<MyConfig> & GetConfigs() const {return Configs;}
+    const MyConfig & GetActiveConfig() const;
+    int Get_iCurConfig() const {return iCurConfig;}
 
     MyGradModel();
 
     void Set_nDraws(size_t _nDraws);
+    size_t Get_nDraw() const {return nDraws;}
 
     bool IsDrawOnlyOne() const {return DrawOnlyOne;}
     const std::vector<QRect> & GetViewPorts() const {return ViewPorts;}
@@ -151,10 +153,15 @@ public:
     MyConfig & CurrentConfigAccess();
 
     void TestTwoLines();
+    void TestGetLastCostForCurrent();
 
     void SetIsDrawAbonents(bool _isDrawAbo) {IsDrawAbonents = _isDrawAbo;}
 
     void ReCalcAboAccessRate();
+
+    static TargetFuncEnum ConvertStringToTargetFuncType(QString &str);
+    static QString ConvertTargetFuncTypeToString(TargetFuncEnum snt);
+
 };
 
 #endif // MYGRADMODEL_H

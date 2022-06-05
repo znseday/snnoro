@@ -2,12 +2,17 @@
 #define MAINGLWIDGET_H
 
 #include <QOpenGLWidget>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QTimer>
+//#include <QKeyEvent>
+//#include <QMouseEvent>
+//#include <QWheelEvent>
+class QKeyEvent;
+class QMouseEvent;
+class QWheelEvent;
 
-#include <QOpenGLFramebufferObject>
+//#include <QTimer>
+
+//#include <QOpenGLFramebufferObject>
+class QOpenGLFramebufferObject;
 //#include <QOpenGLFunctions>
 
 #include "Types.h"
@@ -19,7 +24,7 @@ class MainGLWidget : public QOpenGLWidget, public IGradDrawable
 
 private:
 
-    QTimer *MainTimer;
+//    QTimer *MainTimer;
 
     double AspectRatio = 1;
 
@@ -63,7 +68,7 @@ public:
     MainGLWidget(WorkModeType &_workMode, MyGradModel &_gradModel, WorldModeType &_worldMode, QWidget *parent = nullptr);
     //~MainGLWidget() override;
 
-    void StartMainTimer();
+//    void StartMainTimer();
     virtual void Repaint() override;
 
     void SetIsShowCoordsAlways(bool _b) {IsShowCoordsAlways = _b;}
@@ -73,11 +78,12 @@ public slots:
 
     void slotReceiveRepaintSignal();
 
-    void slotReceiveMainTimerTimeout();
+//    void slotReceiveMainTimerTimeout();
 
 signals:
     void SignalSendWorldCoords(double wx, double wy, double wz, bool wExists);
     void SignalRouteDeleted(bool);
+    void Signal_iCurConfigChanged(int);
 
 };
 

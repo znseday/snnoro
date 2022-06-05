@@ -8,7 +8,7 @@ using Pos3d = QVector3D;
 enum class WorkModeType
 {
     Nothing,
-    OldWork,
+//    OldWork,
     GradWork
 };
 
@@ -26,7 +26,15 @@ enum class NeedToSave
     DoNotNeed
 };
 
-struct TargetFuncSettingsStruct
+enum class TargetFuncEnum
+{
+    Empty,
+    Additive,
+    Probabilistic
+};
+
+struct TargetFuncSettingsStruct // Переделать, чтобы у каждый целевой функции
+                                // был свой пакет настроек
 {
     double Aarf = 1e8;
     double A2 = 4e7;
@@ -37,6 +45,8 @@ struct TargetFuncSettingsStruct
     bool IsUseCoveredFlag = true;
 
     bool IsUseLineBetweenTwoPoints = false;
+
+    TargetFuncEnum TargetFuncType = TargetFuncEnum::Empty;
 };
 
 
