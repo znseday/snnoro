@@ -111,7 +111,7 @@ void MyGradModel::DrawOneConfig(size_t ind, bool OnlyOne)
         glLoadIdentity();
     }
 
-    Configs.at(ind).DrawIn3D(NodesType);
+    Configs.at(ind).DrawIn3D(NodesType, IsDrawAbonents);
 }
 //----------------------------------------------------------
 
@@ -340,6 +340,7 @@ void MyGradModel::AddNewPointToLastRoute(double wx, double wy)
 void MyGradModel::FinishRoute()
 {
     Routes.back().CalcOtherWeights();
+    Routes.back().CalcRouteLength();
 }
 //----------------------------------------------------------
 
@@ -386,6 +387,15 @@ bool MyGradModel::DeleteRoute(double wx, double wy)
 }
 //----------------------------------------------------------
 
+void MyGradModel::CalcAbonentsPos(int t)
+{
+    for (auto & r : Routes)
+    {
+        r.CalcAbonentPos(t);
+    }
+}
+//----------------------------------------------------------
+
 void MyGradModel::ChangeFileName(const QString &_newFileName)
 {
     FileName = _newFileName;
@@ -424,7 +434,7 @@ void MyGradModel::NewGradModelBulk()
     nDraws = 1;
     IsGradCalculating = false;
 
-    IsSaved = false;
+    //IsSaved = false;
 
     ProtoGradDesc.SetIsUseUserTargetFunction(true);
     ProtoGradDesc.SetAlpha(0.35);
@@ -464,6 +474,17 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
         }
     }
     IsSaved = false;
+}
+//----------------------------------------------------------
+
+void MyGradModel::ApplyRoutesToAllConfigs(NeedToSave _NeedToSave)
+{
+    for (auto & cnf : Configs)
+    {
+        cnf.SetRoutes(Routes);
+    }
+    if (_NeedToSave == NeedToSave::Need)
+        IsSaved = false;
 }
 //----------------------------------------------------------
 
@@ -691,10 +712,16 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
         {
             const QJsonObject &routeObject = it->toObject();
             //Route tempRoute;
+
+            QString Name = routeObject["Name"].toString("No name");
+
             size_t pointCount = routeObject["PointCount"].toDouble(-1);
 //            Routes.emplace_back(Route());
             Routes.emplace_back();
             Routes.back().Points.reserve(pointCount);
+            Routes.back().SetName(Name);
+            Routes.back().AbonentDirectAccess().
+                    LoadFromJsonObject(routeObject["Abonent"].toObject());
 
             const QJsonArray &pointsArray = routeObject["Points"].toArray();
             for (auto itP = pointsArray.begin(); itP != pointsArray.end();  ++itP)
@@ -711,6 +738,7 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
             }
 
             Routes.back().CalcOtherWeights();
+            Routes.back().CalcRouteLength();
 
             if (pointCount != Routes.back().Points.size())
                 throw std::runtime_error("pointCount != Routes.back().Points.size()");
@@ -807,6 +835,10 @@ QJsonArray MyGradModel::RepresentRoutesAsJsonArray() const
     for (const auto &r : Routes)
     {
         QJsonObject routeObject;
+
+        routeObject.insert("Name", r.GetName());
+        routeObject.insert("Abonent", r.GetAbonent().RepresentAsJsonObject());
+
         routeObject.insert("PointCount", (int)r.Points.size());
 
         QJsonArray pointsArray;
@@ -899,6 +931,7 @@ bool MyGradModel::LoadFromFile(const QString &_fileName)
         return false;
     }
 
+
     CreatePopulation(configCount);
 
     if (Relief.GetIsMathRelief())
@@ -939,7 +972,7 @@ void MyGradModel::CreatePopulation(size_t _count)
     {
 //        cnf.SetArea(Area);
 //        cnf.SetNodes(Nodes);
-//        cnf.SetRoutes(Routes);
+//        cnf.;
 
         if (IsRandomNodeCoords)
         {
@@ -1230,6 +1263,16 @@ void MyGradModel::TestTwoLines()
 
     c.TestTwoLines();
 
+}
+//----------------------------------------------------------
+
+void MyGradModel::ReCalcAboAccessRate()
+{
+    for (auto & c : Configs)
+    {
+//        c.CalcAccessRateForAbos(false); // Заменить на мембер или типа того !!!!!!!
+        c.CalcAccessRateForAbos(TargetFuncSettings.IsUseLineBetweenTwoPoints); // Заменить на мембер или типа того !!!!!!!
+    }
 }
 //----------------------------------------------------------
 

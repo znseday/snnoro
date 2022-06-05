@@ -9,7 +9,7 @@ enum class WorkModeType
 {
     Nothing,
     OldWork,
-    GradWord
+    GradWork
 };
 
 enum class WorldModeType
@@ -18,6 +18,12 @@ enum class WorldModeType
     ShowCoords,
     AddingRoutePoints,
     DeletingRoute
+};
+
+enum class NeedToSave
+{
+    Need,
+    DoNotNeed
 };
 
 struct TargetFuncSettingsStruct

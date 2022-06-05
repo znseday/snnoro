@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         Configuration.cpp \
         DialogChangePopulationSize.cpp \
+        DialogEditRoutes.cpp \
         DialogEditSignalNodes.cpp \
         DialogGradConfig.cpp \
         DialogNewGradConfig.cpp \
         Export.cpp \
+        FormAboCalc.cpp \
         FormConfigInfo.cpp \
         FormGeneral.cpp \
         FormGradConfigDetails.cpp \
@@ -58,10 +60,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     Configuration.h \
     DialogChangePopulationSize.h \
+    DialogEditRoutes.h \
     DialogEditSignalNodes.h \
     DialogGradConfig.h \
     DialogNewGradConfig.h \
     Export.h \
+    FormAboCalc.h \
     FormConfigInfo.h \
     FormGeneral.h \
     FormGradConfigDetails.h \
@@ -90,9 +94,11 @@ HEADERS += \
 
 FORMS += \
     DialogChangePopulationSize.ui \
+    DialogEditRoutes.ui \
     DialogEditSignalNodes.ui \
     DialogGradConfig.ui \
     DialogNewGradConfig.ui \
+    FormAboCalc.ui \
     FormConfigInfo.ui \
     FormGeneral.ui \
     FormGradConfigDetails.ui \

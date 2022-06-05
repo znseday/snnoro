@@ -28,6 +28,7 @@ protected:
     bool IsRandomNodeCoords = true;
     std::vector<SignalNode> Nodes;
     SignalNodeType NodesType = SignalNodeType::Sphere;
+    bool IsDrawAbonents = false;
 
     std::vector<Route> Routes;
     bool IsRandomRoutes = false;
@@ -125,8 +126,8 @@ public:
     bool AddNewRoute();
     void AddNewPointToLastRoute(double wx, double wy);
     void FinishRoute();
-
     bool DeleteRoute(double wx, double wy);
+    void CalcAbonentsPos(int t);
 
     void ChangeFileName(const QString &_newFileName);
     const QString &GetFileName() const {return FileName;}
@@ -134,10 +135,14 @@ public:
     void NewGradModelBulk();
     void ReCreateSignalNodes(size_t _count, double _R, double _betha);  // ???
 
-    void ApplySignalNodesToAllConfigs(); //????????????????????
+    void ApplySignalNodesToAllConfigs();
+    void ApplyRoutesToAllConfigs(NeedToSave _NeedToSave);
 
     const std::vector<SignalNode> & GetSignalNodes() const {return Nodes;}
     std::vector<SignalNode> & SignalNodesDirectAccess() {return Nodes;}
+
+    const std::vector<Route> & GetRoutes() const {return Routes;}
+    std::vector<Route> & RoutesDirectAccess() {return Routes;}
 
     SignalNodeType GetNodesType() const {return NodesType;}
     void SetNodesType(SignalNodeType _snt) {NodesType = _snt;}
@@ -146,6 +151,10 @@ public:
     MyConfig & CurrentConfigAccess();
 
     void TestTwoLines();
+
+    void SetIsDrawAbonents(bool _isDrawAbo) {IsDrawAbonents = _isDrawAbo;}
+
+    void ReCalcAboAccessRate();
 };
 
 #endif // MYGRADMODEL_H

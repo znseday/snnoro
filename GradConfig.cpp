@@ -42,7 +42,7 @@ void MyConfig::SetRandomNodeCoords()
 }
 //----------------------------------------------------------
 
-void MyConfig::DrawIn3D(SignalNodeType _snt) const
+void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
 {
     if (!Relief)
         throw std::runtime_error("Relief is not set");
@@ -146,6 +146,8 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
             //glVertex3f((p.Pos.x()-offsetX)*k, (p.Pos.y()-offsetY)*k, 0);
             //glEnd();
 
+
+
             glPushMatrix();    
             double x = (p.Pos.x()-offsetX)*k;
             double y = (p.Pos.y()-offsetY)*k;
@@ -163,8 +165,65 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
                 z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
                 glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
             }
+            gluQuadricDrawStyle(Quadric(), GLU_FILL);
             gluSphere(Quadric(), 0.02 + 0.05*sqrt(p.Weight), 12, 12);
             glPopMatrix();
+        }
+
+        if (isDrawAbonents)
+        {
+            const auto & abo = r.GetAbonent();
+            double x = (abo.Pos.x()-offsetX)*k;
+            double y = (abo.Pos.y()-offsetY)*k;
+            double z = 0;
+
+            if (Relief->GetIsMathRelief())
+            {
+                // z = ???;
+                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
+            }
+            else
+            {
+//                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
+                z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
+            }
+
+            glColor3f(0.9f, 0.1f, 0.1f);
+
+            constexpr float kTri = 0.02f;
+
+            glPushMatrix();         
+
+            const auto & q = abo.q;
+
+            double tetha = acos(q.z() / q.length()) * 180.0 / M_PI;
+            double fi;
+            if (qFuzzyCompare(q.toVector2D().length(), 0))
+                fi = 0;
+            else
+                fi = acos(q.y() / q.toVector2D().length()) * 180.8 / M_PI;
+
+            glTranslatef(x, y, z);
+
+            glRotatef( (q.x() > 0) ? -fi : fi, 0, 0, 1);
+            glRotatef(-tetha, 1, 0, 0);
+
+            glTranslatef(0, 0, -kTri*2);
+
+            glDisable(GL_DEPTH_TEST);
+            gluQuadricDrawStyle(Quadric(), GLU_LINE);
+            gluCylinder(Quadric(), kTri, 0, kTri*4, 16, 4);
+            glEnable(GL_DEPTH_TEST);
+
+            glPopMatrix();
+
+            qDebug() << "abo =" << abo.Pos << ", ar =" << abo.accessRate;
+
+//            glBegin(GL_LINE_LOOP);
+//            glVertex3f(x-kTri, y - kTri,     z + zOffset);
+//            glVertex3f(x,      y + kTri,     z + zOffset);
+//            glVertex3f(x+kTri, y - kTri,     z + zOffset);
+//            glEnd();
         }
     }
 
@@ -195,6 +254,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt) const
             z = (node.Pos.z()-offsetZ)*Relief->Get_kz();
             glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
         }
+        gluQuadricDrawStyle(Quadric(), GLU_FILL);
         gluSphere(Quadric(), 0.02, 12, 12);
         glPopMatrix();
 
@@ -924,6 +984,29 @@ void MyConfig::CalcPointStats()
         }
     Stats.UncoveredCount = pointCount - coveredCount;
     Stats.PercentOfCovered = coveredCount/double(pointCount);
+}
+//----------------------------------------------------------
+
+void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints)
+{
+    for (auto & route : Routes)
+    {
+        auto & abo = route.AbonentDirectAccess();
+        double y1 = 0;
+        for (const auto & sn : Nodes)
+        {
+            double y = sn.accessRateF(abo.Pos);
+
+            if (_isUseLineBetweenTwoPoints)
+            {
+                y *= IsLineBetweenTwoPoints(sn.Pos, abo.Pos);
+            }
+
+            y1 += y;
+        }
+        abo.accessRate = y1;
+    }
+
 }
 //----------------------------------------------------------
 
