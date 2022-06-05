@@ -59,6 +59,8 @@ protected:
 
     void FindCoveredPointsUsingParams(const std::vector<double>& params, SignalNodeType _snt);
 
+    void DrawIntersectsWithEllipses(const Settings3dType & _settings3d) const;
+
 public:
 
     Settings3dType Settings3d;

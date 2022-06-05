@@ -262,8 +262,6 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
         }
     }
 
-
-
     for (const auto &node : Nodes)
     {
         glColor3f(0.9, 0.1, 0.1);
@@ -272,6 +270,8 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
 
         node.DrawIn3D(_snt, Relief, Settings3d);
     }
+
+    DrawIntersectsWithEllipses(Settings3d);
 
     glPopMatrix();
 
@@ -893,6 +893,97 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, S
             iPoint++;
         }
         iRoute++;
+    }
+}
+//----------------------------------------------------------
+
+void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) const
+{
+    constexpr float zOffset = 0.01f;
+    const auto & area = Relief->GetArea();
+
+    double kx = 2.0/area.width();
+    double ky = 2.0/area.height();
+    double k = min(kx, ky);
+//    double k = max(kx, ky);
+
+    double hW = area.width()/2.0;
+    double hH = area.height()/2.0;
+
+    double offsetX = area.x()+hW; // in meters
+    double offsetY = area.y()+hH; // in meters
+    double offsetZ = 0;
+
+    glLineWidth(1.0f);
+    gluQuadricDrawStyle(Quadric(), GLU_FILL);
+
+    for (const auto &node : Nodes)
+    {
+        double xNode = (node.Pos.x()-offsetX)*k;
+        double yNode = (node.Pos.y()-offsetY)*k;
+        double zNode;
+
+        for (const auto & r : Routes)
+        {
+            for (const auto & p : r.Points)
+            {
+                glColor3f(0.5f, 0.3f, 0.9f);
+                glBegin(GL_LINES);
+
+                if (Relief->GetIsMathRelief())
+                {
+                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xNode, yNode) : 0));
+                }
+                else
+                {
+                    zNode = (node.Pos.z()-offsetZ)*Relief->Get_kz();
+                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? zNode : 0));
+                }
+
+                double xPoint = (p.Pos.x()-offsetX)*k;
+                double yPoint = (p.Pos.y()-offsetY)*k;
+                double zPoint;
+                if (Relief->GetIsMathRelief())
+                {
+                    glTranslatef(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xPoint, yPoint) : 0));
+                }
+                else
+                {
+                    zPoint = (p.Pos.z()-offsetZ)*Relief->Get_kz();
+                    glVertex3f(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? zPoint : 0));
+                }
+
+                glEnd(); // LINES
+
+                QPointF Result;
+                bool isOk = node.CalcIntersectWithLineToPoint(p.Pos, Result);
+                if (!isOk)
+                    throw std::logic_error("There is not any instersection with ellipse in MyConfig::DrawIntersectsWithEllipses");
+
+                glPushMatrix();
+
+                double x = (Result.x()-offsetX)*k;
+                double y = (Result.y()-offsetY)*k;
+                double z;
+
+                if (Relief->GetIsMathRelief())
+                {
+                    glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
+                }
+                else
+                {
+//                    z = (Pos.z()-offsetZ)*relief->Get_kz();
+
+                    z = zOffset + (_settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(Result.x(), Result.y()) : 0);
+                    glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
+                }
+
+                gluSphere(Quadric(), 0.015, 6, 6);
+                glPopMatrix();
+
+            }
+        }
+
     }
 }
 //----------------------------------------------------------

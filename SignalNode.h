@@ -26,7 +26,6 @@ enum class SignalNodeType
     Unknown
 };
 
-// Передлать этот юзинг на норм структуру!!!!!!
 
 struct BondType
 {
@@ -69,21 +68,17 @@ public:
     SignalNode(SignalNode &&) = default;
     SignalNode & operator=(SignalNode &&) = default;
 
-//    void SetRandomCoord(const QRectF &_area);
-//    bool SetCoordForPos(const QRectF &_area, const Pos3d &_pos);
-
     void SetRandomCoord(const Relief3D &_relief);
     void SetRandomAlpha() {Alpha = rand()/(double)RAND_MAX*2.0*M_PI;}
     bool SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos);
 
-    double accessRateSphere(const QVector3D &p) const;
-    double accessRateCone(const QVector3D &p) const;
+    double accessRateSphere(const Pos3d &p) const;
+    double accessRateCone(const Pos3d &p) const;
 
     friend std::ostream & operator<<(std::ostream & s, const SignalNode &ob);
 
     static SignalNodeType ConvertStringToSignalNodeType(QString &str);
     static QString ConvertSignalNodeTypeToString(SignalNodeType snt);
-
 
 
     std::tuple<double, double, double> CalcEllispe_abc() const;
@@ -95,6 +90,8 @@ public:
 
     void DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
                   const Settings3dType & _settings3d) const;
+
+    int CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_result) const;
 };
 
 

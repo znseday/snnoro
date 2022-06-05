@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <QDebug>
+#include <QLineF>
 
 #include "GradConfig.h"
 
@@ -16,7 +17,15 @@ bool operator<(const BondType &lhs, const BondType &rhs)
 //        return true;
 //    else if (lhs.iRoute > rhs.iRoute)
 //        return
+//    size_t iRoute;
+//    size_t iPoint;
+//    double arf;
+//    double relDist;
 
+//    return std::tie(lhs.iRoute, lhs.iPoint, lhs.arf, lhs.relDist) < std::tie(rhs.iRoute, rhs.iPoint, rhs.arf, rhs.relDist);
+
+    auto tupleRefs = [](const BondType & p) { return std::tie(p.iRoute, p.iPoint, p.arf, p.relDist); };
+    return tupleRefs(lhs) < tupleRefs(rhs);
 }
 //----------------------------------------------------------
 
@@ -75,7 +84,7 @@ bool SignalNode::SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos)
 }
 //----------------------------------------------------------
 
-double SignalNode::accessRateSphere(const QVector3D &p) const
+double SignalNode::accessRateSphere(const Pos3d &p) const
 {
     // это квадрат расстояния между текущей позицией и p
     double d2 = (p.x()-Pos.x())*(p.x()-Pos.x()) +
@@ -87,24 +96,37 @@ double SignalNode::accessRateSphere(const QVector3D &p) const
 }
 //----------------------------------------------------------
 
-double SignalNode::accessRateCone(const QVector3D &p) const
+double SignalNode::accessRateCone(const Pos3d &p) const
 {
-    auto [a, b, c] = CalcEllispe_abc();
+    QPointF interPoint;
+    bool isOk = CalcIntersectWithLineToPoint(Pos, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
+    if (!isOk)
+        throw std::logic_error("There is not any instersection with ellipse in SignalNode::accessRateCone");
 
-    double xt = c;
-    double yt = 0;
+    // Важно !!! Здесь рассчет в 2d !
+    double k = QLineF(Pos.toPointF(), interPoint).length() / QLineF(Pos.toPointF(), p.toPointF()).length();
 
-    double xt2 = xt*cos(-Alpha) + yt*sin(-Alpha);
-    double yt2 = yt*cos(-Alpha) - xt*sin(-Alpha);
+    if (k < 0.01 || k > 1000)
+        qDebug() << "k =" << k;  // k иногда уходит в inf !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    QVector2D q = Pos.toVector2D() - QVector2D(xt2, yt2); // знак q ?
+    return k; // временно!
 
-    double x = Pos.x()-q.x(); // Возможно, это центр эллипса
-    double y = Pos.y()-q.y(); // Возможно, это центр эллипса
+//    auto [a, b, c] = CalcEllispe_abc();
 
-    double d2 = (x-p.x())*(x-p.x())/(a*a) + (y-p.y())*(y-p.y())/(b*b);
-    double res = exp(-d2/(2.0*R*R)); // R??? или a b ???
-    return res;
+//    double xt = c;
+//    double yt = 0;
+
+//    double xt2 = xt*cos(-Alpha) + yt*sin(-Alpha);
+//    double yt2 = yt*cos(-Alpha) - xt*sin(-Alpha);
+
+//    QVector2D q = Pos.toVector2D() - QVector2D(xt2, yt2); // знак q ?
+
+//    double x = Pos.x()-q.x(); // Возможно, это центр эллипса
+//    double y = Pos.y()-q.y(); // Возможно, это центр эллипса
+
+//    double d2 = (x-p.x())*(x-p.x())/(a*a) + (y-p.y())*(y-p.y())/(b*b);
+//    double res = exp(-d2/(2.0*R*R)); // R??? или a b ???
+//    return res;
 }
 //----------------------------------------------------------
 
@@ -170,7 +192,6 @@ GLUquadric* SignalNode::Quadric()
     return q;
 }
 //----------------------------------------------------------
-
 
 void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
                           const Settings3dType & _settings3d) const
@@ -301,20 +322,22 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
 //        double b = a / sqrt(asp_ab);
 //        const double c = sqrt(abs(a*a - b*b));
 
-        auto [a, b, c] = CalcEllispe_abc();
+        auto [Rx, Ry, c] = CalcEllispe_abc();
 
         for (int i = 0; i < nr; i++)
         {
-            double xt = a*cos(fiStart + i*dfi) + c;
-            double yt = b*sin(fiStart + i*dfi);
+            double fi = dfi*i;
 
-            double xt2 = xt*cos(-Alpha) + yt*sin(-Alpha);
-            double yt2 = yt*cos(-Alpha) - xt*sin(-Alpha);
+            QPointF tp = {c + Rx*cos(fi), Ry*sin(fi)};
+            RotatePoint(tp, Alpha);
+            tp += Pos.toPointF();
 
-            xt = Pos.x() + xt2;
-            yt = Pos.y() + yt2;
-            double x = (xt-offsetX)*k;
-            double y = (yt-offsetY)*k;
+            // tp - в реальных координатах
+            double xt = tp.x();
+            double yt = tp.y();
+
+            double x = (tp.x()-offsetX)*k;
+            double y = (tp.y()-offsetY)*k;
             double z;
 
             if (relief->GetIsMathRelief())
@@ -330,6 +353,88 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
 
         glEnd();
     }
+}
+//----------------------------------------------------------
+
+int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_result) const
+{
+    // ВАЖНО! Рассчет ведется в 2d проекции!
+
+    _result = {-1, -1}; // ?
+    auto [Rx, Ry, c] = CalcEllispe_abc();
+    QPointF ellCenter = {c, 0};
+    RotatePoint(ellCenter, Alpha);
+
+    ellCenter += Pos.toPointF();
+
+    QPointF nodeInEllCoords = Pos.toPointF() - ellCenter; // оптимизировать ?
+
+//    qDebug() << "nodeInEllCoordsX =" << nodeInEllCoordsX;
+//    qDebug() << "nodeInEllCoordsY =" << nodeInEllCoordsY;
+
+//    RotatePoint(nodeInEllCoordsX, nodeInEllCoordsY, -alpha);
+    RotatePoint(nodeInEllCoords, -Alpha);
+
+//    qDebug() << "nodeInEllCoordsX (rot reverse) =" << nodeInEllCoordsX;
+//    qDebug() << "nodeInEllCoordsY (rot reverse) =" << nodeInEllCoordsY;
+
+//    double pointInEllCoordsX = pointX - ellCenterX;
+//    double pointInEllCoordsY = pointY - ellCenterY;
+    QPointF pointInEllCoords = _point.toPointF() - ellCenter;
+
+//    qDebug() << "pointInEllCoordsX =" << pointInEllCoordsX;
+//    qDebug() << "pointInEllCoordsY =" << pointInEllCoordsY;
+
+//    RotatePoint(pointInEllCoordsX, pointInEllCoordsY, -alpha);
+    RotatePoint(pointInEllCoords, -Alpha);
+
+//    qDebug() << "pointInEllCoordsX (rot reverse) =" << pointInEllCoordsX;
+//    qDebug() << "pointInEllCoordsY (rot reverse) =" << pointInEllCoordsY;
+
+    QPointF intersect1, intersect2;
+
+    int count = CalcLineInterEllipse(Rx, Ry, nodeInEllCoords, pointInEllCoords, intersect1, intersect2);
+    if (count < 1)
+        return count;
+
+    RotatePoint(intersect1, Alpha);
+    intersect1 += ellCenter;
+
+    RotatePoint(intersect2, Alpha);
+    intersect2 += ellCenter;
+
+    // Важно!!! Здесь дистанция в 2d !
+    double distToInter1 = QLineF(_point.toPointF(), intersect1).length();
+    double distToInter2 = QLineF(_point.toPointF(), intersect2).length();
+
+    if ( pointInEllCoords.x()*pointInEllCoords.x()/(Rx*Rx) + pointInEllCoords.y()*pointInEllCoords.y()/(Ry*Ry) < 1.0 )
+    {
+        if (distToInter1 > distToInter2) // Вместо этого нужно что-то подумать
+        {
+//            painter.drawText(x2, y2, "This inside");
+            _result = intersect2;
+        }
+        else
+        {
+            _result = intersect1;
+//            painter.drawText(x1, y1, "This inside");
+        }
+    }
+
+    else
+    {
+        if (distToInter1 > distToInter2)
+        {
+            _result = intersect2;
+//            painter.drawText(x2, y2, "This outside");
+        }
+        else
+        {
+            _result = intersect1;
+//            painter.drawText(x1, y1, "This outside");
+        }
+    }
+    return count;
 }
 //----------------------------------------------------------
 
