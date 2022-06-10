@@ -98,6 +98,8 @@ double SignalNode::accessRateSphere(const Pos3d &p) const
 
 double SignalNode::accessRateCone(const Pos3d &p) const
 {
+    return 1; // !!!!!!!!!!!!!!!!!!!!!!!!
+
     QPointF interPoint;
     bool isOk = CalcIntersectWithLineToPoint(Pos, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
     if (!isOk)

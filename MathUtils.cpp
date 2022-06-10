@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <QPointF>
+#include <QDebug>
 
 double SimpleRandom(double a, double b)
 {
@@ -29,8 +30,12 @@ int CalcLineInterEllipse(double Rx, double Ry, const QPointF &p1, const QPointF 
     dx = p2.x() - p1.x();
     dy = p2.y() - p1.y();
 
-    if (fabs(dx) < 0.00001) // Подумать над этой константой?
+    constexpr double eps = 0.0000001;
+
+    if (fabs(dx) < eps) // Подумать над этой константой?
     {
+        qDebug() << "This is fabs(dx) <" << eps << "situation !!!";
+
         AA = 1;
         BB = 0;
         CC = -(1 - (p1.x()*p1.x())/(Rx*Rx))*(Ry*Ry);
