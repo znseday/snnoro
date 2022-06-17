@@ -34,7 +34,7 @@ int CalcLineInterEllipse(double Rx, double Ry, const QPointF &p1, const QPointF 
 
     if (fabs(dx) < eps) // Подумать над этой константой?
     {
-        qDebug() << "This is fabs(dx) <" << eps << "situation !!!";
+//        qDebug() << "This is fabs(dx) <" << eps << "situation !!!";
 
         AA = 1;
         BB = 0;
