@@ -281,7 +281,7 @@ void MainWindow::on_actionGradSettings_triggered()
     if (DialogGradSettings.exec() == QDialog::Accepted)
     {
         DialogGradSettings.ReInitGradDesc(GradModel.ProtoGradDesc);
-        DialogGradSettings.ReInitTargetFuncSettings(GradModel.TargetFuncSettings);
+        DialogGradSettings.ReInitTargetFuncSettings(GradModel.TargetFuncSettingsGlobal);
 
         DialogGradSettings.ReInitGradModel(GradModel);
 
@@ -773,7 +773,7 @@ void MainWindow::SlotReceiveShowAboReport()
 {
     try
     {
-        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettings.IsUseLineBetweenTwoPoints,
+        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
                                GradModel.GetNodesType());
 
         dlgAboReport.setWindowTitle

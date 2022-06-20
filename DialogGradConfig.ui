@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>302</width>
+    <width>347</width>
     <height>410</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>2</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tabGradDesc">
         <attribute name="title">
@@ -168,7 +168,7 @@
        </widget>
        <widget class="QWidget" name="tabTargetFunc">
         <attribute name="title">
-         <string>Target Func</string>
+         <string>Target Func Global</string>
         </attribute>
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
@@ -274,13 +274,13 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>230</y>
+           <y>240</y>
            <width>171</width>
            <height>84</height>
           </rect>
          </property>
          <property name="title">
-          <string>GroupBox</string>
+          <string>Signal Nodes Type</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>

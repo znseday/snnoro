@@ -448,7 +448,7 @@ void MyGradModel::NewGradModelBulk()
     nDraws = 1;
     IsGradCalculating = false;
 
-    TargetFuncSettings.TargetFuncType = TargetFuncEnum::Additive;
+    TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
 
     //IsSaved = false;
 
@@ -847,18 +847,18 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     const QJsonObject &targetFuncObject = _jsonObject["TargetFunctionSettings"].toObject();
 
-    TargetFuncSettings.Aarf             = targetFuncObject["Aarf"].toDouble(-1);
-    TargetFuncSettings.A2               = targetFuncObject["A2"].toDouble(-1);
-    TargetFuncSettings.p                = targetFuncObject["p"].toDouble(-1);
-    TargetFuncSettings.offX             = targetFuncObject["offX"].toDouble(-1);
-    TargetFuncSettings.k_step_ot        = targetFuncObject["k_step_ot"].toDouble(-1);
-    TargetFuncSettings.R_nodeOverlap    = targetFuncObject["R_nodeOverlap"].toDouble(-1);
-    TargetFuncSettings.IsUseCoveredFlag = targetFuncObject["IsUseCoveredFlag"].toBool(false);
+    TargetFuncSettingsGlobal.Aarf             = targetFuncObject["Aarf"].toDouble(-1);
+    TargetFuncSettingsGlobal.A2               = targetFuncObject["A2"].toDouble(-1);
+    TargetFuncSettingsGlobal.p                = targetFuncObject["p"].toDouble(-1);
+    TargetFuncSettingsGlobal.offX             = targetFuncObject["offX"].toDouble(-1);
+    TargetFuncSettingsGlobal.k_step_ot        = targetFuncObject["k_step_ot"].toDouble(-1);
+    TargetFuncSettingsGlobal.R_nodeOverlap    = targetFuncObject["R_nodeOverlap"].toDouble(-1);
+    TargetFuncSettingsGlobal.IsUseCoveredFlag = targetFuncObject["IsUseCoveredFlag"].toBool(false);
 
-    TargetFuncSettings.IsUseLineBetweenTwoPoints = targetFuncObject["IsUseLineBetweenTwoPoints"].toBool(false);
+    TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints = targetFuncObject["IsUseLineBetweenTwoPoints"].toBool(false);
 
     QString TargetFuncTypeStr = targetFuncObject["TargetFuncType"].toString();
-    TargetFuncSettings.TargetFuncType = ConvertStringToTargetFuncType(TargetFuncTypeStr);
+    TargetFuncSettingsGlobal.TargetFuncType = ConvertStringToTargetFuncType(TargetFuncTypeStr);
 
     return ConfigCount;
 }
@@ -1067,7 +1067,7 @@ bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
     {
         if (!IsGradCalculating)
             break;
-        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings, NodesType, pGLWidget);
+        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettingsGlobal, NodesType, pGLWidget);
         --iDraw;
     }
 
@@ -1105,7 +1105,7 @@ bool MyGradModel::StartGradDescent_Phase_1_for_Current(IGradDrawable *pGLWidget)
 
     IsGradCalculating = true;
 
-    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc, TargetFuncSettings,
+    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc, TargetFuncSettingsGlobal,
                                             NodesType, pGLWidget);
 
 //    for (auto & c : Configs)
@@ -1156,7 +1156,7 @@ bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
     {
         if (!IsGradCalculating)
             break;
-        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings,
+        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettingsGlobal,
                                 NodesType, pGLWidget);
         --iDraw;
     }
@@ -1194,7 +1194,7 @@ bool MyGradModel::StartGradDescent_Phase_2_for_Current(IGradDrawable *pGLWidget)
 
     IsGradCalculating = true;
 
-    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc, TargetFuncSettings,
+    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc, TargetFuncSettingsGlobal,
                                                  NodesType, pGLWidget);
 
     cout << "Cost After Grad:" << endl;
@@ -1234,7 +1234,7 @@ void MyGradModel::CalcBonds()
     for (auto & c : Configs)
     {
         c.CalcPointStats();
-        c.CalcBonds(TargetFuncSettings, NodesType);
+        c.CalcBonds(TargetFuncSettingsGlobal, NodesType);
     }
 }
 //----------------------------------------------------------
@@ -1269,16 +1269,16 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
     QJsonObject TargetFunctionSettingsObject;
 
-    TargetFunctionSettingsObject.insert("A2", TargetFuncSettings.A2);
-    TargetFunctionSettingsObject.insert("Aarf", TargetFuncSettings.Aarf);
-    TargetFunctionSettingsObject.insert("IsUseCoveredFlag", TargetFuncSettings.IsUseCoveredFlag);
-    TargetFunctionSettingsObject.insert("R_nodeOverlap", TargetFuncSettings.R_nodeOverlap);
-    TargetFunctionSettingsObject.insert("k_step_ot", TargetFuncSettings.k_step_ot);
-    TargetFunctionSettingsObject.insert("offX", TargetFuncSettings.offX);
-    TargetFunctionSettingsObject.insert("p", TargetFuncSettings.p);
-    TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettings.IsUseLineBetweenTwoPoints);
+    TargetFunctionSettingsObject.insert("A2", TargetFuncSettingsGlobal.A2);
+    TargetFunctionSettingsObject.insert("Aarf", TargetFuncSettingsGlobal.Aarf);
+    TargetFunctionSettingsObject.insert("IsUseCoveredFlag", TargetFuncSettingsGlobal.IsUseCoveredFlag);
+    TargetFunctionSettingsObject.insert("R_nodeOverlap", TargetFuncSettingsGlobal.R_nodeOverlap);
+    TargetFunctionSettingsObject.insert("k_step_ot", TargetFuncSettingsGlobal.k_step_ot);
+    TargetFunctionSettingsObject.insert("offX", TargetFuncSettingsGlobal.offX);
+    TargetFunctionSettingsObject.insert("p", TargetFuncSettingsGlobal.p);
+    TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
 
-    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettings.TargetFuncType);
+    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettingsGlobal.TargetFuncType);
     TargetFunctionSettingsObject.insert("TargetFuncType", TargetFuncTypeStr);
 
 
@@ -1359,7 +1359,7 @@ void MyGradModel::ReCalcAboAccessRate()
 {
     for (auto & c : Configs)
     {
-        c.CalcAccessRateForAbos(TargetFuncSettings.IsUseLineBetweenTwoPoints,
+        c.CalcAccessRateForAbos(TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
                                 NodesType); // Заменить на мембер или типа того ?
     }
 }

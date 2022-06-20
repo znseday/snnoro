@@ -33,15 +33,15 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
     ui->EditMaxIters->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxIters()));
     ui->EditMaxTime->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxTime()));
 
-    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettings.Aarf));
-    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettings.A2));
-    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettings.R_nodeOverlap));
-    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettings.k_step_ot));
-    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettings.offX));
-    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettings.p));
-    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettings.IsUseCoveredFlag);
+    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.Aarf));
+    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.A2));
+    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.R_nodeOverlap));
+    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.k_step_ot));
+    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.offX));
+    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.p));
+    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettingsGlobal.IsUseCoveredFlag);
 
-    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettings.IsUseLineBetweenTwoPoints);
+    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
 
     if (_gm.GetNodesType() == SignalNodeType::Sphere)
         ui->rbSignalSphere->setChecked(true);
@@ -51,9 +51,9 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
         QMessageBox::warning(this, "Warning", "SignalNodeType is Unknown");
 
 
-    if (_gm.TargetFuncSettings.TargetFuncType == TargetFuncEnum::Additive)
+    if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Additive)
         ui->rbTargetFuncAdditive->setChecked(true);
-    else if (_gm.TargetFuncSettings.TargetFuncType == TargetFuncEnum::Probabilistic)
+    else if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Probabilistic)
         ui->rbTargetFuncProbabilistic->setChecked(true);
     else
         QMessageBox::warning(this, "Warning", "TargetFuncType is Unknown");
@@ -101,10 +101,10 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
 
 
     if (ui->rbTargetFuncAdditive->isChecked())
-        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Additive;
+        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
     else if (ui->rbTargetFuncProbabilistic->isChecked())
-        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Probabilistic;
+        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Probabilistic;
     else
-        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Empty;
+        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Empty;
 }
 //------------------------------------------------------------------

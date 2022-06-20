@@ -61,7 +61,7 @@ protected:
 public:
 
     tf_gd_lib::GradDescent ProtoGradDesc;
-    TargetFuncSettingsStruct TargetFuncSettings;
+    TargetFuncSettingsStruct TargetFuncSettingsGlobal;
 
     const std::vector<MyConfig> & GetConfigs() const {return Configs;}
     const MyConfig & GetActiveConfig() const;
