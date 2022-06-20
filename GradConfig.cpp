@@ -333,6 +333,10 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
 //                                    Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
 //                          Nodes[k/2].R);
 
+
+//            qDebug() << "params[k] =" << params[k];
+//            qDebug() << "params[k+1] =" <<  params[k+1];
+
             SignalNode sn(QVector3D(params[k],
                                     params[k+1],
                                     Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
@@ -352,7 +356,10 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
                     if (_snt == SignalNodeType::Sphere)
                         y = sn.accessRateSphere(p1.Pos);
                     else if (_snt == SignalNodeType::Cone)
+                    {
+//                        qDebug() << p1.Pos;
                         y = sn.accessRateCone(p1.Pos);
+                    }
                     else
                         throw std::runtime_error("Unknown _snt");
 
@@ -384,15 +391,29 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
         {
             for (size_t k2 = k1+2; k2 < Nodes.size()*dk; k2 += dk)
             {
+//                SignalNode sn1(QVector3D(params[k1],
+//                                         params[k1+1],
+//                                         Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
+//                               Nodes[k1/dk].R);
+
                 SignalNode sn1(QVector3D(params[k1],
-                                         params[k1+1],
-                                         Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
-                               Nodes[k1/dk].R);
+                                        params[k1+1],
+                                        Relief->CalcRealZbyRealXY(params[k1], params[k1+1])  ),
+                              Nodes[k1/dk].R,
+                              params[k1+2], //Nodes[k/dk].Alpha,
+                              Nodes[k1/dk].Beta);
+
+//                SignalNode sn2(QVector3D(params[k2],
+//                                         params[k2+1],
+//                                         Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
+//                               Nodes[k2/dk].R);
 
                 SignalNode sn2(QVector3D(params[k2],
-                                         params[k2+1],
-                                         Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
-                               Nodes[k2/dk].R);
+                                        params[k2+1],
+                                        Relief->CalcRealZbyRealXY(params[k2], params[k2+1])  ),
+                              Nodes[k2/dk].R,
+                              params[k2+2], //Nodes[k/dk].Alpha,
+                              Nodes[k2/dk].Beta);
 
                 double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
                 double R12 = sn1.R + sn2.R;
@@ -487,15 +508,29 @@ bool MyConfig::StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoG
         {
             for (size_t k2 = k1+2; k2 < Nodes.size()*dk; k2 += dk)
             {
+//                SignalNode sn1(QVector3D(params[k1],
+//                                         params[k1+1],
+//                                         Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
+//                               Nodes[k1/dk].R);
+
                 SignalNode sn1(QVector3D(params[k1],
-                                         params[k1+1],
-                                         Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
-                               Nodes[k1/dk].R);
+                                        params[k1+1],
+                                        Relief->CalcRealZbyRealXY(params[k1], params[k1+1])  ),
+                              Nodes[k1/dk].R,
+                              params[k1+2], //Nodes[k/dk].Alpha,
+                              Nodes[k1/dk].Beta);
+
+//                SignalNode sn2(QVector3D(params[k2],
+//                                         params[k2+1],
+//                                         Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
+//                               Nodes[k2/dk].R);
 
                 SignalNode sn2(QVector3D(params[k2],
-                                         params[k2+1],
-                                         Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
-                               Nodes[k2/dk].R);
+                                        params[k2+1],
+                                        Relief->CalcRealZbyRealXY(params[k2], params[k2+1])  ),
+                              Nodes[k2/dk].R,
+                              params[k2+2], //Nodes[k/dk].Alpha,
+                              Nodes[k2/dk].Beta);
 
                 double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
                 double R12 = sn1.R + sn2.R;
@@ -882,6 +917,9 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, S
                                             Nodes[k/dk].Beta);
 
 //                    qDebug() << "FindCovered: sn.accessRateCone(p1.Pos) = " << sn.accessRateCone(p1.Pos);
+
+//                    qDebug() << p1.Pos;
+
                     if (sn.accessRateCone(p1.Pos) > 0.99)
                     {
                         p1.IsCovered = true;
