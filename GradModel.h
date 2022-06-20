@@ -58,6 +58,11 @@ protected:
     QJsonArray RepresentNodesAsJsonArray() const;
     QJsonObject RepresentReliefInfoAsJsonObject() const;
 
+//    std::string ActiveTargetFunction = "AdditiveSphere";
+//    std::map<std::string, std::function<double(const std::vector<double> &)>> TargetFunctions;
+    std::map<std::string, TargetFunctionBase*> TargetFunctions;
+
+
 public:
 
     tf_gd_lib::GradDescent ProtoGradDesc;
@@ -68,6 +73,7 @@ public:
     int Get_iCurConfig() const {return iCurConfig;}
 
     MyGradModel();
+    ~MyGradModel();
 
     void Set_nDraws(size_t _nDraws);
     size_t Get_nDraw() const {return nDraws;}
@@ -159,8 +165,8 @@ public:
 
     void ReCalcAboAccessRate();
 
-    static TargetFuncEnum ConvertStringToTargetFuncType(QString &str);
-    static QString ConvertTargetFuncTypeToString(TargetFuncEnum snt);
+//    static TargetFuncEnum ConvertStringToTargetFuncType(QString &str);
+//    static QString ConvertTargetFuncTypeToString(TargetFuncEnum snt);
 
 };
 

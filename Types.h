@@ -26,12 +26,12 @@ enum class NeedToSave
     DoNotNeed
 };
 
-enum class TargetFuncEnum
-{
-    Empty,
-    Additive,
-    Probabilistic
-};
+//enum class TargetFuncEnum
+//{
+//    Empty,
+//    Additive,
+//    Probabilistic
+//};
 
 struct TargetFuncSettingsStruct // Переделать, чтобы у каждый целевой функции
                                 // был свой пакет настроек
@@ -43,10 +43,11 @@ struct TargetFuncSettingsStruct // Переделать, чтобы у кажд�
     double k_step_ot = 0.03;
     double R_nodeOverlap = 50;
     bool IsUseCoveredFlag = true;
-
     bool IsUseLineBetweenTwoPoints = false;
 
-    TargetFuncEnum TargetFuncType = TargetFuncEnum::Empty;
+//    TargetFuncEnum TargetFuncType = TargetFuncEnum::Empty;
+    std::string ActiveTargetFuncFirstPhase = "AdditiveSphereFirstPhase";
+    std::string ActiveTargetFuncSecondPhase = "AdditiveSphereSecondPhase";
 };
 
 

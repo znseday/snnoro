@@ -257,7 +257,7 @@ void MainWindow::on_actionGradSetDraw9_triggered()
 //-------------------------------------------------------------
 
 void MainWindow::on_actionGradStart_Phase_1_triggered()
-{
+{   
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1... ");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_1(mainGLWidget);

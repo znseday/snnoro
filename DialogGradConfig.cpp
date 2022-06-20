@@ -51,12 +51,12 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
         QMessageBox::warning(this, "Warning", "SignalNodeType is Unknown");
 
 
-    if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Additive)
-        ui->rbTargetFuncAdditive->setChecked(true);
-    else if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Probabilistic)
-        ui->rbTargetFuncProbabilistic->setChecked(true);
-    else
-        QMessageBox::warning(this, "Warning", "TargetFuncType is Unknown");
+//    if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Additive)
+//        ui->rbTargetFuncAdditive->setChecked(true);
+//    else if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Probabilistic)
+//        ui->rbTargetFuncProbabilistic->setChecked(true);
+//    else
+//        QMessageBox::warning(this, "Warning", "TargetFuncType is Unknown");
 
 }
 //------------------------------------------------------------------
@@ -100,11 +100,11 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
         _gm.SetNodesType(SignalNodeType::Unknown);
 
 
-    if (ui->rbTargetFuncAdditive->isChecked())
-        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
-    else if (ui->rbTargetFuncProbabilistic->isChecked())
-        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Probabilistic;
-    else
-        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Empty;
+//    if (ui->rbTargetFuncAdditive->isChecked())
+//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
+//    else if (ui->rbTargetFuncProbabilistic->isChecked())
+//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Probabilistic;
+//    else
+//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Empty;
 }
 //------------------------------------------------------------------

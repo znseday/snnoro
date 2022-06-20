@@ -42,6 +42,9 @@ SOURCES += \
         Relief.cpp \
         Route.cpp \
         SignalNode.cpp \
+        TargetFunctions/TargetFunctionBase.cpp \
+        TargetFunctions/TargetFunctionsFirstPhase.cpp \
+        TargetFunctions/TargetFunctionsSecondPhase.cpp \
         Test_tf_gd_lib.cpp \
         main.cpp
 
@@ -70,6 +73,9 @@ HEADERS += \
     Relief.h \
     Route.h \
     SignalNode.h \
+    TargetFunctions/TargetFunctionBase.h \
+    TargetFunctions/TargetFunctionsFirstPhase.h \
+    TargetFunctions/TargetFunctionsSecondPhase.h \
     Test_tf_gd_lib.h \
     Types.h
 

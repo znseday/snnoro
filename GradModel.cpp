@@ -17,8 +17,11 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
-
 #include <iostream>
+
+#include "TargetFunctions/TargetFunctionsFirstPhase.h"
+#include "TargetFunctions/TargetFunctionsSecondPhase.h"
+
 using namespace std;
 
 constexpr float RotSpeed = 0.12f;
@@ -27,6 +30,37 @@ constexpr float TransSpeed = 0.006f;
 MyGradModel::MyGradModel()
 {
     ProtoGradDesc.SetIsUseUserTargetFunction(true);
+//                               AdditiveSphereFirstPhase
+    TargetFunctions.try_emplace("AdditiveSphereFirstPhase",
+                                new TargetFuncAdditiveSphereFirstPhase());
+
+    TargetFunctions.try_emplace("ProbabilisticSphereFirstPhase",
+                                new TargetFuncProbabilisticSphereFirstPhase());
+
+    TargetFunctions.try_emplace("AdditiveConeFirstPhase",
+                                new TargetFuncAdditiveConeFirstPhase());
+
+    TargetFunctions.try_emplace("ProbabilisticConeFirstPhase",
+                                new TargetFuncProbabilisticConeFirstPhase());
+
+    TargetFunctions.try_emplace("AdditiveSphereSecondPhase",
+                                new TargetFuncAdditiveSphereSecondPhase());
+
+    TargetFunctions.try_emplace("ProbabilisticSphereSecondPhase",
+                                new TargetFuncProbabilisticSphereSecondPhase());
+
+    TargetFunctions.try_emplace("AdditiveConeSecondPhase",
+                                new TargetFuncAdditiveConeSecondPhase());
+
+    TargetFunctions.try_emplace("ProbabilisticConeSecondPhase",
+                                new TargetFuncProbabilisticConeSecondPhase());
+}
+//----------------------------------------------------------
+
+MyGradModel::~MyGradModel()
+{
+    for (auto & item : TargetFunctions)
+        delete item.second;
 }
 //----------------------------------------------------------
 
@@ -448,7 +482,7 @@ void MyGradModel::NewGradModelBulk()
     nDraws = 1;
     IsGradCalculating = false;
 
-    TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
+//    TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
 
     //IsSaved = false;
 
@@ -857,8 +891,11 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints = targetFuncObject["IsUseLineBetweenTwoPoints"].toBool(false);
 
-    QString TargetFuncTypeStr = targetFuncObject["TargetFuncType"].toString();
-    TargetFuncSettingsGlobal.TargetFuncType = ConvertStringToTargetFuncType(TargetFuncTypeStr);
+//    QString TargetFuncTypeStr = targetFuncObject["TargetFuncType"].toString();
+//    TargetFuncSettingsGlobal.TargetFuncType = ConvertStringToTargetFuncType(TargetFuncTypeStr);
+
+    TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase  = targetFuncObject["TargetFuncFirstPhase"].toString().toStdString();
+    TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase = targetFuncObject["TargetFuncSecondPhase"].toString().toStdString();
 
     return ConfigCount;
 }
@@ -1055,6 +1092,10 @@ void MyGradModel::CancelGradDescent()
 
 bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
 {
+    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    if (it_TargetFunc == TargetFunctions.end())
+        throw std::logic_error("TargetFunctionFirstPhase not found in MyGradModel::StartGradDescent_Phase_1");
+
     int iDraw = nDraws;
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -1062,12 +1103,18 @@ bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
 //    for (auto & c : Configs)
 //        cout << c.GradDesc.GetLastCost() << endl;
 
+    auto & tf = *it_TargetFunc->second;
+    tf.InitMembersByGlobalSettings(TargetFuncSettingsGlobal);
+
     IsGradCalculating = true;
     for (auto & c : Configs)
     {
         if (!IsGradCalculating)
             break;
-        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettingsGlobal, NodesType, pGLWidget);
+
+//        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettingsGlobal, *it_TargetFunc->second, NodesType, pGLWidget);
+        c.StartGradDescent(iDraw, ProtoGradDesc, tf, NodesType, pGLWidget);
+
         --iDraw;
     }
 
@@ -1098,23 +1145,25 @@ bool MyGradModel::StartGradDescent_Phase_1_for_Current(IGradDrawable *pGLWidget)
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
         return false;
 
+    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    if (it_TargetFunc == TargetFunctions.end())
+        throw std::logic_error("TargetFunctionFirstPhase not found in MyGradModel::StartGradDescent_Phase_1_for_Current");
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     cout << "Cost Before Grad:" << endl;
     cout << Configs.at(iCurConfig).GradDesc.GetLastCost() << endl;
 
+    auto & tf = *it_TargetFunc->second;
+    tf.InitMembersByGlobalSettings(TargetFuncSettingsGlobal);
+
     IsGradCalculating = true;
 
-    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc, TargetFuncSettingsGlobal,
-                                            NodesType, pGLWidget);
+//    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc, TargetFuncSettingsGlobal,
+//                                            *it_TargetFunc->second, NodesType, pGLWidget);
 
-//    for (auto & c : Configs)
-//    {
-//        if (!IsGradCalculating)
-//            break;
-//        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettings, pGLWidget);
-//        --iDraw;
-//    }
+    Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc,
+                                            tf, NodesType, pGLWidget);
 
     cout << "Cost After Grad:" << endl;
     cout << Configs.at(iCurConfig).GradDesc.GetLastCost() << endl;
@@ -1144,6 +1193,10 @@ bool MyGradModel::RemoveUncovered(IGradDrawable *pGLWidget)
 
 bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
 {
+    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase);
+    if (it_TargetFunc == TargetFunctions.end())
+        throw std::logic_error("TargetFunctionSecondPhase not found in MyGradModel::StartGradDescent_Phase_2");
+
     int iDraw = nDraws;
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -1151,13 +1204,18 @@ bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
 //    for (auto & c : Configs)
 //        cout << c.GradDesc.GetLastCost() << endl;
 
+    auto & tf = *it_TargetFunc->second;
+    tf.InitMembersByGlobalSettings(TargetFuncSettingsGlobal);
+
     IsGradCalculating = true;
     for (auto & c : Configs)
     {
         if (!IsGradCalculating)
             break;
-        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettingsGlobal,
-                                NodesType, pGLWidget);
+//        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettingsGlobal,
+//                                NodesType, pGLWidget);
+        c.StartFinalGradDescent(iDraw, ProtoGradDesc,
+                                tf, NodesType, pGLWidget);
         --iDraw;
     }
 
@@ -1187,15 +1245,25 @@ bool MyGradModel::StartGradDescent_Phase_2_for_Current(IGradDrawable *pGLWidget)
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
         return false;
 
+    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase);
+    if (it_TargetFunc == TargetFunctions.end())
+        throw std::logic_error("TargetFunctionSecondPhase not found in MyGradModel::StartGradDescent_Phase_2_for_Current");
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     cout << "Cost Before Grad:" << endl;
     cout << Configs.at(iCurConfig).GradDesc.GetLastCost() << endl;
 
+    auto & tf = *it_TargetFunc->second;
+    tf.InitMembersByGlobalSettings(TargetFuncSettingsGlobal);
+
     IsGradCalculating = true;
 
-    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc, TargetFuncSettingsGlobal,
-                                                 NodesType, pGLWidget);
+//    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc, TargetFuncSettingsGlobal,
+//                                                 NodesType, pGLWidget);
+
+    Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc,
+                                                 tf, NodesType, pGLWidget);
 
     cout << "Cost After Grad:" << endl;
     cout << Configs.at(iCurConfig).GradDesc.GetLastCost() << endl;
@@ -1231,10 +1299,16 @@ void MyGradModel::DeleteConfigsWithUncoveredPoints()
 
 void MyGradModel::CalcBonds()
 {
+    // Важно! Здесь используются настройки для активной целевой функции первой фазы!
+    // Возможно, имеет смысл переделать так, чтобе в c.CalcBonds передавались не все параметры, а только необходимые
+    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    if (it_TargetFunc == TargetFunctions.end())
+        throw std::logic_error("TargetFunctionFirstPhase not found in MyGradModel::CalcBonds");
+
     for (auto & c : Configs)
     {
         c.CalcPointStats();
-        c.CalcBonds(TargetFuncSettingsGlobal, NodesType);
+        c.CalcBonds(*it_TargetFunc->second, NodesType);
     }
 }
 //----------------------------------------------------------
@@ -1278,9 +1352,11 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
     TargetFunctionSettingsObject.insert("p", TargetFuncSettingsGlobal.p);
     TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
 
-    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettingsGlobal.TargetFuncType);
-    TargetFunctionSettingsObject.insert("TargetFuncType", TargetFuncTypeStr);
+//    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettingsGlobal.TargetFuncType);
+//    TargetFunctionSettingsObject.insert("TargetFuncType", TargetFuncTypeStr);
 
+    TargetFunctionSettingsObject.insert("TargetFuncFirstPhase", QString().fromStdString(TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase));
+    TargetFunctionSettingsObject.insert("TargetFuncSecondPhase", QString().fromStdString(TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase));
 
     mainObject.insert("TargetFunctionSettings", TargetFunctionSettingsObject);
 
@@ -1296,7 +1372,7 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
     ConfigurationObject.insert("Nodes", RepresentNodesAsJsonArray());
 
-    ConfigurationObject.insert("TargetCostFunction", "MyFunction"); // Not used
+//    ConfigurationObject.insert("TargetCostFunction", "MyFunction"); // Not used
 
     QJsonObject AreaObject; // Для математичесокго рельефа
     AreaObject.insert("bottom", 0);
@@ -1365,31 +1441,31 @@ void MyGradModel::ReCalcAboAccessRate()
 }
 //----------------------------------------------------------
 
-TargetFuncEnum MyGradModel::ConvertStringToTargetFuncType(QString &str) // static member-function
-{
-    if (str.toUpper() == "ADDITIVE")
-        return TargetFuncEnum::Additive;
-    else if (str.toUpper() == "PROBABILISTIC")
-        return TargetFuncEnum::Probabilistic;
-    else
-        return TargetFuncEnum::Empty;
-}
-//----------------------------------------------------------
+//TargetFuncEnum MyGradModel::ConvertStringToTargetFuncType(QString &str) // static member-function
+//{
+//    if (str.toUpper() == "ADDITIVE")
+//        return TargetFuncEnum::Additive;
+//    else if (str.toUpper() == "PROBABILISTIC")
+//        return TargetFuncEnum::Probabilistic;
+//    else
+//        return TargetFuncEnum::Empty;
+//}
+////----------------------------------------------------------
 
-QString MyGradModel::ConvertTargetFuncTypeToString(TargetFuncEnum snt) // static member-function
-{
-    switch (snt)
-    {
-    case TargetFuncEnum::Additive:
-        return "Additive";
-    case TargetFuncEnum::Probabilistic:
-        return "Probabilistic";
-    case TargetFuncEnum::Empty:
-        return "Empty";
-    default:
-        return "Unknown";
-    }
-}
+//QString MyGradModel::ConvertTargetFuncTypeToString(TargetFuncEnum snt) // static member-function
+//{
+//    switch (snt)
+//    {
+//    case TargetFuncEnum::Additive:
+//        return "Additive";
+//    case TargetFuncEnum::Probabilistic:
+//        return "Probabilistic";
+//    case TargetFuncEnum::Empty:
+//        return "Empty";
+//    default:
+//        return "Unknown";
+//    }
+//}
 //----------------------------------------------------------
 
 
