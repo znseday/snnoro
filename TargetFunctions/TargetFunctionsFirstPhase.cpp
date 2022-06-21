@@ -73,7 +73,7 @@ double TargetFuncAdditiveSphereFirstPhase::operator()(const std::vector<double> 
     double y2 = 0;
     for (size_t k1 = 0; k1 < (Nodes.size()-1)*dk; k1 += dk)
     {
-        for (size_t k2 = k1+2; k2 < Nodes.size()*dk; k2 += dk)
+        for (size_t k2 = k1+dk; k2 < Nodes.size()*dk; k2 += dk)
         {
             SignalNode sn1(QVector3D(params[k1],
                                      params[k1+1],
@@ -179,7 +179,7 @@ double TargetFuncProbabilisticSphereFirstPhase::operator()(const std::vector<dou
     double y2 = 0;
     for (size_t k1 = 0; k1 < (Nodes.size()-1)*dk; k1 += dk)
     {
-        for (size_t k2 = k1+2; k2 < Nodes.size()*dk; k2 += dk)
+        for (size_t k2 = k1+dk; k2 < Nodes.size()*dk; k2 += dk)
         {
             SignalNode sn1(QVector3D(params[k1],
                                      params[k1+1],
@@ -239,8 +239,11 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
                       params[k+2], //Nodes[k/dk].Alpha,
                       Nodes[k/dk].Beta);
 
-        //            qDebug() << "params[k] =" << params[k];
-        //            qDebug() << "params[k+1] =" <<  params[k+1];
+//        qDebug() << "params[k] =" << params[k];
+//        qDebug() << "params[k+1] =" <<  params[k+1];
+//        qDebug() << "params[k+2] =" <<  params[k+2];
+
+        // Иногда вылетает, даже если хорошие координаты и углы - возможно проблема в другом месте
 
         for (auto & route : Routes)
         {
@@ -248,6 +251,9 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
             {
 
                 double y; // = /*_targetFuncSettings.Aarf * */ sn.accessRateSphere(p1.Pos);
+
+//                qDebug() << "p1.Pos =" << p1.Pos;
+                // Иногда вылетает, даже если хорошие координаты p1.Pos - возможно проблема в другом месте
 
                 y = sn.accessRateCone(p1.Pos);
 
@@ -277,7 +283,7 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
     double y2 = 0;
     for (size_t k1 = 0; k1 < (Nodes.size()-1)*dk; k1 += dk)
     {
-        for (size_t k2 = k1+2; k2 < Nodes.size()*dk; k2 += dk)
+        for (size_t k2 = k1+dk; k2 < Nodes.size()*dk; k2 += dk) // +dk !!!!!!!!!!!!!!!!!!
         {
             SignalNode sn1(QVector3D(params[k1],
                                     params[k1+1],
@@ -293,6 +299,10 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
                           params[k2+2], //Nodes[k/dk].Alpha,
                           Nodes[k2/dk].Beta);
 
+//            qDebug() << "sn1.Pos =" << sn1.Pos;
+//            qDebug() << "sn2.Pos =" << sn2.Pos;
+            // Иногда вылетает, даже если хорошие координаты sn1.Pos и sn2.Pos - возможно проблема в другом месте
+
             double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
             double R12 = sn1.R + sn2.R;
 
@@ -305,6 +315,8 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
 
     y1 *= Aarf;
 
+    // Иногда вылетает ДО этой строки!!!!!!!!!
+//    qDebug() << "Just before return from TargetFuncAdditiveConeFirstPhase::operator()";
     return -(y1+y2);
 }
 //-------------------------------------------------------------
@@ -384,7 +396,7 @@ double TargetFuncProbabilisticConeFirstPhase::operator()(const std::vector<doubl
     double y2 = 0;
     for (size_t k1 = 0; k1 < (Nodes.size()-1)*dk; k1 += dk)
     {
-        for (size_t k2 = k1+2; k2 < Nodes.size()*dk; k2 += dk)
+        for (size_t k2 = k1+dk; k2 < Nodes.size()*dk; k2 += dk) //  +dk
         {
 //                SignalNode sn1(QVector3D(params[k1],
 //                                         params[k1+1],

@@ -165,6 +165,8 @@ public:
 
     void ReCalcAboAccessRate();
 
+    const auto & GetTargetFunctions() const {return TargetFunctions;}
+
 //    static TargetFuncEnum ConvertStringToTargetFuncType(QString &str);
 //    static QString ConvertTargetFuncTypeToString(TargetFuncEnum snt);
 

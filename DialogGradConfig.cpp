@@ -50,6 +50,26 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
     else
         QMessageBox::warning(this, "Warning", "SignalNodeType is Unknown");
 
+    ui->cbTargetFuncFirstPhase->clear();
+    ui->cbTargetFuncSecondPhase->clear();
+
+    for (const auto & item : _gm.GetTargetFunctions())
+    {
+        ui->cbTargetFuncFirstPhase->addItem(QString().fromStdString(item.first));
+        ui->cbTargetFuncSecondPhase->addItem(QString().fromStdString(item.first));
+    }
+
+    auto it_TargetFunc_1 = _gm.GetTargetFunctions().find(_gm.TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    if (it_TargetFunc_1 == _gm.GetTargetFunctions().end())
+        QMessageBox::warning(this, "Warning", "TargetFunctionFirstPhase is Unknown!");
+    else
+        ui->cbTargetFuncFirstPhase->setCurrentText(QString().fromStdString(it_TargetFunc_1->first));
+
+    auto it_TargetFunc_2 = _gm.GetTargetFunctions().find(_gm.TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase);
+    if (it_TargetFunc_2 == _gm.GetTargetFunctions().end())
+        QMessageBox::warning(this, "Warning", "TargetFunctionSecondPhase is Unknown!");
+    else
+        ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
 
 //    if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Additive)
 //        ui->rbTargetFuncAdditive->setChecked(true);
@@ -86,7 +106,7 @@ void DialogGradConfig::ReInitTargetFuncSettings(TargetFuncSettingsStruct &_targe
     _targetFuncSettings.p = ui->Edit_p->text().toDouble();
     _targetFuncSettings.IsUseCoveredFlag = ui->chbIsUseCoveredFlag->isChecked();
 
-    _targetFuncSettings.IsUseLineBetweenTwoPoints = ui->chbIsUseLineBetweenTwoPoints->isChecked();
+    _targetFuncSettings.IsUseLineBetweenTwoPoints = ui->chbIsUseLineBetweenTwoPoints->isChecked(); 
 }
 //------------------------------------------------------------------
 
@@ -99,6 +119,21 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
     else
         _gm.SetNodesType(SignalNodeType::Unknown);
 
+
+    auto it_TargetFunc_1 = _gm.GetTargetFunctions().find(ui->cbTargetFuncFirstPhase->currentText().toStdString());
+    if (it_TargetFunc_1 == _gm.GetTargetFunctions().end())
+        QMessageBox::warning(this, "Warning", "TargetFunctionFirstPhase is Unknown!");
+    else
+        ui->cbTargetFuncFirstPhase->setCurrentText(QString().fromStdString(it_TargetFunc_1->first));
+
+    auto it_TargetFunc_2 = _gm.GetTargetFunctions().find(ui->cbTargetFuncSecondPhase->currentText().toStdString());
+    if (it_TargetFunc_2 == _gm.GetTargetFunctions().end())
+        QMessageBox::warning(this, "Warning", "TargetFunctionSecondPhase is Unknown!");
+    else
+        ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
+
+    _gm.TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase = ui->cbTargetFuncFirstPhase->currentText().toStdString();
+    _gm.TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase = ui->cbTargetFuncSecondPhase->currentText().toStdString();
 
 //    if (ui->rbTargetFuncAdditive->isChecked())
 //        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
