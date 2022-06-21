@@ -33,15 +33,15 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
     ui->EditMaxIters->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxIters()));
     ui->EditMaxTime->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxTime()));
 
-    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettings.Aarf));
-    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettings.A2));
-    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettings.R_nodeOverlap));
-    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettings.k_step_ot));
-    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettings.offX));
-    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettings.p));
-    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettings.IsUseCoveredFlag);
+    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.Aarf));
+    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.A2));
+    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.R_nodeOverlap));
+    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.k_step_ot));
+    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.offX));
+    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.p));
+    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettingsGlobal.IsUseCoveredFlag);
 
-    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettings.IsUseLineBetweenTwoPoints);
+    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
 
     if (_gm.GetNodesType() == SignalNodeType::Sphere)
         ui->rbSignalSphere->setChecked(true);
@@ -50,13 +50,33 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
     else
         QMessageBox::warning(this, "Warning", "SignalNodeType is Unknown");
 
+    ui->cbTargetFuncFirstPhase->clear();
+    ui->cbTargetFuncSecondPhase->clear();
 
-    if (_gm.TargetFuncSettings.TargetFuncType == TargetFuncEnum::Additive)
-        ui->rbTargetFuncAdditive->setChecked(true);
-    else if (_gm.TargetFuncSettings.TargetFuncType == TargetFuncEnum::Probabilistic)
-        ui->rbTargetFuncProbabilistic->setChecked(true);
+    for (const auto & item : _gm.GetTargetFunctions())
+    {
+        ui->cbTargetFuncFirstPhase->addItem(QString().fromStdString(item.first));
+        ui->cbTargetFuncSecondPhase->addItem(QString().fromStdString(item.first));
+    }
+
+    auto it_TargetFunc_1 = _gm.GetTargetFunctions().find(_gm.TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    if (it_TargetFunc_1 == _gm.GetTargetFunctions().end())
+        QMessageBox::warning(this, "Warning", "TargetFunctionFirstPhase is Unknown!");
     else
-        QMessageBox::warning(this, "Warning", "TargetFuncType is Unknown");
+        ui->cbTargetFuncFirstPhase->setCurrentText(QString().fromStdString(it_TargetFunc_1->first));
+
+    auto it_TargetFunc_2 = _gm.GetTargetFunctions().find(_gm.TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase);
+    if (it_TargetFunc_2 == _gm.GetTargetFunctions().end())
+        QMessageBox::warning(this, "Warning", "TargetFunctionSecondPhase is Unknown!");
+    else
+        ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
+
+//    if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Additive)
+//        ui->rbTargetFuncAdditive->setChecked(true);
+//    else if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Probabilistic)
+//        ui->rbTargetFuncProbabilistic->setChecked(true);
+//    else
+//        QMessageBox::warning(this, "Warning", "TargetFuncType is Unknown");
 
 }
 //------------------------------------------------------------------
@@ -86,7 +106,7 @@ void DialogGradConfig::ReInitTargetFuncSettings(TargetFuncSettingsStruct &_targe
     _targetFuncSettings.p = ui->Edit_p->text().toDouble();
     _targetFuncSettings.IsUseCoveredFlag = ui->chbIsUseCoveredFlag->isChecked();
 
-    _targetFuncSettings.IsUseLineBetweenTwoPoints = ui->chbIsUseLineBetweenTwoPoints->isChecked();
+    _targetFuncSettings.IsUseLineBetweenTwoPoints = ui->chbIsUseLineBetweenTwoPoints->isChecked(); 
 }
 //------------------------------------------------------------------
 
@@ -100,11 +120,26 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
         _gm.SetNodesType(SignalNodeType::Unknown);
 
 
-    if (ui->rbTargetFuncAdditive->isChecked())
-        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Additive;
-    else if (ui->rbTargetFuncProbabilistic->isChecked())
-        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Probabilistic;
+    auto it_TargetFunc_1 = _gm.GetTargetFunctions().find(ui->cbTargetFuncFirstPhase->currentText().toStdString());
+    if (it_TargetFunc_1 == _gm.GetTargetFunctions().end())
+        QMessageBox::warning(this, "Warning", "TargetFunctionFirstPhase is Unknown!");
     else
-        _gm.TargetFuncSettings.TargetFuncType = TargetFuncEnum::Empty;
+        ui->cbTargetFuncFirstPhase->setCurrentText(QString().fromStdString(it_TargetFunc_1->first));
+
+    auto it_TargetFunc_2 = _gm.GetTargetFunctions().find(ui->cbTargetFuncSecondPhase->currentText().toStdString());
+    if (it_TargetFunc_2 == _gm.GetTargetFunctions().end())
+        QMessageBox::warning(this, "Warning", "TargetFunctionSecondPhase is Unknown!");
+    else
+        ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
+
+    _gm.TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase = ui->cbTargetFuncFirstPhase->currentText().toStdString();
+    _gm.TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase = ui->cbTargetFuncSecondPhase->currentText().toStdString();
+
+//    if (ui->rbTargetFuncAdditive->isChecked())
+//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
+//    else if (ui->rbTargetFuncProbabilistic->isChecked())
+//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Probabilistic;
+//    else
+//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Empty;
 }
 //------------------------------------------------------------------

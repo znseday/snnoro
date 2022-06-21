@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>302</width>
+    <width>347</width>
     <height>410</height>
    </rect>
   </property>
@@ -168,7 +168,7 @@
        </widget>
        <widget class="QWidget" name="tabTargetFunc">
         <attribute name="title">
-         <string>Target Func</string>
+         <string>Target Func Global</string>
         </attribute>
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
@@ -274,13 +274,13 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>230</y>
+           <y>240</y>
            <width>171</width>
            <height>84</height>
           </rect>
          </property>
          <property name="title">
-          <string>GroupBox</string>
+          <string>Signal Nodes Type</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
@@ -304,32 +304,48 @@
         <attribute name="title">
          <string>Func Selector</string>
         </attribute>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QWidget" name="verticalLayoutWidget">
          <property name="geometry">
           <rect>
-           <x>10</x>
+           <x>20</x>
            <y>20</y>
-           <width>115</width>
-           <height>93</height>
+           <width>251</width>
+           <height>141</height>
           </rect>
-         </property>
-         <property name="title">
-          <string>Target Func</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QRadioButton" name="rbTargetFuncAdditive">
+           <widget class="QLabel" name="label_17">
             <property name="text">
-             <string>Additive</string>
+             <string>Target Func First Phase:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="rbTargetFuncProbabilistic">
+           <widget class="QComboBox" name="cbTargetFuncFirstPhase"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_19">
             <property name="text">
-             <string>Probabilistic</string>
+             <string>Target Func Second Phase:</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cbTargetFuncSecondPhase"/>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>

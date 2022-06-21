@@ -257,7 +257,7 @@ void MainWindow::on_actionGradSetDraw9_triggered()
 //-------------------------------------------------------------
 
 void MainWindow::on_actionGradStart_Phase_1_triggered()
-{
+{   
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1... ");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_1(mainGLWidget);
@@ -281,7 +281,7 @@ void MainWindow::on_actionGradSettings_triggered()
     if (DialogGradSettings.exec() == QDialog::Accepted)
     {
         DialogGradSettings.ReInitGradDesc(GradModel.ProtoGradDesc);
-        DialogGradSettings.ReInitTargetFuncSettings(GradModel.TargetFuncSettings);
+        DialogGradSettings.ReInitTargetFuncSettings(GradModel.TargetFuncSettingsGlobal);
 
         DialogGradSettings.ReInitGradModel(GradModel);
 
@@ -773,7 +773,7 @@ void MainWindow::SlotReceiveShowAboReport()
 {
     try
     {
-        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettings.IsUseLineBetweenTwoPoints,
+        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
                                GradModel.GetNodesType());
 
         dlgAboReport.setWindowTitle
