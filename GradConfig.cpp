@@ -369,8 +369,11 @@ bool MyConfig::StartGradDescent(int nDraw,
         break;
     }
 
+    FindCoveredPointsUsingParams(GradDesc.GetParams(), _snt); // Добавил, раньше не было
 
+    InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
     CalcPointStats();
+    CalcBonds(_targetFunction, _snt);
 
     Stats.LastCostPhase1 = GradDesc.GetLastCost();
     cout << "gd.GetLastCost() = " << GradDesc.GetLastCost() << endl;
@@ -378,11 +381,7 @@ bool MyConfig::StartGradDescent(int nDraw,
     cout << "Iters: " << GradDesc.GetLastIters() << " out of " << GradDesc.GetMaxIters() << endl;
     cout << "Time: " << GradDesc.GetLastTime() << " out of " << GradDesc.GetMaxTime() << endl;
 
-    InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
-
-    CalcBonds(_targetFunction, _snt);
-
-    cout << "Grad Descent Finished" << endl << endl;
+    cout << "Grad Descent Finished (First Phase)" << endl << endl;
 
 //    PrintBondsInfo();
 
@@ -398,55 +397,6 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 {
     cout << endl << "Final Grad Descent Started" << endl;
 
-//    int param_count;
-//    if (_snt == SignalNodeType::Sphere)
-//        param_count = Nodes.size()*2;
-//    else if (_snt == SignalNodeType::Cone)
-//        param_count = Nodes.size()*3;
-//    else
-//        throw std::runtime_error("Unknown _snt");
-
-//    auto targetFunction = [this, &_targetFuncSettings](const vector<double>& params)
-//    {
-//        double y1 = 0;
-//        for (size_t k = 0; k < Nodes.size()*2; k += 2)
-//        {
-//            SignalNode sn(QVector3D(params[k],
-//                                    params[k+1],
-//                                  Relief->CalcRealZbyRealXY(params[k], params[k+1]) ),
-//                          Nodes[k/2].R);
-
-
-//            for (const auto & b : Nodes[k/2].Bonds)
-//            {
-////                const RoutePoint & p1 = Routes.at(std::get<0>(b)).Points.at(std::get<1>(b));
-//                const RoutePoint & p1 = Routes.at(b.iRoute).Points.at(b.iPoint);
-
-//                double y = _targetFuncSettings.Aarf * sn.accessRateSphere(p1.Pos);
-
-//                if (_targetFuncSettings.IsUseLineBetweenTwoPoints)
-//                {
-//                    y *= IsLineBetweenTwoPoints(sn.Pos, p1.Pos);
-//                }
-
-////                if ( IsLineBetweenTwoPoints(sn.Pos, p1.Pos) )
-////                    y = _targetFuncSettings.Aarf * sn.accessRateF(p1.Pos);
-////                else
-////                    y = 0;
-
-
-//                double w = p1.Weight;                   // 11111111111111111111
-//                y *= w;//*(1-tanh(k_step*(x-sn.R)));
-
-////                y *= Routes.at(std::get<0>(b)).Get_w(); // ?????????????????
-
-//                y1 += y;
-//            }
-//        }
-
-//        return -y1;
-//    };
-
     GradDesc = _protoGD;
 
     _targetFunction.Init(this);
@@ -456,7 +406,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
         return _targetFunction(params);
     };
 
-    // why doesn't std::function work???
+    // why doesn't std::function work without lambda???
 
 //    std::function<double(const std::vector<double>&)> f_TargetFunc = _targetFunction;
 //    GradDesc.SetUseUserTargetFunction(f_TargetFunc);
@@ -511,9 +461,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
     }
 
 
-
-    FindCoveredPointsUsingParams(GradDesc.GetParams(), SignalNodeType::Sphere);
-
+    FindCoveredPointsUsingParams(GradDesc.GetParams(), _snt);
 
 //    int iRoute = 0;
 //    for (/*const*/ auto & route : Routes) // сделать это всё и для Cone !!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
@@ -535,6 +483,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 //        iRoute++;
 //    }
 
+    InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
     CalcPointStats();
 
     Stats.LastCostPhase2 = GradDesc.GetLastCost();
@@ -542,8 +491,6 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 
     cout << "Iters: " << GradDesc.GetLastIters() << " out of " << GradDesc.GetMaxIters() << endl;
     cout << "Time: " << GradDesc.GetLastTime() << " out of " << GradDesc.GetMaxTime() << endl;
-
-    InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
 
     cout << "Final Grad Descent Finished" << endl << endl;
 
