@@ -118,7 +118,8 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    qDebug() << "znam =" << znam;
 
 //    double k = QLineF(Pos.toPointF(), interPoint).length() / QLineF(Pos.toPointF(), p.toPointF()).length();
-    double k = chisl / znam;
+//    double k = chisl / znam;
+    double k = znam / chisl;
 
     if (k < 0.01 || k > 1000)
         qDebug() << "k =" << k;  // k иногда уходит в inf !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -55,6 +55,8 @@ double TargetFuncAdditiveSphereSecondPhase::operator()(const std::vector<double>
 
 //                y *= Routes.at(std::get<0>(b)).Get_w(); // ?????????????????
 
+            y *= Routes.at(b.iRoute).Get_w() / sum_w_of_routes;
+
             y1 += y;
 
         }

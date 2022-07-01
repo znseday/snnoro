@@ -120,9 +120,9 @@ double TargetFuncProbabilisticSphereFirstPhase::operator()(const std::vector<dou
     const auto & Relief = myConfig->GetRelief();
     /*const*/ auto & Nodes = myConfig->NodesAccess();
 
-    double sum_w_of_routes = 0;
-    for (auto & route : Routes)
-        sum_w_of_routes += route.Get_w();
+//    double sum_w_of_routes = 0;
+//    for (auto & route : Routes)
+//        sum_w_of_routes += route.Get_w();
 
     double y1 = 0;
     size_t dk = 2;
@@ -148,15 +148,15 @@ double TargetFuncProbabilisticSphereFirstPhase::operator()(const std::vector<dou
                 }
 
 
-                double w = p1.Weight;  // !!!!!!!!!!!!!!
+//                double w = p1.Weight;  // !!!!!!!!!!!!!!
 //                    y *= w;                   //*(1-tanh(k_step*(x-sn.R)));
 
 //                    qDebug() << "p1 =" << p1.Pos << ": w =" << w;
 
-                if (IsUseCoveredFlag && !p1.IsCovered)
-                {
-                    y *= 2;
-                }
+//                if (IsUseCoveredFlag && !p1.IsCovered)
+//                {
+//                    y *= 2;
+//                }
 
                 if (k == 0)
                     s = y;
@@ -171,10 +171,10 @@ double TargetFuncProbabilisticSphereFirstPhase::operator()(const std::vector<dou
 
         }
 
-        y1 *= (route.Get_w() / sum_w_of_routes);
+//        y1 *= (route.Get_w() / sum_w_of_routes);
     }
 
-    myConfig->FindCoveredPointsUsingParams(params, SignalNodeType::Sphere);
+//    myConfig->FindCoveredPointsUsingParams(params, SignalNodeType::Sphere);
 
     double y2 = 0;
     for (size_t k1 = 0; k1 < (Nodes.size()-1)*dk; k1 += dk)
@@ -323,7 +323,7 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
 
 
 void TargetFuncProbabilisticConeFirstPhase::Init(MyConfig *_myConfig)
-{
+{ 
     TargetFunctionBase::Init(_myConfig);
     param_count = myConfig->NodesAccess().size()*3;
 }
@@ -334,9 +334,9 @@ double TargetFuncProbabilisticConeFirstPhase::operator()(const std::vector<doubl
     const auto & Relief = myConfig->GetRelief();
     const auto & Nodes = myConfig->NodesAccess();
 
-    double sum_w_of_routes = 0;
-    for (auto & route : Routes)
-        sum_w_of_routes += route.Get_w();
+//    double sum_w_of_routes = 0;
+//    for (auto & route : Routes)
+//        sum_w_of_routes += route.Get_w();
 
     double y1 = 0;
     size_t dk =  3;
@@ -365,15 +365,15 @@ double TargetFuncProbabilisticConeFirstPhase::operator()(const std::vector<doubl
                 }
 
 
-                double w = p1.Weight;  // !!!!!!!!!!!!!!
+//                double w = p1.Weight;  // !!!!!!!!!!!!!!
 //                    y *= w;                   //*(1-tanh(k_step*(x-sn.R)));
 
 //                    qDebug() << "p1 =" << p1.Pos << ": w =" << w;
 
-                if (IsUseCoveredFlag && !p1.IsCovered)
-                {
-                    y *= 2;
-                }
+//                if (IsUseCoveredFlag && !p1.IsCovered)
+//                {
+//                    y *= 2;
+//                }
 
                 if (k == 0)
                     s = y;
@@ -388,10 +388,10 @@ double TargetFuncProbabilisticConeFirstPhase::operator()(const std::vector<doubl
 
         }
 
-        y1 *= (route.Get_w() / sum_w_of_routes);
+//        y1 *= (route.Get_w() / sum_w_of_routes);
     }
 
-    myConfig->FindCoveredPointsUsingParams(params, SignalNodeType::Cone);
+//    myConfig->FindCoveredPointsUsingParams(params, SignalNodeType::Cone);
 
     double y2 = 0;
     for (size_t k1 = 0; k1 < (Nodes.size()-1)*dk; k1 += dk)
