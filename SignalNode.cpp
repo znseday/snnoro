@@ -111,17 +111,18 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    qDebug() << "interPoint =" << interPoint;
 //    qDebug() << "p.toPointF() = " << p.toPointF();
 
-    double chisl = QLineF(Pos.toPointF(), interPoint).length();
-    double znam = QLineF(Pos.toPointF(), p.toPointF()).length();
+    double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), interPoint).length();
+    double dist_from_sn_to_point_of_route = QLineF(Pos.toPointF(), p.toPointF()).length();
 
 //    qDebug() << "chisl =" << chisl;
 //    qDebug() << "znam =" << znam;
 
 //    double k = QLineF(Pos.toPointF(), interPoint).length() / QLineF(Pos.toPointF(), p.toPointF()).length();
 //    double k = chisl / znam;
-    double k = znam / chisl;
+//    double k = - dist_from_sn_to_point_of_route / dist_from_sn_to_intersect;
+    double k = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route + 10);
 
-    if (k < 0.01 || k > 1000)
+    if (fabs(k) < 0.01 || fabs(k) > 1000)
         qDebug() << "k =" << k;  // k иногда уходит в inf !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     return k; // временно!

@@ -230,6 +230,8 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
     double y1 = 0;
     size_t dk = 3;
 
+//    printf("param_count = %i\n", (int)param_count);
+
     for (size_t k = 0; k < param_count; k += dk)
     {
         SignalNode sn(QVector3D(params[k],
@@ -242,6 +244,10 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
 //        qDebug() << "params[k] =" << params[k];
 //        qDebug() << "params[k+1] =" <<  params[k+1];
 //        qDebug() << "params[k+2] =" <<  params[k+2];
+
+
+//        std::cout << "sn.Alpha" << sn.Alpha << endl;
+//        printf("sn.Alpha = %.16lf\n", sn.Alpha);
 
         // Иногда вылетает, даже если хорошие координаты и углы - возможно проблема в другом месте
 
