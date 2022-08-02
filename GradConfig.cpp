@@ -11,6 +11,8 @@
 
 #include "TargetFunctions/TargetFunctionBase.h"
 
+//constexpr double WierdCoeffAlpha = 1000;
+
 using namespace std;
 
 void MyConfig::StatsStruct::Reset()
@@ -518,7 +520,7 @@ void MyConfig::InitNodeCoordsFromParams(const std::vector<double> & _params, Sig
             Nodes.at(i/3).Pos.setY(_params[i+1]);
             Nodes.at(i/3).Pos.setZ( Relief->CalcRealZbyRealXY(_params[i], _params[i+1]) );
 
-            Nodes.at(i/3).Alpha = _params[i+2];
+            Nodes.at(i/3).Alpha = _params[i+2]; // / WierdCoeffAlpha;
         }
     }
     else
@@ -572,8 +574,13 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
         params[i] = node.Pos.x();
 //        min_constrains[i] = Area.left();
 //        max_constrains[i] = Area.right();
+
         min_constrains[i] = min_x;
         max_constrains[i] = max_x;
+
+//        min_constrains[i] = min_x;
+//        max_constrains[i] = min_x;
+
         rel_constrains[i] = 50; // not used yet
         type_constrains[i] = false; // use absolute constrains
         i++;
@@ -581,17 +588,27 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
         params[i] = node.Pos.y();
 //        min_constrains[i] = Area.top();
 //        max_constrains[i] = Area.bottom();
+
         min_constrains[i] = min_y;
         max_constrains[i] = max_y;
+
+//        min_constrains[i] = min_y;
+//        max_constrains[i] = min_y;
+
         rel_constrains[i] = 50; // not used yet
         type_constrains[i] = false; // use absolute constrains
         i++;
 
         if (_snt == SignalNodeType::Cone)
         {
-            params[i] = node.Alpha;
-            min_constrains[i] = -2*M_PI; // ???
-            max_constrains[i] = +2*M_PI; // ???
+            params[i] = node.Alpha; // * WierdCoeffAlpha;
+
+//            min_constrains[i] = -2*M_PI; // ???
+//            max_constrains[i] = +2*M_PI; // ???
+
+            min_constrains[i] = -2; // ???
+            max_constrains[i] = +2; // ???
+
 //            min_constrains[i] = min_y;
 //            max_constrains[i] = max_y;
             rel_constrains[i] = 50; // not used yet
@@ -647,7 +664,7 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, S
 
 //                    qDebug() << p1.Pos;
 
-                    if (sn.accessRateCone(p1.Pos) > 0.99)
+                    if (sn.accessRateCone(p1.Pos) > 0.25)
                     {
                         p1.IsCovered = true;
                         break;
