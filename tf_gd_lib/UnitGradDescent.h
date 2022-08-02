@@ -40,6 +40,7 @@ protected:
 	double Min_Eta = 1e-6;
 
 	std::vector<double> Cur_Eta;
+    std::vector<double> dCost_dp;
 
 	double Eta_k_inc = 1.1;
 	double Eta_k_dec = 2.0;
@@ -100,8 +101,11 @@ public:
 	void SetMaxTime(double _MaxTime)             { MaxTime = _MaxTime; }
 	void SetCallBackFreq(size_t _CallBackFreq)   { CallBackFreq = _CallBackFreq; }
 
-	double GetMin_Eta() const              { return Min_Eta; }
-	std::vector<double> GetCur_Eta() const { return Cur_Eta; }
+    double GetMin_Eta() const                      { return Min_Eta; }
+    const std::vector<double> & GetCur_Eta() const { return Cur_Eta; }
+
+    const std::vector<double> & Get_dCost_dp() const { return dCost_dp; }
+
 	double GetEta_k_inc() const            { return Eta_k_inc; }
 	double GetEta_k_dec() const            { return Eta_k_dec; }
 	double GetEta_FirstJump() const        { return Eta_FirstJump; }
@@ -116,12 +120,11 @@ public:
 	void SetRelConstrains(const std::vector<double>& _RelConstrains) { RelConstrains = _RelConstrains; }
 	void SetTypeConstrains(const std::vector<bool>& _TypeConstrains) { TypeConstrains = _TypeConstrains; }
 
-	std::vector<double> GetParams() const         { return Params; }
-	std::vector<double> GetMinConstrains() const  { return MinConstrains; }
-	std::vector<double> GetMaxConstrains() const  { return MaxConstrains; }
-	std::vector<double> GetRelConstrains() const  { return RelConstrains; }
-	std::vector<bool>   GetTypeConstrains() const { return TypeConstrains; }
-
+    const std::vector<double> & GetParams() const         { return Params; }
+    const std::vector<double> & GetMinConstrains() const  { return MinConstrains; }
+    const std::vector<double> & GetMaxConstrains() const  { return MaxConstrains; }
+    const std::vector<double> & GetRelConstrains() const  { return RelConstrains; }
+    const std::vector<bool>   & GetTypeConstrains() const { return TypeConstrains; }
 
 	void SetSrcFunction(const TableFunction& _SrcFunction) { SrcFunction = _SrcFunction; }
 
@@ -160,7 +163,7 @@ public:
 	double GetLastTime() const { return LastTime; }
 
 	void SetEps(double _eps) { Eps = _eps; }
-        double GetEps() const { return Eps; }
+    double GetEps() const { return Eps; }
 
 	void SetFinDifMethod(bool _FinDifMethod) { FinDifMethod = _FinDifMethod; }
 	bool GetFinDifMethod() const { return FinDifMethod; }
