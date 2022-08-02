@@ -8,10 +8,11 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <fstream>
 
 #include "TargetFunctions/TargetFunctionBase.h"
 
-//constexpr double WierdCoeffAlpha = 1000;
+
 
 using namespace std;
 
@@ -323,12 +324,44 @@ bool MyConfig::StartGradDescent(int nDraw,
 //    GradDesc.SetUseUserTargetFunction(std::function<double(const std::vector<double>&)>(_targetFunction(const std::vector<double>&)));
     GradDesc.SetUseUserTargetFunction(lambdaTargetFunc);
 
+    bool GradReport = true;
+    std::ofstream f_out;
+
+    if (GradReport)
+    {
+        f_out.open("GradReport.txt");
+        f_out.precision(16);
+    }
+
     if (nDraw > 0)
     {
-        GradDesc.SetCallback([this, pGLWidget, _snt]()
+        GradDesc.SetCallback([this, pGLWidget, _snt, GradReport, &f_out]()
         {
             if (!IsGradCalculating)
                 GradDesc.Stop();
+
+            if (GradReport)
+            {
+                for (const auto & item: GradDesc.GetParams())
+                {
+                    f_out << item << "\t";
+                }
+                f_out << endl;
+
+                for (const auto & item: GradDesc.Get_dCost_dp())
+                {
+                    f_out << item << "\t";
+                }
+                f_out << endl;
+
+                for (const auto & item: GradDesc.GetCur_Eta())
+                {
+                    f_out << item << "\t";
+                }
+                f_out << endl;
+
+                f_out << endl;
+            }
 
             InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
             pGLWidget->Repaint();
@@ -520,7 +553,7 @@ void MyConfig::InitNodeCoordsFromParams(const std::vector<double> & _params, Sig
             Nodes.at(i/3).Pos.setY(_params[i+1]);
             Nodes.at(i/3).Pos.setZ( Relief->CalcRealZbyRealXY(_params[i], _params[i+1]) );
 
-            Nodes.at(i/3).Alpha = _params[i+2]; // / WierdCoeffAlpha;
+            Nodes.at(i/3).Alpha = _params[i+2] / WierdCoeffAlpha;
         }
     }
     else
@@ -601,13 +634,13 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
 
         if (_snt == SignalNodeType::Cone)
         {
-            params[i] = node.Alpha; // * WierdCoeffAlpha;
+            params[i] = node.Alpha * WierdCoeffAlpha;
 
-//            min_constrains[i] = -2*M_PI; // ???
-//            max_constrains[i] = +2*M_PI; // ???
+            min_constrains[i] = -2*M_PI  * WierdCoeffAlpha; // ???
+            max_constrains[i] = +2*M_PI  * WierdCoeffAlpha; // ???
 
-            min_constrains[i] = -2; // ???
-            max_constrains[i] = +2; // ???
+//            min_constrains[i] = -2; // ???
+//            max_constrains[i] = +2; // ???
 
 //            min_constrains[i] = min_y;
 //            max_constrains[i] = max_y;

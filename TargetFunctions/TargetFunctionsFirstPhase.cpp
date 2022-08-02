@@ -238,7 +238,7 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
                                 params[k+1],
                                 Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
                       Nodes[k/dk].R,
-                      params[k+2], //Nodes[k/dk].Alpha,
+                      params[k+2] / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
                       Nodes[k/dk].Beta);
 
 //        qDebug() << "params[k] =" << params[k];
@@ -295,14 +295,14 @@ double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &p
                                     params[k1+1],
                                     Relief->CalcRealZbyRealXY(params[k1], params[k1+1])  ),
                           Nodes[k1/dk].R,
-                          params[k1+2], //Nodes[k/dk].Alpha,
+                          params[k1+2]  / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
                           Nodes[k1/dk].Beta);
 
             SignalNode sn2(QVector3D(params[k2],
                                     params[k2+1],
                                     Relief->CalcRealZbyRealXY(params[k2], params[k2+1])  ),
                           Nodes[k2/dk].R,
-                          params[k2+2], //Nodes[k/dk].Alpha,
+                          params[k2+2]   / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
                           Nodes[k2/dk].Beta);
 
 //            qDebug() << "sn1.Pos =" << sn1.Pos;

@@ -3,6 +3,8 @@
 
 #include "TargetFunctionBase.h"
 
+
+
 class TargetFuncAdditiveSphereFirstPhase : public TargetFunctionBase
 {
 public:

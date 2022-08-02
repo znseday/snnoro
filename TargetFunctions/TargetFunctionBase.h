@@ -6,6 +6,9 @@
 class MyConfig;
 class TargetFuncSettingsStruct;
 
+//constexpr double WierdCoeffAlpha = 0.00001;
+constexpr double WierdCoeffAlpha = 1;
+
 class TargetFunctionBase
 {
 protected:
