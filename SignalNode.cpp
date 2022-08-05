@@ -101,7 +101,7 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    return 1; // !!!!!!!!!!!!!!!!!!!!!!!!
 
     QPointF interPoint;
-    bool isOk = CalcIntersectWithLineToPoint(Pos, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
+    bool isOk = CalcIntersectWithLineToPoint(p, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
     if (!isOk)
         throw std::logic_error("There is not any instersection with ellipse in SignalNode::accessRateCone");
 
@@ -111,11 +111,20 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    qDebug() << "interPoint =" << interPoint;
 //    qDebug() << "p.toPointF() = " << p.toPointF();
 
+//    interPoint = {100, 100};
+
     double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), interPoint).length();
+//    double dist_from_sn_to_intersect = sqrt( pow(Pos.toPointF().x() - interPoint.x(), 2)
+//                                           + pow(Pos.toPointF().y() - interPoint.y(), 2) );
+
+
     double dist_from_sn_to_point_of_route = QLineF(Pos.toPointF(), p.toPointF()).length();
 
 //    qDebug() << "chisl =" << chisl;
 //    qDebug() << "znam =" << znam;
+
+//    qDebug() << "dist_from_sn_to_intersect =" << dist_from_sn_to_intersect;
+//    qDebug() << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route;
 
 //    double k = QLineF(Pos.toPointF(), interPoint).length() / QLineF(Pos.toPointF(), p.toPointF()).length();
 //    double k = chisl / znam;

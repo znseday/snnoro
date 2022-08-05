@@ -324,7 +324,7 @@ bool MyConfig::StartGradDescent(int nDraw,
 //    GradDesc.SetUseUserTargetFunction(std::function<double(const std::vector<double>&)>(_targetFunction(const std::vector<double>&)));
     GradDesc.SetUseUserTargetFunction(lambdaTargetFunc);
 
-    bool GradReport = true;
+    bool GradReport = false;
     std::ofstream f_out;
 
     if (GradReport)
@@ -709,6 +709,12 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, S
         }
         iRoute++;
     }
+}
+//----------------------------------------------------------
+
+void MyConfig::CalcAccessRateForCurrent()
+{
+    qDebug() << Nodes.front().accessRateCone(Routes.front().Points.front().Pos);
 }
 //----------------------------------------------------------
 

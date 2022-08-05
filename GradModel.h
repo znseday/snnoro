@@ -170,6 +170,8 @@ public:
 //    static TargetFuncEnum ConvertStringToTargetFuncType(QString &str);
 //    static QString ConvertTargetFuncTypeToString(TargetFuncEnum snt);
 
+    void CalcAccessRateForCurrent();
+
 };
 
 #endif // MYGRADMODEL_H

@@ -1417,7 +1417,6 @@ void MyGradModel::TestTwoLines()
     auto &c = Configs.at(iCurConfig);
 
     c.TestTwoLines();
-
 }
 //----------------------------------------------------------
 
@@ -1438,6 +1437,12 @@ void MyGradModel::ReCalcAboAccessRate()
         c.CalcAccessRateForAbos(TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
                                 NodesType); // Заменить на мембер или типа того ?
     }
+}
+//----------------------------------------------------------
+
+void MyGradModel::CalcAccessRateForCurrent()
+{
+    Configs.at(iCurConfig).CalcAccessRateForCurrent();
 }
 //----------------------------------------------------------
 

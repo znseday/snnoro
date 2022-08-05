@@ -859,6 +859,8 @@ void MainWindow::on_actionGrad_SetDrawCount_Custom_triggered()
 }
 //-------------------------------------------------------------
 
-
-
+void MainWindow::on_actionDebug_Calc_Access_Rate_for_current_triggered()
+{
+    GradModel.CalcAccessRateForCurrent();
+}
 

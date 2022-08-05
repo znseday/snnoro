@@ -105,6 +105,8 @@ private slots:
 
     void on_actionGrad_SetDrawCount_Custom_triggered();
 
+    void on_actionDebug_Calc_Access_Rate_for_current_triggered();
+
 private:
     Ui::MainWindow *ui;
 
