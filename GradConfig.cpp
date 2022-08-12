@@ -749,32 +749,32 @@ void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) co
             for (const auto & p : r.Points)
             {
                 glColor3f(0.5f, 0.3f, 0.9f);
-                glBegin(GL_LINES);
+//                glBegin(GL_LINES);
 
-                if (Relief->GetIsMathRelief())
-                {
-                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xNode, yNode) : 0));
-                }
-                else
-                {
-                    zNode = (node.Pos.z()-offsetZ)*Relief->Get_kz();
-                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? zNode : 0));
-                }
+//                if (Relief->GetIsMathRelief())
+//                {
+//                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xNode, yNode) : 0));
+//                }
+//                else
+//                {
+//                    zNode = (node.Pos.z()-offsetZ)*Relief->Get_kz();
+//                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? zNode : 0));
+//                }
 
-                double xPoint = (p.Pos.x()-offsetX)*k;
-                double yPoint = (p.Pos.y()-offsetY)*k;
-                double zPoint;
-                if (Relief->GetIsMathRelief())
-                {
-                    glTranslatef(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xPoint, yPoint) : 0));
-                }
-                else
-                {
-                    zPoint = (p.Pos.z()-offsetZ)*Relief->Get_kz();
-                    glVertex3f(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? zPoint : 0));
-                }
+//                double xPoint = (p.Pos.x()-offsetX)*k;
+//                double yPoint = (p.Pos.y()-offsetY)*k;
+//                double zPoint;
+//                if (Relief->GetIsMathRelief())
+//                {
+//                    glTranslatef(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xPoint, yPoint) : 0));
+//                }
+//                else
+//                {
+//                    zPoint = (p.Pos.z()-offsetZ)*Relief->Get_kz();
+//                    glVertex3f(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? zPoint : 0));
+//                }
 
-                glEnd(); // LINES
+//                glEnd(); // LINES
 
                 QPointF Result;
                 bool isOk = node.CalcIntersectWithLineToPoint(p.Pos, Result);
@@ -856,7 +856,7 @@ void MyConfig::CalcBonds(const TargetFunctionBase &_targetFuncSettingsBase, Sign
                     distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
 //                    distToPoint = для Cone (учесть, что центр в другом месте)
 
-                    if (distToPoint < Nodes[iNode].R) // R переделать на другой критерий
+                    if (distToPoint < Nodes[iNode].R) // R переделать на другой критерий !!!!!!!!!!!!!!!
                     {
                         double arf = Nodes[iNode].accessRateCone(Routes[iRoute].Points[iPoint].Pos);
 

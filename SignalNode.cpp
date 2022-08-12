@@ -435,36 +435,54 @@ int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_resu
     intersect2 += ellCenter;
 
     // Важно!!! Здесь дистанция в 2d !
-    double distToInter1 = QLineF(_point.toPointF(), intersect1).length();
-    double distToInter2 = QLineF(_point.toPointF(), intersect2).length();
+//    double distToInter1 = QLineF(_point.toPointF(), intersect1).length();
+//    double distToInter2 = QLineF(_point.toPointF(), intersect2).length();
 
-    if ( pointInEllCoords.x()*pointInEllCoords.x()/(Rx*Rx) + pointInEllCoords.y()*pointInEllCoords.y()/(Ry*Ry) < 1.0 )
+    double dx = _point.x() - Pos.x();
+    double dy = _point.y() - Pos.y();
+
+    double dx1 = intersect1.x() - Pos.x();
+    double dy1 = intersect1.y() - Pos.y();
+
+//    qDebug() << "dx =" << dx;
+//    qDebug() << "dy =" << dy;
+//    qDebug() << "dx1 =" << dx1;
+//    qDebug() << "dy1 =" << dy1;
+
+    if ( ( (dx >= 0 && dx1 >= 0) || (dx <= 0 && dx1 <= 0) ) &&
+         ( (dy >= 0 && dy1 >= 0) || (dy <= 0 && dy1 <= 0) ) )
     {
-        if (distToInter1 > distToInter2) // Вместо этого нужно что-то подумать
-        {
-//            painter.drawText(x2, y2, "This inside");
-            _result = intersect2;
-        }
-        else
-        {
-            _result = intersect1;
-//            painter.drawText(x1, y1, "This inside");
-        }
+        _result = intersect1; // painter.drawText(x1, y1, "This inside");
     }
-
     else
     {
-        if (distToInter1 > distToInter2)
-        {
-            _result = intersect2;
-//            painter.drawText(x2, y2, "This outside");
-        }
-        else
-        {
-            _result = intersect1;
-//            painter.drawText(x1, y1, "This outside");
-        }
+        _result = intersect2; // painter.drawText(x2, y2, "This inside");
     }
+
+//    if ( pointInEllCoords.x()*pointInEllCoords.x()/(Rx*Rx) + pointInEllCoords.y()*pointInEllCoords.y()/(Ry*Ry) < 1.0 )
+//    {
+//        if (distToInter1 > distToInter2) // Вместо этого нужно что-то подумать
+//        {
+//            _result = intersect2; // painter.drawText(x2, y2, "This inside");
+//        }
+//        else
+//        {
+//            _result = intersect1; // painter.drawText(x1, y1, "This inside");
+//        }
+//    }
+
+//    else
+//    {
+//        if (distToInter1 > distToInter2)
+//        {
+//            _result = intersect2; // painter.drawText(x2, y2, "This outside");
+//        }
+//        else
+//        {
+//            _result = intersect1; // painter.drawText(x1, y1, "This outside");
+//        }
+//    }
+
     return count;
 }
 //----------------------------------------------------------
