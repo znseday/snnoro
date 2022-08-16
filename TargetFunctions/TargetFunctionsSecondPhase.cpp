@@ -24,7 +24,8 @@ double TargetFuncAdditiveSphereSecondPhase::operator()(const std::vector<double>
     double y1 = 0;
     size_t dk = 2;
 
-    for (size_t k = 0; k < Nodes.size()*dk; k += dk)
+//    for (size_t k = 0; k < Nodes.size()*dk; k += dk)
+    for (size_t k = 0; k < param_count; k += dk)
     {
         SignalNode sn(QVector3D(params[k],
                                 params[k+1],
@@ -34,7 +35,6 @@ double TargetFuncAdditiveSphereSecondPhase::operator()(const std::vector<double>
 
         for (const auto & b : Nodes[k/dk].Bonds)
         {
-//                const RoutePoint & p1 = Routes.at(std::get<0>(b)).Points.at(std::get<1>(b));
             const RoutePoint & p1 = Routes.at(b.iRoute).Points.at(b.iPoint);
 
             double y = Aarf * sn.accessRateSphere(p1.Pos);
@@ -170,12 +170,53 @@ void TargetFuncAdditiveConeSecondPhase::Init(MyConfig *_myConfig)
 }
 //-------------------------------------------------------------
 
-
 double TargetFuncAdditiveConeSecondPhase::operator()(const std::vector<double> &params) const
 {
-    // Не было реализовано и в изначальной версии на лямбдах!
-    (void)params;
-    return 0;
+    const auto & Routes = myConfig->RoutesAccess();
+    const auto & Relief = myConfig->GetRelief();
+    const auto & Nodes = myConfig->NodesAccess();
+
+    double sum_w_of_routes = 0;
+    for (auto & route : Routes)
+    {
+        sum_w_of_routes += route.Get_w();
+    }
+
+    double y1 = 0;
+    size_t dk = 3;
+
+//    printf("param_count = %i\n", (int)param_count);
+
+    for (size_t k = 0; k < param_count; k += dk)
+    {
+        SignalNode sn(QVector3D(params[k],
+                                params[k+1],
+                                Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                      Nodes[k/dk].R,
+                      params[k+2] / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
+                      Nodes[k/dk].Beta);
+
+        for (const auto & b : Nodes[k/dk].Bonds)
+        {
+            const RoutePoint & p1 = Routes.at(b.iRoute).Points.at(b.iPoint);
+
+            double y = Aarf * sn.accessRateCone(p1.Pos);
+
+            if (IsUseLineBetweenTwoPoints)
+            {
+                y *= myConfig->IsLineBetweenTwoPoints(sn.Pos, p1.Pos);
+            }
+
+            double w = p1.Weight;  // !!!!!!!
+            y *= w;                   //*(1-tanh(k_step*(x-sn.R)));
+
+            y *= Routes.at(b.iRoute).Get_w() / sum_w_of_routes;
+
+            y1 += y;
+        }
+    }
+
+    return -y1;
 }
 //-------------------------------------------------------------
 

@@ -114,11 +114,19 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    interPoint = {100, 100};
 
     double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), interPoint).length();
-//    double dist_from_sn_to_intersect = sqrt( pow(Pos.toPointF().x() - interPoint.x(), 2)
+
+    //    double dist_from_sn_to_intersect = sqrt( pow(Pos.toPointF().x() - interPoint.x(), 2)
 //                                           + pow(Pos.toPointF().y() - interPoint.y(), 2) );
 
 
     double dist_from_sn_to_point_of_route = QLineF(Pos.toPointF(), p.toPointF()).length();
+
+//    if (dist_from_sn_to_point_of_route == 0)
+//    {
+////        qDebug() << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route;
+//        std::cout.precision(20);
+//        std::cout << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route << std::endl;
+//    }
 
 //    qDebug() << "chisl =" << chisl;
 //    qDebug() << "znam =" << znam;
@@ -129,7 +137,17 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    double k = QLineF(Pos.toPointF(), interPoint).length() / QLineF(Pos.toPointF(), p.toPointF()).length();
 //    double k = chisl / znam;
 //    double k = - dist_from_sn_to_point_of_route / dist_from_sn_to_intersect;
-    double k = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route + 10);
+
+    double k;// = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route + 10);
+
+
+    // Переделать. Сделать физично.
+    // Вылетает ошибка при подсчете пересечений, когда узел оказывается в точке маршрута и расстояние до него 0
+
+    if (dist_from_sn_to_point_of_route >= 100)
+        k = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route);
+    else
+        k = (dist_from_sn_to_intersect + 100) / (100.0);
 
     if (fabs(k) < 0.01 || fabs(k) > 1000)
         qDebug() << "k =" << k;  // k иногда уходит в inf !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -392,6 +410,11 @@ int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_resu
 
     ellCenter += Pos.toPointF();
 
+    double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), _point.toPointF()).length();
+//    if (dist_from_sn_to_intersect < 0.01)
+//        qDebug() << "dist_from_sn_to_intersect =" << dist_from_sn_to_intersect;
+
+
     QPointF nodeInEllCoords = Pos.toPointF() - ellCenter; // оптимизировать ?
 
 //    qDebug() << "nodeInEllCoordsX =" << nodeInEllCoordsX;
@@ -419,9 +442,15 @@ int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_resu
     QPointF intersect1, intersect2;
 
     int count = CalcLineInterEllipse(Rx, Ry, nodeInEllCoords, pointInEllCoords, intersect1, intersect2);
+
+    if (count < 2 && dist_from_sn_to_intersect < 0.0001)
+    {
+        return count; // Подумать, что делать с точками пересечения и как оих обрабатывать в вызывающем коде
+    }
+
     if (count < 2)
     {
-        qDebug() << count;
+        qDebug() << "count of intersections =" << count;
         throw std::runtime_error("count of intersections < 2");
     }
 

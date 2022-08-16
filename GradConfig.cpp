@@ -12,7 +12,7 @@
 
 #include "TargetFunctions/TargetFunctionBase.h"
 
-
+constexpr double arfThreshold = 0.5;
 
 using namespace std;
 
@@ -697,7 +697,7 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, S
 
 //                    qDebug() << p1.Pos;
 
-                    if (sn.accessRateCone(p1.Pos) > 0.25)
+                    if (sn.accessRateCone(p1.Pos) > arfThreshold)
                     {
                         p1.IsCovered = true;
                         break;
@@ -856,24 +856,25 @@ void MyConfig::CalcBonds(const TargetFunctionBase &_targetFuncSettingsBase, Sign
                     distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
 //                    distToPoint = для Cone (учесть, что центр в другом месте)
 
-                    if (distToPoint < Nodes[iNode].R) // R переделать на другой критерий !!!!!!!!!!!!!!!
+                    double arf = Nodes[iNode].accessRateCone(Routes[iRoute].Points[iPoint].Pos);
+
+                    if ( _targetFuncSettingsBase.GetIsUseLineBetweenTwoPoints() )
                     {
-                        double arf = Nodes[iNode].accessRateCone(Routes[iRoute].Points[iPoint].Pos);
+                        // Что делать с этим?
+                        arf *= IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos);
 
-                        if ( _targetFuncSettingsBase.GetIsUseLineBetweenTwoPoints() )
-                        {
-                            // Что делать с этим?
-                            arf *= IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos);
+//                      if ( IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos) )
+//                          arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
+//                      else
+//                          arf = 0;
+                    }
 
-    //                      if ( IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos) )
-    //                          arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
-    //                      else
-    //                          arf = 0;
-                        }
-
+                    if (arf > arfThreshold)
+                    {
                         // Строчкой ниже R на что заменить?
                         Nodes[iNode].Bonds.emplace(iRoute, iPoint, arf, distToPoint/Nodes[iNode].R);
                     }
+
                 }
                 else
                     throw std::runtime_error("Unknown _snt in MyConfig::CalcBonds");
