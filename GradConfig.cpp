@@ -416,6 +416,8 @@ bool MyConfig::StartGradDescent(int nDraw,
     cout << "Iters: " << GradDesc.GetLastIters() << " out of " << GradDesc.GetMaxIters() << endl;
     cout << "Time: " << GradDesc.GetLastTime() << " out of " << GradDesc.GetMaxTime() << endl;
 
+    cout << "alpha = " << GradDesc.GetParams()[2] << endl;
+
     cout << "Grad Descent Finished (First Phase)" << endl << endl;
 
 //    PrintBondsInfo();
@@ -636,8 +638,14 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
         {
             params[i] = node.Alpha * WierdCoeffAlpha;
 
-            min_constrains[i] = -2*M_PI  * WierdCoeffAlpha; // ???
-            max_constrains[i] = +2*M_PI  * WierdCoeffAlpha; // ???
+//            min_constrains[i] = -2*M_PI  * WierdCoeffAlpha; // ???
+//            max_constrains[i] = +2*M_PI  * WierdCoeffAlpha; // ???
+
+//            min_constrains[i] = -M_PI  * WierdCoeffAlpha; // ???
+//            max_constrains[i] = +M_PI  * WierdCoeffAlpha; // ???
+
+            min_constrains[i] = -1e20; // ???
+            max_constrains[i] = +1e20; // ???
 
 //            min_constrains[i] = -2; // ???
 //            max_constrains[i] = +2; // ???

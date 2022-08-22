@@ -231,9 +231,83 @@ void TargetFuncProbabilisticConeSecondPhase::Init(MyConfig *_myConfig)
 
 double TargetFuncProbabilisticConeSecondPhase::operator()(const std::vector<double> &params) const
 {
-    // Не было реализовано и в изначальной версии на лямбдах!
-    (void)params;
-    return 0;
+    const auto & Routes = myConfig->RoutesAccess();
+    const auto & Relief = myConfig->GetRelief();
+    const auto & Nodes = myConfig->NodesAccess();
+
+//    double sum_w_of_routes = 0;
+//    for (auto & route : Routes)
+//        sum_w_of_routes += route.Get_w();
+
+    double y1 = 0;
+    size_t dk =  3;
+
+    for (size_t iRoute = 0; iRoute < Routes.size(); ++iRoute) // все точки всех маршрутов
+    {
+        for (size_t iPoint = 0; iPoint < Routes[iRoute].Points.size(); ++iPoint) // цикл по точкаи одного маршрута
+        {
+            double s = 0;
+            bool isFirst_y = true;
+
+            for (size_t k = 0; k < param_count; k += dk)
+            {
+                SignalNode sn(QVector3D(params[k],
+                                        params[k+1],
+                                        Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                              Nodes[k/dk].R,
+                              params[k+2], //Nodes[k/dk].Alpha,
+                              Nodes[k/dk].Beta);
+
+//                    double y = /* _targetFuncSettings.Aarf * */ sn.accessRateSphere(p1.Pos);
+                bool isService = false;
+                for (const auto & b : Nodes[k/dk].Bonds)
+                {
+//                    const RoutePoint & pb = Routes.at(b.iRoute).Points.at(b.iPoint);
+                    if (iRoute == b.iRoute && iPoint == b.iPoint)
+                    {
+                        isService = true;
+                        break;
+                    }
+                }
+
+                if (!isService)
+                    continue;
+
+                double y = sn.accessRateCone(Routes[iRoute].Points[iPoint].Pos);
+
+                if (IsUseLineBetweenTwoPoints)
+                {
+                    y *= myConfig->IsLineBetweenTwoPoints(sn.Pos, Routes[iRoute].Points[iPoint].Pos);
+                }
+
+                if (isFirst_y)
+                {
+                    s = y;
+                    isFirst_y = false;
+                }
+                else
+                {
+                    s = s + y - s*y; // для каждоый точки по всем узлам
+                }
+
+            }
+
+            y1 += s;
+
+        }
+
+    }
+
+    y1 *= Aarf;
+
+    return -y1;
 }
 //-------------------------------------------------------------
+
+
+
+
+
+
+
 

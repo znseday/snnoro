@@ -101,9 +101,15 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    return 1; // !!!!!!!!!!!!!!!!!!!!!!!!
 
     QPointF interPoint;
-    bool isOk = CalcIntersectWithLineToPoint(p, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
-    if (!isOk)
-        throw std::logic_error("There is not any instersection with ellipse in SignalNode::accessRateCone");
+    int countIntersects = CalcIntersectWithLineToPoint(p, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
+    if (countIntersects < 2)
+    {
+        qDebug() << "countIntersects < 2 in SignalNode::accessRateCone";
+        return 2; // ???
+    }
+
+    //    if (!isOk)
+//        throw std::logic_error("There is not any instersection with ellipse in SignalNode::accessRateCone");
 
     // Важно !!! Здесь рассчет в 2d !
 
@@ -450,7 +456,11 @@ int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_resu
 
     if (count < 2)
     {
+        qDebug() << "nodeInEllCoords =" << nodeInEllCoords;
+        qDebug() << "nodeInEllCoords =" << pointInEllCoords;
         qDebug() << "count of intersections =" << count;
+        qDebug() << "intersect1 =" << intersect1;
+        qDebug() << "intersect2 =" << intersect2;
         throw std::runtime_error("count of intersections < 2");
     }
 
