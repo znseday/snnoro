@@ -22,10 +22,44 @@
 #include "TargetFunctions/TargetFunctionsFirstPhase.h"
 #include "TargetFunctions/TargetFunctionsSecondPhase.h"
 
+#include "GradDescSaveLoad.h"
+
 using namespace std;
 
 constexpr float RotSpeed = 0.12f;
 constexpr float TransSpeed = 0.006f;
+
+static const QString ReliefsDefaultDir = "Reliefs";
+static const QString SettingsDefaultDir = "Settings";
+
+static void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, const QString &_what)
+{
+    if ( !QFile::exists(_fileName) )
+    {
+        QFileInfo fileInfo(_fileName);
+        _fileName = _defDir + "/" + fileInfo.fileName();
+    }
+
+    if ( !QFile::exists(_fileName) )
+    {
+        auto res = QMessageBox::question(nullptr, "Question", _what + " File not Found. Would you like to choose " + _what + " file?");
+        if (res == QMessageBox::Yes)
+        {
+            _fileName = QFileDialog::getOpenFileName(nullptr,
+                                      "Choose " + _what + " file", ".", _what + " Files (*.json)");
+
+            if (_fileName.isEmpty())
+            {
+                QMessageBox::critical(nullptr, "Error", _what + " file not set and won't be loaded");
+            }
+
+        }
+        else
+        {
+            QMessageBox::critical(nullptr, "Error", _what + " file not set and won't be loaded");
+        }
+    }
+}
 
 MyGradModel::MyGradModel()
 {
@@ -688,13 +722,6 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
         qDebug() << _parseError.errorString(); return 0;
     }
 
-
-//    Area.setLeft(areaObject["left"].toDouble(-1));
-//    Area.setRight(areaObject["right"].toDouble(-1));
-//    Area.setTop(areaObject["top"].toDouble(-1));
-//    Area.setBottom(areaObject["bottom"].toDouble(-1));
-
-
     // Здесь должна быть загрузка параметров рельефа
     const QJsonObject &reliefInfoObject = configObject["ReliefInfo"].toObject();
 
@@ -713,31 +740,33 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     {
         QString ReliefFileName = configObject["ReliefFileName"].toString();
 
-        if ( !QFile::exists(ReliefFileName) )
-        {
-            QFileInfo fileInfo(ReliefFileName);
-            ReliefFileName = fileInfo.fileName();
-        }
+        CorrectFileNameIfDoesntExist(ReliefFileName, ReliefsDefaultDir, "Relief");
 
-        if ( !QFile::exists(ReliefFileName) )
-        {
-            auto res = QMessageBox::question(nullptr, "Question", "Relief File not Found. Would you like to choose Relif file?");
-            if (res == QMessageBox::Yes)
-            {
-                ReliefFileName = QFileDialog::getOpenFileName(nullptr,
-                                          "Choose Relief file", ".", "Relif Files (*.json)");
+//        if ( !QFile::exists(ReliefFileName) )
+//        {
+//            QFileInfo fileInfo(ReliefFileName);
+//            ReliefFileName = ReliefsDefaultDir + "/" + fileInfo.fileName();
+//        }
 
-                if (ReliefFileName.isEmpty())
-                {
-                    QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
-                }
+//        if ( !QFile::exists(ReliefFileName) )
+//        {
+//            auto res = QMessageBox::question(nullptr, "Question", "Relief File not Found. Would you like to choose Relif file?");
+//            if (res == QMessageBox::Yes)
+//            {
+//                ReliefFileName = QFileDialog::getOpenFileName(nullptr,
+//                                          "Choose Relief file", ".", "Relif Files (*.json)");
 
-            }
-            else
-            {
-                QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
-            }
-        }
+//                if (ReliefFileName.isEmpty())
+//                {
+//                    QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
+//                }
+
+//            }
+//            else
+//            {
+//                QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
+//            }
+//        }
 
         if (!Relief.LoadFromFile(ReliefFileName))
             throw std::runtime_error("Relief File Not Found or Couldn't be read");
@@ -837,18 +866,8 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     const QJsonArray &nodesArray = configObject["Nodes"].toArray();
     for (auto it = nodesArray.begin(); it != nodesArray.end();  ++it)
     {
-//        const QJsonObject &nodeObject = it->toObject();
         Nodes.emplace_back(SignalNode());
         Nodes.back().LoadFromJsonObject(it->toObject());
-
-//        double R = nodeObject["R"].toDouble(-1);
-//        double Beta = qDegreesToRadians(nodeObject["Beta"].toDouble(0));
-//        Nodes.emplace_back(QVector3D(), R, 0, Beta);
-
-//        Routes.back().Points.emplace_back(RoutePoint());
-
-//        Routes.back().AbonentDirectAccess().
-//                LoadFromJsonObject(routeObject["Abonent"].toObject());
 
     }
     if (SignalNodeCount != Nodes.size())
@@ -866,33 +885,103 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     const QJsonObject &gradDescObject = _jsonObject["GradDesc"].toObject();
 
-    ProtoGradDesc.SetAlpha(gradDescObject["Alpha"].toDouble(-1));
-    ProtoGradDesc.SetEps(gradDescObject["Eps"].toDouble(-1));
-    ProtoGradDesc.SetEta_FirstJump(gradDescObject["Eta_FirstJump"].toDouble(-1));
-    ProtoGradDesc.SetEta_k_inc(gradDescObject["Eta_k_inc"].toDouble(-1));
-    ProtoGradDesc.SetEta_k_dec(gradDescObject["Eta_k_dec"].toDouble(-1));
-    ProtoGradDesc.SetMin_Eta(gradDescObject["Min_Eta"].toDouble(-1));
-    ProtoGradDesc.SetFinDifMethod(gradDescObject["FinDifMethod"].toBool(false));
-    ProtoGradDesc.SetMaxIters(gradDescObject["MaxIters"].toInt(0));
-    ProtoGradDesc.SetMaxTime(gradDescObject["MaxTime"].toDouble(-1));
-    ProtoGradDesc.SetCallBackFreq(gradDescObject["CallBackFreq"].toInt(1));
+//    ProtoGradDesc.SetAlpha(gradDescObject["Alpha"].toDouble(-1));
+//    ProtoGradDesc.SetEps(gradDescObject["Eps"].toDouble(-1));
+//    ProtoGradDesc.SetEta_FirstJump(gradDescObject["Eta_FirstJump"].toDouble(-1));
+//    ProtoGradDesc.SetEta_k_inc(gradDescObject["Eta_k_inc"].toDouble(-1));
+//    ProtoGradDesc.SetEta_k_dec(gradDescObject["Eta_k_dec"].toDouble(-1));
+//    ProtoGradDesc.SetMin_Eta(gradDescObject["Min_Eta"].toDouble(-1));
+//    ProtoGradDesc.SetFinDifMethod(gradDescObject["FinDifMethod"].toBool(false));
+//    ProtoGradDesc.SetMaxIters(gradDescObject["MaxIters"].toInt(0));
+//    ProtoGradDesc.SetMaxTime(gradDescObject["MaxTime"].toDouble(-1));
+//    ProtoGradDesc.SetCallBackFreq(gradDescObject["CallBackFreq"].toInt(1));
+
+    GradDescFileName = gradDescObject["GradDescFileName"].toString();
+
+    CorrectFileNameIfDoesntExist(GradDescFileName, SettingsDefaultDir, "GradDesc");
+
+//    if ( !QFile::exists(GradDescFileName) )
+//    {
+//        QFileInfo fileInfo(GradDescFileName);
+//        GradDescFileName = SettingsDefaultDir + "/" +fileInfo.fileName();
+//    }
+//    if ( !QFile::exists(GradDescFileName) )
+//    {
+//        auto res = QMessageBox::question(nullptr, "Question", "GradDesc file not Found. Would you like to choose GradDesc file?");
+//        if (res == QMessageBox::Yes)
+//        {
+//            GradDescFileName = QFileDialog::getOpenFileName(nullptr,
+//                                      "Choose GradDesc file", ".", "GradDesc Files (*.json)");
+
+//            if (GradDescFileName.isEmpty())
+//            {
+//                QMessageBox::critical(nullptr, "Error", "GradDesc file not set and won't be loaded");
+//            }
+
+//        }
+//        else
+//        {
+//            QMessageBox::critical(nullptr, "Error", "GradDesc file not set and won't be loaded");
+//        }
+//    }
+
+    if (!GradDescLoadFromFile(ProtoGradDesc, GradDescFileName))
+    {
+        qDebug() << "GradDesc file not open or currupted!";
+        QMessageBox::warning(nullptr, "Warning", "GradDesc file not found or currupted!");
+    }
+
 
 
     const QJsonObject &targetFuncObject = _jsonObject["TargetFunctionSettings"].toObject();
 
-//    TargetFuncSettingsGlobal.Aarf             = targetFuncObject["Aarf"].toDouble(-1);
-//    TargetFuncSettingsGlobal.A2               = targetFuncObject["A2"].toDouble(-1);
-//    TargetFuncSettingsGlobal.p                = targetFuncObject["p"].toDouble(-1);
-//    TargetFuncSettingsGlobal.offX             = targetFuncObject["offX"].toDouble(-1);
-//    TargetFuncSettingsGlobal.k_step_ot        = targetFuncObject["k_step_ot"].toDouble(-1);
-//    TargetFuncSettingsGlobal.R_nodeOverlap    = targetFuncObject["R_nodeOverlap"].toDouble(-1);
-//    TargetFuncSettingsGlobal.IsUseCoveredFlag = targetFuncObject["IsUseCoveredFlag"].toBool(false);
-//    TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints = targetFuncObject["IsUseLineBetweenTwoPoints"].toBool(false);
+    ActiveTargetFuncFirstPhase  = targetFuncObject["TargetFuncFirstPhase"].toString().toStdString();
+    if (ActiveTargetFuncFirstPhase.empty())
+    {
+        qDebug() << "ActiveTargetFuncFirstPhase is not specified!";
+        QMessageBox::warning(nullptr, "Warning", "ActiveTargetFuncFirstPhase is not specified!");
+    }
+    ActiveTargetFuncSecondPhase = targetFuncObject["TargetFuncSecondPhase"].toString().toStdString();
+    if (ActiveTargetFuncSecondPhase.empty())
+    {
+        qDebug() << "ActiveTargetFuncSecondPhase is not specified!";
+        QMessageBox::warning(nullptr, "Warning", "ActiveTargetFuncSecondPhase is not specified!");
+    }
 
-    TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase  = targetFuncObject["TargetFuncFirstPhase"].toString().toStdString();
-    TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase = targetFuncObject["TargetFuncSecondPhase"].toString().toStdString();
-    QString TempFileName = targetFuncObject["TargetFuncFileName"].toString();
-    TargetFuncSettingsGlobal.LoadFromFile(TempFileName);
+    QString TargetFuncFileName = targetFuncObject["TargetFuncFileName"].toString();
+
+    CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc");
+
+//    if ( !QFile::exists(TargetFuncFileName) )
+//    {
+//        QFileInfo fileInfo(TargetFuncFileName);
+//        TargetFuncFileName = SettingsDefaultDir + "/" +fileInfo.fileName();
+//    }
+//    if ( !QFile::exists(TargetFuncFileName) )
+//    {
+//        auto res = QMessageBox::question(nullptr, "Question", "TargetFunc file not Found. Would you like to choose TargetFunc file?");
+//        if (res == QMessageBox::Yes)
+//        {
+//            TargetFuncFileName = QFileDialog::getOpenFileName(nullptr,
+//                                      "Choose TargetFunc file", ".", "TargetFunc Files (*.json)");
+
+//            if (TargetFuncFileName.isEmpty())
+//            {
+//                QMessageBox::critical(nullptr, "Error", "TargetFunc file not set and won't be loaded");
+//            }
+
+//        }
+//        else
+//        {
+//            QMessageBox::critical(nullptr, "Error", "TargetFunc file not set and won't be loaded");
+//        }
+//    }
+
+    if (!TargetFuncSettingsGlobal.LoadFromFile(TargetFuncFileName))
+    {
+        qDebug() << "TargetFunc file not open or currupted!";
+        QMessageBox::warning(nullptr, "Warning", "TargetFunc file not found or currupted!");
+    }
 
     return ConfigCount;
 }
@@ -1089,7 +1178,7 @@ void MyGradModel::CancelGradDescent()
 
 bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
 {
-    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    auto it_TargetFunc = TargetFunctions.find(ActiveTargetFuncFirstPhase);
     if (it_TargetFunc == TargetFunctions.end())
         throw std::logic_error("TargetFunctionFirstPhase not found in MyGradModel::StartGradDescent_Phase_1");
 
@@ -1142,7 +1231,7 @@ bool MyGradModel::StartGradDescent_Phase_1_for_Current(IGradDrawable *pGLWidget)
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
         return false;
 
-    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    auto it_TargetFunc = TargetFunctions.find(ActiveTargetFuncFirstPhase);
     if (it_TargetFunc == TargetFunctions.end())
         throw std::logic_error("TargetFunctionFirstPhase not found in MyGradModel::StartGradDescent_Phase_1_for_Current");
 
@@ -1190,7 +1279,7 @@ bool MyGradModel::RemoveUncovered(IGradDrawable *pGLWidget)
 
 bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
 {
-    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase);
+    auto it_TargetFunc = TargetFunctions.find(ActiveTargetFuncSecondPhase);
     if (it_TargetFunc == TargetFunctions.end())
         throw std::logic_error("TargetFunctionSecondPhase not found in MyGradModel::StartGradDescent_Phase_2");
 
@@ -1242,7 +1331,7 @@ bool MyGradModel::StartGradDescent_Phase_2_for_Current(IGradDrawable *pGLWidget)
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
         return false;
 
-    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase);
+    auto it_TargetFunc = TargetFunctions.find(ActiveTargetFuncSecondPhase);
     if (it_TargetFunc == TargetFunctions.end())
         throw std::logic_error("TargetFunctionSecondPhase not found in MyGradModel::StartGradDescent_Phase_2_for_Current");
 
@@ -1298,7 +1387,7 @@ void MyGradModel::CalcBonds()
 {
     // Важно! Здесь используются настройки для активной целевой функции первой фазы!
     // Возможно, имеет смысл переделать так, чтобе в c.CalcBonds передавались не все параметры, а только необходимые
-    auto it_TargetFunc = TargetFunctions.find(TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    auto it_TargetFunc = TargetFunctions.find(ActiveTargetFuncFirstPhase);
     if (it_TargetFunc == TargetFunctions.end())
         throw std::logic_error("TargetFunctionFirstPhase not found in MyGradModel::CalcBonds");
 
@@ -1324,40 +1413,46 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
     QJsonObject GradDescObject;
 
-    GradDescObject.insert("Alpha", ProtoGradDesc.GetAlpha());
-    GradDescObject.insert("CallBackFreq", (int)ProtoGradDesc.GetCallBackFreq());
-    GradDescObject.insert("Eps", ProtoGradDesc.GetEps());
-    GradDescObject.insert("Eta_FirstJump", ProtoGradDesc.GetEta_FirstJump());
-    GradDescObject.insert("Eta_k_dec", ProtoGradDesc.GetEta_k_dec());
-    GradDescObject.insert("Eta_k_inc", ProtoGradDesc.GetEta_k_inc());
-    GradDescObject.insert("FinDifMethod", ProtoGradDesc.GetFinDifMethod());
-    GradDescObject.insert("MaxIters", (int)ProtoGradDesc.GetMaxIters());
-    GradDescObject.insert("MaxTime", ProtoGradDesc.GetMaxTime());
-    GradDescObject.insert("Min_Eta", ProtoGradDesc.GetMin_Eta());
+//    GradDescObject.insert("Alpha", ProtoGradDesc.GetAlpha());
+//    GradDescObject.insert("CallBackFreq", (int)ProtoGradDesc.GetCallBackFreq());
+//    GradDescObject.insert("Eps", ProtoGradDesc.GetEps());
+//    GradDescObject.insert("Eta_FirstJump", ProtoGradDesc.GetEta_FirstJump());
+//    GradDescObject.insert("Eta_k_dec", ProtoGradDesc.GetEta_k_dec());
+//    GradDescObject.insert("Eta_k_inc", ProtoGradDesc.GetEta_k_inc());
+//    GradDescObject.insert("FinDifMethod", ProtoGradDesc.GetFinDifMethod());
+//    GradDescObject.insert("MaxIters", (int)ProtoGradDesc.GetMaxIters());
+//    GradDescObject.insert("MaxTime", ProtoGradDesc.GetMaxTime());
+//    GradDescObject.insert("Min_Eta", ProtoGradDesc.GetMin_Eta());
+
+    GradDescObject.insert("GradDescFileName", GradDescFileName);
 
     mainObject.insert("GradDesc", GradDescObject);
 
-
     QJsonObject TargetFunctionSettingsObject;
 
-    TargetFunctionSettingsObject.insert("A2", TargetFuncSettingsGlobal.A2);
-    TargetFunctionSettingsObject.insert("Aarf", TargetFuncSettingsGlobal.Aarf);
-    TargetFunctionSettingsObject.insert("IsUseCoveredFlag", TargetFuncSettingsGlobal.IsUseCoveredFlag);
-    TargetFunctionSettingsObject.insert("R_nodeOverlap", TargetFuncSettingsGlobal.R_nodeOverlap);
-    TargetFunctionSettingsObject.insert("k_step_ot", TargetFuncSettingsGlobal.k_step_ot);
-    TargetFunctionSettingsObject.insert("offX", TargetFuncSettingsGlobal.offX);
-    TargetFunctionSettingsObject.insert("p", TargetFuncSettingsGlobal.p);
-    TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
+//    TargetFunctionSettingsObject.insert("A2", TargetFuncSettingsGlobal.A2);
+//    TargetFunctionSettingsObject.insert("Aarf", TargetFuncSettingsGlobal.Aarf);
+//    TargetFunctionSettingsObject.insert("IsUseCoveredFlag", TargetFuncSettingsGlobal.IsUseCoveredFlag);
+//    TargetFunctionSettingsObject.insert("R_nodeOverlap", TargetFuncSettingsGlobal.R_nodeOverlap);
+//    TargetFunctionSettingsObject.insert("k_step_ot", TargetFuncSettingsGlobal.k_step_ot);
+//    TargetFunctionSettingsObject.insert("offX", TargetFuncSettingsGlobal.offX);
+//    TargetFunctionSettingsObject.insert("p", TargetFuncSettingsGlobal.p);
+//    TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
 
 //    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettingsGlobal.TargetFuncType);
 //    TargetFunctionSettingsObject.insert("TargetFuncType", TargetFuncTypeStr);
 
-    TargetFunctionSettingsObject.insert("TargetFuncFirstPhase", QString().fromStdString(TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase));
-    TargetFunctionSettingsObject.insert("TargetFuncSecondPhase", QString().fromStdString(TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase));
+    TargetFunctionSettingsObject.insert("TargetFuncFirstPhase", QString().fromStdString(ActiveTargetFuncFirstPhase));
+    TargetFunctionSettingsObject.insert("TargetFuncSecondPhase", QString().fromStdString(ActiveTargetFuncSecondPhase));
+    TargetFunctionSettingsObject.insert("TargetFuncFileName", TargetFuncSettingsGlobal.FileName);
 
     mainObject.insert("TargetFunctionSettings", TargetFunctionSettingsObject);
 
     QJsonObject ConfigurationObject;
+
+//    ConfigurationObject.insert("TargetFuncFirstPhase", QString().fromStdString(ActiveTargetFuncFirstPhase));
+//    ConfigurationObject.insert("TargetFuncSecondPhase", QString().fromStdString(ActiveTargetFuncSecondPhase));
+
 
     ConfigurationObject.insert("RouteCount", (int)Routes.size());
     ConfigurationObject.insert("Routes", RepresentRoutesAsJsonArray());

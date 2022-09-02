@@ -6,6 +6,37 @@
 #include <QFileDialog>
 
 #include "GradModel.h"
+#include "GradDescSaveLoad.h"
+
+void DialogGradConfig::InitTargetFuncSettingsDialog(const TargetFuncSettingsStruct &_targetFuncSettings)
+{
+    ui->EditAarf->setText(QString().setNum(_targetFuncSettings.Aarf));
+    ui->EditA2->setText(QString().setNum(_targetFuncSettings.A2));
+    ui->EditR_nodeOverlap->setText(QString().setNum(_targetFuncSettings.R_nodeOverlap));
+    ui->Edit_k_step_ot->setText(QString().setNum(_targetFuncSettings.k_step_ot));
+    ui->Edit_offX->setText(QString().setNum(_targetFuncSettings.offX));
+    ui->Edit_p->setText(QString().setNum(_targetFuncSettings.p));
+    ui->chbIsUseCoveredFlag->setChecked(_targetFuncSettings.IsUseCoveredFlag);
+    ui->chbIsUseLineBetweenTwoPoints->setChecked(_targetFuncSettings.IsUseLineBetweenTwoPoints);
+
+    ui->EditTargetFuncGlobalFile->setText(_targetFuncSettings.FileName);
+}
+//----------------------------------------------------------
+
+void DialogGradConfig::InitGradDescDialog(const tf_gd_lib::GradDescent &_gd)
+{
+    ui->EditMinEta->setText(QString().setNum(_gd.GetMin_Eta()));
+    ui->EditFirstJump->setText(QString().setNum(_gd.GetEta_FirstJump()));
+    ui->Edit_k_mult->setText(QString().setNum(_gd.GetEta_k_inc()));
+    ui->Edit_k_div->setText(QString().setNum(_gd.GetEta_k_dec()));
+    ui->EditAlpha->setText(QString().setNum(_gd.GetAlpha()));
+    ui->Edit_eps->setText(QString().setNum(_gd.GetEps()));
+    ui->EditCallbackFreq->setText(QString().setNum(_gd.GetCallBackFreq()));
+    ui->chbFinMethod->setChecked(_gd.GetFinDifMethod());
+    ui->EditMaxIters->setText(QString().setNum(_gd.GetMaxIters()));
+    ui->EditMaxTime->setText(QString().setNum(_gd.GetMaxTime()));
+}
+//----------------------------------------------------------
 
 DialogGradConfig::DialogGradConfig(QWidget *parent) :
     QDialog(parent),
@@ -23,26 +54,30 @@ DialogGradConfig::~DialogGradConfig()
 
 void DialogGradConfig::InitDialog(const MyGradModel &_gm)
 {
-    ui->EditMinEta->setText(QString().setNum(_gm.ProtoGradDesc.GetMin_Eta()));
-    ui->EditFirstJump->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_FirstJump()));
-    ui->Edit_k_mult->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_k_inc()));
-    ui->Edit_k_div->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_k_dec()));
-    ui->EditAlpha->setText(QString().setNum(_gm.ProtoGradDesc.GetAlpha()));
-    ui->Edit_eps->setText(QString().setNum(_gm.ProtoGradDesc.GetEps()));
-    ui->EditCallbackFreq->setText(QString().setNum(_gm.ProtoGradDesc.GetCallBackFreq()));
-    ui->chbFinMethod->setChecked(_gm.ProtoGradDesc.GetFinDifMethod());
-    ui->EditMaxIters->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxIters()));
-    ui->EditMaxTime->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxTime()));
+//    ui->EditMinEta->setText(QString().setNum(_gm.ProtoGradDesc.GetMin_Eta()));
+//    ui->EditFirstJump->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_FirstJump()));
+//    ui->Edit_k_mult->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_k_inc()));
+//    ui->Edit_k_div->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_k_dec()));
+//    ui->EditAlpha->setText(QString().setNum(_gm.ProtoGradDesc.GetAlpha()));
+//    ui->Edit_eps->setText(QString().setNum(_gm.ProtoGradDesc.GetEps()));
+//    ui->EditCallbackFreq->setText(QString().setNum(_gm.ProtoGradDesc.GetCallBackFreq()));
+//    ui->chbFinMethod->setChecked(_gm.ProtoGradDesc.GetFinDifMethod());
+//    ui->EditMaxIters->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxIters()));
+//    ui->EditMaxTime->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxTime()));
 
-    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.Aarf));
-    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.A2));
-    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.R_nodeOverlap));
-    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.k_step_ot));
-    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.offX));
-    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.p));
-    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettingsGlobal.IsUseCoveredFlag);
+    InitGradDescDialog(_gm.ProtoGradDesc);
+    ui->EditGradDescFile->setText(_gm.GetGradDescFileName());
 
-    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
+//    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.Aarf));
+//    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.A2));
+//    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.R_nodeOverlap));
+//    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.k_step_ot));
+//    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.offX));
+//    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.p));
+//    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettingsGlobal.IsUseCoveredFlag);
+//    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
+
+    InitTargetFuncSettingsDialog(_gm.TargetFuncSettingsGlobal);
 
     if (_gm.GetNodesType() == SignalNodeType::Sphere)
         ui->rbSignalSphere->setChecked(true);
@@ -60,25 +95,17 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
         ui->cbTargetFuncSecondPhase->addItem(QString().fromStdString(item.first));
     }
 
-    auto it_TargetFunc_1 = _gm.GetTargetFunctions().find(_gm.TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    auto it_TargetFunc_1 = _gm.GetTargetFunctions().find(_gm.GetActiveTargetFuncFirstPhase());
     if (it_TargetFunc_1 == _gm.GetTargetFunctions().end())
         QMessageBox::warning(this, "Warning", "TargetFunctionFirstPhase is Unknown!");
     else
         ui->cbTargetFuncFirstPhase->setCurrentText(QString().fromStdString(it_TargetFunc_1->first));
 
-    auto it_TargetFunc_2 = _gm.GetTargetFunctions().find(_gm.TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase);
+    auto it_TargetFunc_2 = _gm.GetTargetFunctions().find(_gm.GetActiveTargetFuncSecondPhase());
     if (it_TargetFunc_2 == _gm.GetTargetFunctions().end())
         QMessageBox::warning(this, "Warning", "TargetFunctionSecondPhase is Unknown!");
     else
         ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
-
-//    if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Additive)
-//        ui->rbTargetFuncAdditive->setChecked(true);
-//    else if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Probabilistic)
-//        ui->rbTargetFuncProbabilistic->setChecked(true);
-//    else
-//        QMessageBox::warning(this, "Warning", "TargetFuncType is Unknown");
-
 }
 //------------------------------------------------------------------
 
@@ -106,8 +133,9 @@ void DialogGradConfig::ReInitTargetFuncSettings(TargetFuncSettingsStruct &_targe
     _targetFuncSettings.offX = ui->Edit_offX->text().toDouble();
     _targetFuncSettings.p = ui->Edit_p->text().toDouble();
     _targetFuncSettings.IsUseCoveredFlag = ui->chbIsUseCoveredFlag->isChecked();
-
     _targetFuncSettings.IsUseLineBetweenTwoPoints = ui->chbIsUseLineBetweenTwoPoints->isChecked(); 
+
+    _targetFuncSettings.FileName = ui->EditTargetFuncGlobalFile->text();
 }
 //------------------------------------------------------------------
 
@@ -133,38 +161,118 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
     else
         ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
 
-    _gm.TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase = ui->cbTargetFuncFirstPhase->currentText().toStdString();
-    _gm.TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase = ui->cbTargetFuncSecondPhase->currentText().toStdString();
+    _gm.SetActiveTargetFuncFirstPhase(ui->cbTargetFuncFirstPhase->currentText().toStdString());
+    _gm.SetActiveTargetFuncSecondPhase(ui->cbTargetFuncSecondPhase->currentText().toStdString());
 
-//    if (ui->rbTargetFuncAdditive->isChecked())
-//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
-//    else if (ui->rbTargetFuncProbabilistic->isChecked())
-//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Probabilistic;
-//    else
-//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Empty;
+    _gm.SetGradDescFileName(ui->EditGradDescFile->text());
 }
 //------------------------------------------------------------------
 
 void DialogGradConfig::on_btnTargetFuncGlobalOpenFile_clicked()
 {
     QString fn = QFileDialog::getOpenFileName(nullptr, "Select file",
-                                              ui->EditTargetFuncGLobalFile->text(),
+                                              ui->EditTargetFuncGlobalFile->text(),
                                               "TargetFunc Settings Files (*.json)");
 
     if (fn.isEmpty())
     {
-        qDebug() << "Select TargetFunc Settings File canceled by user";
+        qDebug() << "Selection TargetFunc Settings File canceled by user";
+        return;
+    }
+
+    ui->EditTargetFuncGlobalFile->setText(fn);
+
+    TargetFuncSettingsStruct tempTargetFuncSettings;
+    if (!tempTargetFuncSettings.LoadFromFile(fn))
+    {
+        qDebug() << "Select TargetFunc Settings cannot be loaded";
+        return;
+    }
+
+    InitTargetFuncSettingsDialog(tempTargetFuncSettings);
+}
+//------------------------------------------------------------------
+
+void DialogGradConfig::on_btnTargetFuncGlobalSave_clicked()
+{
+    QString fn = ui->EditTargetFuncGlobalFile->text();
+    if (fn.isEmpty()) {
+        on_btnTargetFuncGlobalSaveAs_clicked();
         return;
     }
 
     TargetFuncSettingsStruct tempTargetFuncSettings;
-//    if (!tempTargetFuncSettings.LoadFromJson(fn))
-//    {
-//        qDebug() << "Select TargetFunc Settings cannot be loaded";
-//        return;
-//    }
+    ReInitTargetFuncSettings(tempTargetFuncSettings);
+    tempTargetFuncSettings.SaveToFile(fn);
+}
+//------------------------------------------------------------------
 
+void DialogGradConfig::on_btnTargetFuncGlobalSaveAs_clicked()
+{
+    QString fn = QFileDialog::getSaveFileName(nullptr, "Select TargetFunc file",
+                                               ui->EditTargetFuncGlobalFile->text(),
+                                               "TargetFunc Settings Files (*.json)");
+    if (!fn.isEmpty())
+    {
+        TargetFuncSettingsStruct tempTargetFuncSettings;
+        ReInitTargetFuncSettings(tempTargetFuncSettings);
+        tempTargetFuncSettings.SaveToFile(fn);
+        ui->EditTargetFuncGlobalFile->setText(fn);
+    }
+}
+//------------------------------------------------------------------
 
+void DialogGradConfig::on_btnGradDescOpenFile_clicked()
+{
+    QString fn = QFileDialog::getOpenFileName(nullptr, "Select GradDesc file",
+                                              ui->EditGradDescFile->text(),
+                                              "GradDesc Settings Files (*.json)");
+
+    if (fn.isEmpty())
+    {
+        qDebug() << "Selection GradDesc Settings File canceled by user";
+        return;
+    }
+
+    ui->EditGradDescFile->setText(fn);
+
+    tf_gd_lib::GradDescent tempGradDescSettings;
+    if (!GradDescLoadFromFile(tempGradDescSettings, fn))
+    {
+        qDebug() << "Select TargetFunc Settings cannot be loaded";
+        return;
+    }
+
+    InitGradDescDialog(tempGradDescSettings);
+}
+//------------------------------------------------------------------
+
+void DialogGradConfig::on_btnGradDescSave_clicked()
+{
+    QString fn = ui->EditGradDescFile->text();
+    if (fn.isEmpty()) {
+        on_btnGradDescSaveAs_clicked();
+        return;
+    }
+
+    tf_gd_lib::GradDescent tempGradDescSettings;
+    ReInitGradDesc(tempGradDescSettings);
+    GradDescSaveToFile(tempGradDescSettings, fn);
+}
+//------------------------------------------------------------------
+
+void DialogGradConfig::on_btnGradDescSaveAs_clicked()
+{
+    QString fn = QFileDialog::getSaveFileName(nullptr, "Select GradDesc file",
+                                               ui->EditGradDescFile->text(),
+                                               "GradDesc Settings Files (*.json)");
+    if (!fn.isEmpty())
+    {
+        tf_gd_lib::GradDescent tempGradDescSettings;
+        ReInitGradDesc(tempGradDescSettings);
+        GradDescSaveToFile(tempGradDescSettings, fn);
+        ui->EditGradDescFile->setText(fn);
+    }
 }
 //------------------------------------------------------------------
 
