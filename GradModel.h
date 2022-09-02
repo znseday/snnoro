@@ -8,6 +8,7 @@
 #include "Route.h"
 #include "GradConfig.h"
 #include "Types.h"
+#include "TargetFunctions/TargetFunctionBase.h"
 
 #include "Relief.h"
 
@@ -46,7 +47,6 @@ protected:
 
     QString Name = "Unknown";
     QString FileName;
-    //bool IsLoaded = false; // Not needed anymore
     bool IsSaved = true;
 
     size_t nDraws = 1;
@@ -58,10 +58,7 @@ protected:
     QJsonArray RepresentNodesAsJsonArray() const;
     QJsonObject RepresentReliefInfoAsJsonObject() const;
 
-//    std::string ActiveTargetFunction = "AdditiveSphere";
-//    std::map<std::string, std::function<double(const std::vector<double> &)>> TargetFunctions;
     std::map<std::string, TargetFunctionBase*> TargetFunctions;
-
 
 public:
 

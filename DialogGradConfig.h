@@ -25,11 +25,12 @@ public:
     void ReInitTargetFuncSettings(TargetFuncSettingsStruct &_targetFuncSettings);
     void ReInitGradModel(MyGradModel &_gm);
 
+private slots:
+    void on_btnTargetFuncGlobalOpenFile_clicked();
+
 private:
 
     Ui::DialogGradConfig *ui;
-
-
 
 };
 

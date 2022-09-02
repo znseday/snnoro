@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "GradModel.h"
 
@@ -143,3 +144,27 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
 //        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Empty;
 }
 //------------------------------------------------------------------
+
+void DialogGradConfig::on_btnTargetFuncGlobalOpenFile_clicked()
+{
+    QString fn = QFileDialog::getOpenFileName(nullptr, "Select file",
+                                              ui->EditTargetFuncGLobalFile->text(),
+                                              "TargetFunc Settings Files (*.json)");
+
+    if (fn.isEmpty())
+    {
+        qDebug() << "Select TargetFunc Settings File canceled by user";
+        return;
+    }
+
+    TargetFuncSettingsStruct tempTargetFuncSettings;
+//    if (!tempTargetFuncSettings.LoadFromJson(fn))
+//    {
+//        qDebug() << "Select TargetFunc Settings cannot be loaded";
+//        return;
+//    }
+
+
+}
+//------------------------------------------------------------------
+

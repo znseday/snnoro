@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>347</width>
-    <height>410</height>
+    <width>502</width>
+    <height>467</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>2</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tabGradDesc">
         <attribute name="title">
@@ -173,8 +173,8 @@
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>10</x>
-           <y>10</y>
+           <x>30</x>
+           <y>110</y>
            <width>170</width>
            <height>232</height>
           </rect>
@@ -273,8 +273,8 @@
         <widget class="QGroupBox" name="groupBox">
          <property name="geometry">
           <rect>
-           <x>10</x>
-           <y>240</y>
+           <x>250</x>
+           <y>170</y>
            <width>171</width>
            <height>84</height>
           </rect>
@@ -298,6 +298,58 @@
            </widget>
           </item>
          </layout>
+        </widget>
+        <widget class="QPushButton" name="btnTargetFuncGlobalSaveAs">
+         <property name="geometry">
+          <rect>
+           <x>370</x>
+           <y>340</y>
+           <width>80</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Save As...</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btnTargetFuncGlobalSave">
+         <property name="geometry">
+          <rect>
+           <x>270</x>
+           <y>340</y>
+           <width>80</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Save</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btnTargetFuncGlobalOpenFile">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>20</y>
+           <width>141</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Open Settings FIle...</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="EditTargetFuncGLobalFile">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>60</y>
+           <width>431</width>
+           <height>24</height>
+          </rect>
+         </property>
         </widget>
        </widget>
        <widget class="QWidget" name="tabTargetFuncSelector">
