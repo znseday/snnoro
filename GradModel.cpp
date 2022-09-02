@@ -32,6 +32,35 @@ constexpr float TransSpeed = 0.006f;
 static const QString ReliefsDefaultDir = "Reliefs";
 static const QString SettingsDefaultDir = "Settings";
 
+static void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, const QString &_what)
+{
+    if ( !QFile::exists(_fileName) )
+    {
+        QFileInfo fileInfo(_fileName);
+        _fileName = _defDir + "/" + fileInfo.fileName();
+    }
+
+    if ( !QFile::exists(_fileName) )
+    {
+        auto res = QMessageBox::question(nullptr, "Question", _what + " File not Found. Would you like to choose " + _what + " file?");
+        if (res == QMessageBox::Yes)
+        {
+            _fileName = QFileDialog::getOpenFileName(nullptr,
+                                      "Choose " + _what + " file", ".", _what + " Files (*.json)");
+
+            if (_fileName.isEmpty())
+            {
+                QMessageBox::critical(nullptr, "Error", _what + " file not set and won't be loaded");
+            }
+
+        }
+        else
+        {
+            QMessageBox::critical(nullptr, "Error", _what + " file not set and won't be loaded");
+        }
+    }
+}
+
 MyGradModel::MyGradModel()
 {
     ProtoGradDesc.SetIsUseUserTargetFunction(true);
@@ -711,31 +740,33 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     {
         QString ReliefFileName = configObject["ReliefFileName"].toString();
 
-        if ( !QFile::exists(ReliefFileName) )
-        {
-            QFileInfo fileInfo(ReliefFileName);
-            ReliefFileName = ReliefsDefaultDir + "/" + fileInfo.fileName();
-        }
+        CorrectFileNameIfDoesntExist(ReliefFileName, ReliefsDefaultDir, "Relief");
 
-        if ( !QFile::exists(ReliefFileName) )
-        {
-            auto res = QMessageBox::question(nullptr, "Question", "Relief File not Found. Would you like to choose Relif file?");
-            if (res == QMessageBox::Yes)
-            {
-                ReliefFileName = QFileDialog::getOpenFileName(nullptr,
-                                          "Choose Relief file", ".", "Relif Files (*.json)");
+//        if ( !QFile::exists(ReliefFileName) )
+//        {
+//            QFileInfo fileInfo(ReliefFileName);
+//            ReliefFileName = ReliefsDefaultDir + "/" + fileInfo.fileName();
+//        }
 
-                if (ReliefFileName.isEmpty())
-                {
-                    QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
-                }
+//        if ( !QFile::exists(ReliefFileName) )
+//        {
+//            auto res = QMessageBox::question(nullptr, "Question", "Relief File not Found. Would you like to choose Relif file?");
+//            if (res == QMessageBox::Yes)
+//            {
+//                ReliefFileName = QFileDialog::getOpenFileName(nullptr,
+//                                          "Choose Relief file", ".", "Relif Files (*.json)");
 
-            }
-            else
-            {
-                QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
-            }
-        }
+//                if (ReliefFileName.isEmpty())
+//                {
+//                    QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
+//                }
+
+//            }
+//            else
+//            {
+//                QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
+//            }
+//        }
 
         if (!Relief.LoadFromFile(ReliefFileName))
             throw std::runtime_error("Relief File Not Found or Couldn't be read");
@@ -867,30 +898,32 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     GradDescFileName = gradDescObject["GradDescFileName"].toString();
 
-    if ( !QFile::exists(GradDescFileName) )
-    {
-        QFileInfo fileInfo(GradDescFileName);
-        GradDescFileName = SettingsDefaultDir + "/" +fileInfo.fileName();
-    }
-    if ( !QFile::exists(GradDescFileName) )
-    {
-        auto res = QMessageBox::question(nullptr, "Question", "GradDesc file not Found. Would you like to choose GradDesc file?");
-        if (res == QMessageBox::Yes)
-        {
-            GradDescFileName = QFileDialog::getOpenFileName(nullptr,
-                                      "Choose GradDesc file", ".", "GradDesc Files (*.json)");
+    CorrectFileNameIfDoesntExist(GradDescFileName, SettingsDefaultDir, "GradDesc");
 
-            if (GradDescFileName.isEmpty())
-            {
-                QMessageBox::critical(nullptr, "Error", "GradDesc file not set and won't be loaded");
-            }
+//    if ( !QFile::exists(GradDescFileName) )
+//    {
+//        QFileInfo fileInfo(GradDescFileName);
+//        GradDescFileName = SettingsDefaultDir + "/" +fileInfo.fileName();
+//    }
+//    if ( !QFile::exists(GradDescFileName) )
+//    {
+//        auto res = QMessageBox::question(nullptr, "Question", "GradDesc file not Found. Would you like to choose GradDesc file?");
+//        if (res == QMessageBox::Yes)
+//        {
+//            GradDescFileName = QFileDialog::getOpenFileName(nullptr,
+//                                      "Choose GradDesc file", ".", "GradDesc Files (*.json)");
 
-        }
-        else
-        {
-            QMessageBox::critical(nullptr, "Error", "GradDesc file not set and won't be loaded");
-        }
-    }
+//            if (GradDescFileName.isEmpty())
+//            {
+//                QMessageBox::critical(nullptr, "Error", "GradDesc file not set and won't be loaded");
+//            }
+
+//        }
+//        else
+//        {
+//            QMessageBox::critical(nullptr, "Error", "GradDesc file not set and won't be loaded");
+//        }
+//    }
 
     if (!GradDescLoadFromFile(ProtoGradDesc, GradDescFileName))
     {
@@ -917,30 +950,32 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     QString TargetFuncFileName = targetFuncObject["TargetFuncFileName"].toString();
 
-    if ( !QFile::exists(TargetFuncFileName) )
-    {
-        QFileInfo fileInfo(TargetFuncFileName);
-        TargetFuncFileName = SettingsDefaultDir + "/" +fileInfo.fileName();
-    }
-    if ( !QFile::exists(TargetFuncFileName) )
-    {
-        auto res = QMessageBox::question(nullptr, "Question", "TargetFunc file not Found. Would you like to choose TargetFunc file?");
-        if (res == QMessageBox::Yes)
-        {
-            TargetFuncFileName = QFileDialog::getOpenFileName(nullptr,
-                                      "Choose TargetFunc file", ".", "TargetFunc Files (*.json)");
+    CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc");
 
-            if (TargetFuncFileName.isEmpty())
-            {
-                QMessageBox::critical(nullptr, "Error", "TargetFunc file not set and won't be loaded");
-            }
+//    if ( !QFile::exists(TargetFuncFileName) )
+//    {
+//        QFileInfo fileInfo(TargetFuncFileName);
+//        TargetFuncFileName = SettingsDefaultDir + "/" +fileInfo.fileName();
+//    }
+//    if ( !QFile::exists(TargetFuncFileName) )
+//    {
+//        auto res = QMessageBox::question(nullptr, "Question", "TargetFunc file not Found. Would you like to choose TargetFunc file?");
+//        if (res == QMessageBox::Yes)
+//        {
+//            TargetFuncFileName = QFileDialog::getOpenFileName(nullptr,
+//                                      "Choose TargetFunc file", ".", "TargetFunc Files (*.json)");
 
-        }
-        else
-        {
-            QMessageBox::critical(nullptr, "Error", "TargetFunc file not set and won't be loaded");
-        }
-    }
+//            if (TargetFuncFileName.isEmpty())
+//            {
+//                QMessageBox::critical(nullptr, "Error", "TargetFunc file not set and won't be loaded");
+//            }
+
+//        }
+//        else
+//        {
+//            QMessageBox::critical(nullptr, "Error", "TargetFunc file not set and won't be loaded");
+//        }
+//    }
 
     if (!TargetFuncSettingsGlobal.LoadFromFile(TargetFuncFileName))
     {
