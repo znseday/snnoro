@@ -3,8 +3,42 @@
 
 
 #include <vector>
+#include <string>
 class MyConfig;
-class TargetFuncSettingsStruct;
+//class TargetFuncSettingsStruct;
+
+//constexpr double WierdCoeffAlpha = 0.00001;
+constexpr double WierdCoeffAlpha = 1;
+
+class QJsonObject;
+class QJsonParseError;
+
+#include <QString>
+
+struct TargetFuncSettingsStruct // Переделать, чтобы у каждый целевой функции
+                                // был свой пакет настроек
+{
+    double Aarf = 1e8;
+    double A2 = 4e7;
+    double p = 1e-5;
+    double offX = 0.01;
+    double k_step_ot = 0.03;
+    double R_nodeOverlap = 50;
+    bool IsUseCoveredFlag = true;
+    bool IsUseLineBetweenTwoPoints = false;
+
+    // Перенести эти две строчки в GradModel ???
+    std::string ActiveTargetFuncFirstPhase = "AdditiveSphereFirstPhase";
+    std::string ActiveTargetFuncSecondPhase = "AdditiveSphereSecondPhase";
+
+    void ParseJson(const QJsonObject &_jsonObject, const QJsonParseError &_parseError);
+    bool LoadFromFile(const QString &_fileName);
+    bool SaveToFile(const QString &_fileName);
+
+    QString FileName;
+};
+
+//----------------------------------------------------------
 
 class TargetFunctionBase
 {

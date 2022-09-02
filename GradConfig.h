@@ -123,6 +123,8 @@ public:
 
     void FindCoveredPointsUsingParams(const std::vector<double>& params, SignalNodeType _snt);
 
+
+    void CalcAccessRateForCurrent(); // DEBUG
 };
 
 //bool operator<(const MyConfig &a, const MyConfig &b)

@@ -144,6 +144,7 @@
     <addaction name="actionTwoLines"/>
     <addaction name="separator"/>
     <addaction name="actionDebug_Get_Last_Cost_For_Current"/>
+    <addaction name="actionDebug_Calc_Access_Rate_for_current"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGrad"/>
@@ -425,6 +426,11 @@
   <action name="actionGrad_SetDrawCount_Custom">
    <property name="text">
     <string>Custom...</string>
+   </property>
+  </action>
+  <action name="actionDebug_Calc_Access_Rate_for_current">
+   <property name="text">
+    <string>Calc Access Rate for current</string>
    </property>
   </action>
  </widget>

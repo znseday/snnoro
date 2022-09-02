@@ -8,8 +8,11 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <fstream>
 
 #include "TargetFunctions/TargetFunctionBase.h"
+
+constexpr double arfThreshold = 0.5;
 
 using namespace std;
 
@@ -321,12 +324,44 @@ bool MyConfig::StartGradDescent(int nDraw,
 //    GradDesc.SetUseUserTargetFunction(std::function<double(const std::vector<double>&)>(_targetFunction(const std::vector<double>&)));
     GradDesc.SetUseUserTargetFunction(lambdaTargetFunc);
 
+    bool GradReport = false;
+    std::ofstream f_out;
+
+    if (GradReport)
+    {
+        f_out.open("GradReport.txt");
+        f_out.precision(16);
+    }
+
     if (nDraw > 0)
     {
-        GradDesc.SetCallback([this, pGLWidget, _snt]()
+        GradDesc.SetCallback([this, pGLWidget, _snt, GradReport, &f_out]()
         {
             if (!IsGradCalculating)
                 GradDesc.Stop();
+
+            if (GradReport)
+            {
+                for (const auto & item: GradDesc.GetParams())
+                {
+                    f_out << item << "\t";
+                }
+                f_out << endl;
+
+                for (const auto & item: GradDesc.Get_dCost_dp())
+                {
+                    f_out << item << "\t";
+                }
+                f_out << endl;
+
+                for (const auto & item: GradDesc.GetCur_Eta())
+                {
+                    f_out << item << "\t";
+                }
+                f_out << endl;
+
+                f_out << endl;
+            }
 
             InitNodeCoordsFromParams(GradDesc.GetParams(), _snt);
             pGLWidget->Repaint();
@@ -380,6 +415,8 @@ bool MyConfig::StartGradDescent(int nDraw,
 
     cout << "Iters: " << GradDesc.GetLastIters() << " out of " << GradDesc.GetMaxIters() << endl;
     cout << "Time: " << GradDesc.GetLastTime() << " out of " << GradDesc.GetMaxTime() << endl;
+
+    cout << "alpha = " << GradDesc.GetParams()[2] << endl;
 
     cout << "Grad Descent Finished (First Phase)" << endl << endl;
 
@@ -518,7 +555,7 @@ void MyConfig::InitNodeCoordsFromParams(const std::vector<double> & _params, Sig
             Nodes.at(i/3).Pos.setY(_params[i+1]);
             Nodes.at(i/3).Pos.setZ( Relief->CalcRealZbyRealXY(_params[i], _params[i+1]) );
 
-            Nodes.at(i/3).Alpha = _params[i+2];
+            Nodes.at(i/3).Alpha = _params[i+2] / WierdCoeffAlpha;
         }
     }
     else
@@ -572,8 +609,13 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
         params[i] = node.Pos.x();
 //        min_constrains[i] = Area.left();
 //        max_constrains[i] = Area.right();
+
         min_constrains[i] = min_x;
         max_constrains[i] = max_x;
+
+//        min_constrains[i] = min_x;
+//        max_constrains[i] = min_x;
+
         rel_constrains[i] = 50; // not used yet
         type_constrains[i] = false; // use absolute constrains
         i++;
@@ -581,17 +623,33 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
         params[i] = node.Pos.y();
 //        min_constrains[i] = Area.top();
 //        max_constrains[i] = Area.bottom();
+
         min_constrains[i] = min_y;
         max_constrains[i] = max_y;
+
+//        min_constrains[i] = min_y;
+//        max_constrains[i] = min_y;
+
         rel_constrains[i] = 50; // not used yet
         type_constrains[i] = false; // use absolute constrains
         i++;
 
         if (_snt == SignalNodeType::Cone)
         {
-            params[i] = node.Alpha;
-            min_constrains[i] = -2*M_PI; // ???
-            max_constrains[i] = +2*M_PI; // ???
+            params[i] = node.Alpha * WierdCoeffAlpha;
+
+//            min_constrains[i] = -2*M_PI  * WierdCoeffAlpha; // ???
+//            max_constrains[i] = +2*M_PI  * WierdCoeffAlpha; // ???
+
+//            min_constrains[i] = -M_PI  * WierdCoeffAlpha; // ???
+//            max_constrains[i] = +M_PI  * WierdCoeffAlpha; // ???
+
+            min_constrains[i] = -1e20; // ???
+            max_constrains[i] = +1e20; // ???
+
+//            min_constrains[i] = -2; // ???
+//            max_constrains[i] = +2; // ???
+
 //            min_constrains[i] = min_y;
 //            max_constrains[i] = max_y;
             rel_constrains[i] = 50; // not used yet
@@ -647,7 +705,7 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, S
 
 //                    qDebug() << p1.Pos;
 
-                    if (sn.accessRateCone(p1.Pos) > 0.99)
+                    if (sn.accessRateCone(p1.Pos) > arfThreshold)
                     {
                         p1.IsCovered = true;
                         break;
@@ -659,6 +717,12 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, S
         }
         iRoute++;
     }
+}
+//----------------------------------------------------------
+
+void MyConfig::CalcAccessRateForCurrent()
+{
+    qDebug() << Nodes.front().accessRateCone(Routes.front().Points.front().Pos);
 }
 //----------------------------------------------------------
 
@@ -693,32 +757,32 @@ void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) co
             for (const auto & p : r.Points)
             {
                 glColor3f(0.5f, 0.3f, 0.9f);
-                glBegin(GL_LINES);
+//                glBegin(GL_LINES);
 
-                if (Relief->GetIsMathRelief())
-                {
-                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xNode, yNode) : 0));
-                }
-                else
-                {
-                    zNode = (node.Pos.z()-offsetZ)*Relief->Get_kz();
-                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? zNode : 0));
-                }
+//                if (Relief->GetIsMathRelief())
+//                {
+//                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xNode, yNode) : 0));
+//                }
+//                else
+//                {
+//                    zNode = (node.Pos.z()-offsetZ)*Relief->Get_kz();
+//                    glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? zNode : 0));
+//                }
 
-                double xPoint = (p.Pos.x()-offsetX)*k;
-                double yPoint = (p.Pos.y()-offsetY)*k;
-                double zPoint;
-                if (Relief->GetIsMathRelief())
-                {
-                    glTranslatef(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xPoint, yPoint) : 0));
-                }
-                else
-                {
-                    zPoint = (p.Pos.z()-offsetZ)*Relief->Get_kz();
-                    glVertex3f(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? zPoint : 0));
-                }
+//                double xPoint = (p.Pos.x()-offsetX)*k;
+//                double yPoint = (p.Pos.y()-offsetY)*k;
+//                double zPoint;
+//                if (Relief->GetIsMathRelief())
+//                {
+//                    glTranslatef(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(xPoint, yPoint) : 0));
+//                }
+//                else
+//                {
+//                    zPoint = (p.Pos.z()-offsetZ)*Relief->Get_kz();
+//                    glVertex3f(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? zPoint : 0));
+//                }
 
-                glEnd(); // LINES
+//                glEnd(); // LINES
 
                 QPointF Result;
                 bool isOk = node.CalcIntersectWithLineToPoint(p.Pos, Result);
@@ -800,24 +864,25 @@ void MyConfig::CalcBonds(const TargetFunctionBase &_targetFuncSettingsBase, Sign
                     distToPoint = Routes[iRoute].Points[iPoint].Pos.distanceToPoint(Nodes[iNode].Pos);
 //                    distToPoint = для Cone (учесть, что центр в другом месте)
 
-                    if (distToPoint < Nodes[iNode].R) // R переделать на другой критерий
+                    double arf = Nodes[iNode].accessRateCone(Routes[iRoute].Points[iPoint].Pos);
+
+                    if ( _targetFuncSettingsBase.GetIsUseLineBetweenTwoPoints() )
                     {
-                        double arf = Nodes[iNode].accessRateCone(Routes[iRoute].Points[iPoint].Pos);
+                        // Что делать с этим?
+                        arf *= IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos);
 
-                        if ( _targetFuncSettingsBase.GetIsUseLineBetweenTwoPoints() )
-                        {
-                            // Что делать с этим?
-                            arf *= IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos);
+//                      if ( IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos) )
+//                          arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
+//                      else
+//                          arf = 0;
+                    }
 
-    //                      if ( IsLineBetweenTwoPoints(Nodes[iNode].Pos, Routes[iRoute].Points[iPoint].Pos) )
-    //                          arf = Nodes[iNode].accessRateF(Routes[iRoute].Points[iPoint].Pos);
-    //                      else
-    //                          arf = 0;
-                        }
-
+                    if (arf > arfThreshold)
+                    {
                         // Строчкой ниже R на что заменить?
                         Nodes[iNode].Bonds.emplace(iRoute, iPoint, arf, distToPoint/Nodes[iNode].R);
                     }
+
                 }
                 else
                     throw std::runtime_error("Unknown _snt in MyConfig::CalcBonds");

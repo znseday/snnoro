@@ -101,9 +101,15 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    return 1; // !!!!!!!!!!!!!!!!!!!!!!!!
 
     QPointF interPoint;
-    bool isOk = CalcIntersectWithLineToPoint(Pos, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
-    if (!isOk)
-        throw std::logic_error("There is not any instersection with ellipse in SignalNode::accessRateCone");
+    int countIntersects = CalcIntersectWithLineToPoint(p, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
+    if (countIntersects < 2)
+    {
+        qDebug() << "countIntersects < 2 in SignalNode::accessRateCone";
+        return 2; // ???
+    }
+
+    //    if (!isOk)
+//        throw std::logic_error("There is not any instersection with ellipse in SignalNode::accessRateCone");
 
     // Важно !!! Здесь рассчет в 2d !
 
@@ -111,16 +117,45 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    qDebug() << "interPoint =" << interPoint;
 //    qDebug() << "p.toPointF() = " << p.toPointF();
 
-    double chisl = QLineF(Pos.toPointF(), interPoint).length();
-    double znam = QLineF(Pos.toPointF(), p.toPointF()).length();
+//    interPoint = {100, 100};
+
+    double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), interPoint).length();
+
+    //    double dist_from_sn_to_intersect = sqrt( pow(Pos.toPointF().x() - interPoint.x(), 2)
+//                                           + pow(Pos.toPointF().y() - interPoint.y(), 2) );
+
+
+    double dist_from_sn_to_point_of_route = QLineF(Pos.toPointF(), p.toPointF()).length();
+
+//    if (dist_from_sn_to_point_of_route == 0)
+//    {
+////        qDebug() << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route;
+//        std::cout.precision(20);
+//        std::cout << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route << std::endl;
+//    }
 
 //    qDebug() << "chisl =" << chisl;
 //    qDebug() << "znam =" << znam;
 
-//    double k = QLineF(Pos.toPointF(), interPoint).length() / QLineF(Pos.toPointF(), p.toPointF()).length();
-    double k = chisl / znam;
+//    qDebug() << "dist_from_sn_to_intersect =" << dist_from_sn_to_intersect;
+//    qDebug() << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route;
 
-    if (k < 0.01 || k > 1000)
+//    double k = QLineF(Pos.toPointF(), interPoint).length() / QLineF(Pos.toPointF(), p.toPointF()).length();
+//    double k = chisl / znam;
+//    double k = - dist_from_sn_to_point_of_route / dist_from_sn_to_intersect;
+
+    double k;// = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route + 10);
+
+
+    // Переделать. Сделать физично.
+    // Вылетает ошибка при подсчете пересечений, когда узел оказывается в точке маршрута и расстояние до него 0
+
+    if (dist_from_sn_to_point_of_route >= 100)
+        k = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route);
+    else
+        k = (dist_from_sn_to_intersect + 100) / (100.0);
+
+    if (fabs(k) < 0.01 || fabs(k) > 1000)
         qDebug() << "k =" << k;  // k иногда уходит в inf !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     return k; // временно!
@@ -381,6 +416,11 @@ int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_resu
 
     ellCenter += Pos.toPointF();
 
+    double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), _point.toPointF()).length();
+//    if (dist_from_sn_to_intersect < 0.01)
+//        qDebug() << "dist_from_sn_to_intersect =" << dist_from_sn_to_intersect;
+
+
     QPointF nodeInEllCoords = Pos.toPointF() - ellCenter; // оптимизировать ?
 
 //    qDebug() << "nodeInEllCoordsX =" << nodeInEllCoordsX;
@@ -408,9 +448,19 @@ int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_resu
     QPointF intersect1, intersect2;
 
     int count = CalcLineInterEllipse(Rx, Ry, nodeInEllCoords, pointInEllCoords, intersect1, intersect2);
+
+    if (count < 2 && dist_from_sn_to_intersect < 0.0001)
+    {
+        return count; // Подумать, что делать с точками пересечения и как оих обрабатывать в вызывающем коде
+    }
+
     if (count < 2)
     {
-        qDebug() << count;
+        qDebug() << "nodeInEllCoords =" << nodeInEllCoords;
+        qDebug() << "nodeInEllCoords =" << pointInEllCoords;
+        qDebug() << "count of intersections =" << count;
+        qDebug() << "intersect1 =" << intersect1;
+        qDebug() << "intersect2 =" << intersect2;
         throw std::runtime_error("count of intersections < 2");
     }
 
@@ -424,36 +474,54 @@ int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_resu
     intersect2 += ellCenter;
 
     // Важно!!! Здесь дистанция в 2d !
-    double distToInter1 = QLineF(_point.toPointF(), intersect1).length();
-    double distToInter2 = QLineF(_point.toPointF(), intersect2).length();
+//    double distToInter1 = QLineF(_point.toPointF(), intersect1).length();
+//    double distToInter2 = QLineF(_point.toPointF(), intersect2).length();
 
-    if ( pointInEllCoords.x()*pointInEllCoords.x()/(Rx*Rx) + pointInEllCoords.y()*pointInEllCoords.y()/(Ry*Ry) < 1.0 )
+    double dx = _point.x() - Pos.x();
+    double dy = _point.y() - Pos.y();
+
+    double dx1 = intersect1.x() - Pos.x();
+    double dy1 = intersect1.y() - Pos.y();
+
+//    qDebug() << "dx =" << dx;
+//    qDebug() << "dy =" << dy;
+//    qDebug() << "dx1 =" << dx1;
+//    qDebug() << "dy1 =" << dy1;
+
+    if ( ( (dx >= 0 && dx1 >= 0) || (dx <= 0 && dx1 <= 0) ) &&
+         ( (dy >= 0 && dy1 >= 0) || (dy <= 0 && dy1 <= 0) ) )
     {
-        if (distToInter1 > distToInter2) // Вместо этого нужно что-то подумать
-        {
-//            painter.drawText(x2, y2, "This inside");
-            _result = intersect2;
-        }
-        else
-        {
-            _result = intersect1;
-//            painter.drawText(x1, y1, "This inside");
-        }
+        _result = intersect1; // painter.drawText(x1, y1, "This inside");
     }
-
     else
     {
-        if (distToInter1 > distToInter2)
-        {
-            _result = intersect2;
-//            painter.drawText(x2, y2, "This outside");
-        }
-        else
-        {
-            _result = intersect1;
-//            painter.drawText(x1, y1, "This outside");
-        }
+        _result = intersect2; // painter.drawText(x2, y2, "This inside");
     }
+
+//    if ( pointInEllCoords.x()*pointInEllCoords.x()/(Rx*Rx) + pointInEllCoords.y()*pointInEllCoords.y()/(Ry*Ry) < 1.0 )
+//    {
+//        if (distToInter1 > distToInter2) // Вместо этого нужно что-то подумать
+//        {
+//            _result = intersect2; // painter.drawText(x2, y2, "This inside");
+//        }
+//        else
+//        {
+//            _result = intersect1; // painter.drawText(x1, y1, "This inside");
+//        }
+//    }
+
+//    else
+//    {
+//        if (distToInter1 > distToInter2)
+//        {
+//            _result = intersect2; // painter.drawText(x2, y2, "This outside");
+//        }
+//        else
+//        {
+//            _result = intersect1; // painter.drawText(x1, y1, "This outside");
+//        }
+//    }
+
     return count;
 }
 //----------------------------------------------------------

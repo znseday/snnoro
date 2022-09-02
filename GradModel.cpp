@@ -871,7 +871,6 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     ProtoGradDesc.SetEta_FirstJump(gradDescObject["Eta_FirstJump"].toDouble(-1));
     ProtoGradDesc.SetEta_k_inc(gradDescObject["Eta_k_inc"].toDouble(-1));
     ProtoGradDesc.SetEta_k_dec(gradDescObject["Eta_k_dec"].toDouble(-1));
-//    ProtoGradDesc.SetEta_FirstJump(gradDescObject["Eta_FirstJump"].toDouble(-1));
     ProtoGradDesc.SetMin_Eta(gradDescObject["Min_Eta"].toDouble(-1));
     ProtoGradDesc.SetFinDifMethod(gradDescObject["FinDifMethod"].toBool(false));
     ProtoGradDesc.SetMaxIters(gradDescObject["MaxIters"].toInt(0));
@@ -881,21 +880,19 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     const QJsonObject &targetFuncObject = _jsonObject["TargetFunctionSettings"].toObject();
 
-    TargetFuncSettingsGlobal.Aarf             = targetFuncObject["Aarf"].toDouble(-1);
-    TargetFuncSettingsGlobal.A2               = targetFuncObject["A2"].toDouble(-1);
-    TargetFuncSettingsGlobal.p                = targetFuncObject["p"].toDouble(-1);
-    TargetFuncSettingsGlobal.offX             = targetFuncObject["offX"].toDouble(-1);
-    TargetFuncSettingsGlobal.k_step_ot        = targetFuncObject["k_step_ot"].toDouble(-1);
-    TargetFuncSettingsGlobal.R_nodeOverlap    = targetFuncObject["R_nodeOverlap"].toDouble(-1);
-    TargetFuncSettingsGlobal.IsUseCoveredFlag = targetFuncObject["IsUseCoveredFlag"].toBool(false);
-
-    TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints = targetFuncObject["IsUseLineBetweenTwoPoints"].toBool(false);
-
-//    QString TargetFuncTypeStr = targetFuncObject["TargetFuncType"].toString();
-//    TargetFuncSettingsGlobal.TargetFuncType = ConvertStringToTargetFuncType(TargetFuncTypeStr);
+//    TargetFuncSettingsGlobal.Aarf             = targetFuncObject["Aarf"].toDouble(-1);
+//    TargetFuncSettingsGlobal.A2               = targetFuncObject["A2"].toDouble(-1);
+//    TargetFuncSettingsGlobal.p                = targetFuncObject["p"].toDouble(-1);
+//    TargetFuncSettingsGlobal.offX             = targetFuncObject["offX"].toDouble(-1);
+//    TargetFuncSettingsGlobal.k_step_ot        = targetFuncObject["k_step_ot"].toDouble(-1);
+//    TargetFuncSettingsGlobal.R_nodeOverlap    = targetFuncObject["R_nodeOverlap"].toDouble(-1);
+//    TargetFuncSettingsGlobal.IsUseCoveredFlag = targetFuncObject["IsUseCoveredFlag"].toBool(false);
+//    TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints = targetFuncObject["IsUseLineBetweenTwoPoints"].toBool(false);
 
     TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase  = targetFuncObject["TargetFuncFirstPhase"].toString().toStdString();
     TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase = targetFuncObject["TargetFuncSecondPhase"].toString().toStdString();
+    QString TempFileName = targetFuncObject["TargetFuncFileName"].toString();
+    TargetFuncSettingsGlobal.LoadFromFile(TempFileName);
 
     return ConfigCount;
 }
@@ -1417,7 +1414,6 @@ void MyGradModel::TestTwoLines()
     auto &c = Configs.at(iCurConfig);
 
     c.TestTwoLines();
-
 }
 //----------------------------------------------------------
 
@@ -1438,6 +1434,12 @@ void MyGradModel::ReCalcAboAccessRate()
         c.CalcAccessRateForAbos(TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
                                 NodesType); // Заменить на мембер или типа того ?
     }
+}
+//----------------------------------------------------------
+
+void MyGradModel::CalcAccessRateForCurrent()
+{
+    Configs.at(iCurConfig).CalcAccessRateForCurrent();
 }
 //----------------------------------------------------------
 
