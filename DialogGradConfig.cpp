@@ -7,6 +7,21 @@
 
 #include "GradModel.h"
 
+void DialogGradConfig::InitTargetFuncSettingsDialog(const TargetFuncSettingsStruct &_targetFuncSettings)
+{
+    ui->EditAarf->setText(QString().setNum(_targetFuncSettings.Aarf));
+    ui->EditA2->setText(QString().setNum(_targetFuncSettings.A2));
+    ui->EditR_nodeOverlap->setText(QString().setNum(_targetFuncSettings.R_nodeOverlap));
+    ui->Edit_k_step_ot->setText(QString().setNum(_targetFuncSettings.k_step_ot));
+    ui->Edit_offX->setText(QString().setNum(_targetFuncSettings.offX));
+    ui->Edit_p->setText(QString().setNum(_targetFuncSettings.p));
+    ui->chbIsUseCoveredFlag->setChecked(_targetFuncSettings.IsUseCoveredFlag);
+    ui->chbIsUseLineBetweenTwoPoints->setChecked(_targetFuncSettings.IsUseLineBetweenTwoPoints);
+
+    ui->EditTargetFuncGlobalFile->setText(_targetFuncSettings.FileName);
+}
+//----------------------------------------------------------
+
 DialogGradConfig::DialogGradConfig(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogGradConfig)
@@ -34,15 +49,16 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
     ui->EditMaxIters->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxIters()));
     ui->EditMaxTime->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxTime()));
 
-    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.Aarf));
-    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.A2));
-    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.R_nodeOverlap));
-    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.k_step_ot));
-    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.offX));
-    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.p));
-    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettingsGlobal.IsUseCoveredFlag);
+//    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.Aarf));
+//    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.A2));
+//    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.R_nodeOverlap));
+//    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.k_step_ot));
+//    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.offX));
+//    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.p));
+//    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettingsGlobal.IsUseCoveredFlag);
+//    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
 
-    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
+    InitTargetFuncSettingsDialog(_gm.TargetFuncSettingsGlobal);
 
     if (_gm.GetNodesType() == SignalNodeType::Sphere)
         ui->rbSignalSphere->setChecked(true);
@@ -60,25 +76,17 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
         ui->cbTargetFuncSecondPhase->addItem(QString().fromStdString(item.first));
     }
 
-    auto it_TargetFunc_1 = _gm.GetTargetFunctions().find(_gm.TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase);
+    auto it_TargetFunc_1 = _gm.GetTargetFunctions().find(_gm.GetActiveTargetFuncFirstPhase());
     if (it_TargetFunc_1 == _gm.GetTargetFunctions().end())
         QMessageBox::warning(this, "Warning", "TargetFunctionFirstPhase is Unknown!");
     else
         ui->cbTargetFuncFirstPhase->setCurrentText(QString().fromStdString(it_TargetFunc_1->first));
 
-    auto it_TargetFunc_2 = _gm.GetTargetFunctions().find(_gm.TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase);
+    auto it_TargetFunc_2 = _gm.GetTargetFunctions().find(_gm.GetActiveTargetFuncSecondPhase());
     if (it_TargetFunc_2 == _gm.GetTargetFunctions().end())
         QMessageBox::warning(this, "Warning", "TargetFunctionSecondPhase is Unknown!");
     else
         ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
-
-//    if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Additive)
-//        ui->rbTargetFuncAdditive->setChecked(true);
-//    else if (_gm.TargetFuncSettingsGlobal.TargetFuncType == TargetFuncEnum::Probabilistic)
-//        ui->rbTargetFuncProbabilistic->setChecked(true);
-//    else
-//        QMessageBox::warning(this, "Warning", "TargetFuncType is Unknown");
-
 }
 //------------------------------------------------------------------
 
@@ -106,8 +114,9 @@ void DialogGradConfig::ReInitTargetFuncSettings(TargetFuncSettingsStruct &_targe
     _targetFuncSettings.offX = ui->Edit_offX->text().toDouble();
     _targetFuncSettings.p = ui->Edit_p->text().toDouble();
     _targetFuncSettings.IsUseCoveredFlag = ui->chbIsUseCoveredFlag->isChecked();
-
     _targetFuncSettings.IsUseLineBetweenTwoPoints = ui->chbIsUseLineBetweenTwoPoints->isChecked(); 
+
+    _targetFuncSettings.FileName = ui->EditTargetFuncGlobalFile->text();
 }
 //------------------------------------------------------------------
 
@@ -133,22 +142,15 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
     else
         ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
 
-    _gm.TargetFuncSettingsGlobal.ActiveTargetFuncFirstPhase = ui->cbTargetFuncFirstPhase->currentText().toStdString();
-    _gm.TargetFuncSettingsGlobal.ActiveTargetFuncSecondPhase = ui->cbTargetFuncSecondPhase->currentText().toStdString();
-
-//    if (ui->rbTargetFuncAdditive->isChecked())
-//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
-//    else if (ui->rbTargetFuncProbabilistic->isChecked())
-//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Probabilistic;
-//    else
-//        _gm.TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Empty;
+    _gm.SetActiveTargetFuncFirstPhase(ui->cbTargetFuncFirstPhase->currentText().toStdString());
+    _gm.SetActiveTargetFuncSecondPhase(ui->cbTargetFuncSecondPhase->currentText().toStdString());
 }
 //------------------------------------------------------------------
 
 void DialogGradConfig::on_btnTargetFuncGlobalOpenFile_clicked()
 {
     QString fn = QFileDialog::getOpenFileName(nullptr, "Select file",
-                                              ui->EditTargetFuncGLobalFile->text(),
+                                              ui->EditTargetFuncGlobalFile->text(),
                                               "TargetFunc Settings Files (*.json)");
 
     if (fn.isEmpty())
@@ -157,14 +159,47 @@ void DialogGradConfig::on_btnTargetFuncGlobalOpenFile_clicked()
         return;
     }
 
+    ui->EditTargetFuncGlobalFile->setText(fn);
+
     TargetFuncSettingsStruct tempTargetFuncSettings;
-//    if (!tempTargetFuncSettings.LoadFromJson(fn))
-//    {
-//        qDebug() << "Select TargetFunc Settings cannot be loaded";
-//        return;
-//    }
+    if (!tempTargetFuncSettings.LoadFromFile(fn))
+    {
+        qDebug() << "Select TargetFunc Settings cannot be loaded";
+        return;
+    }
 
-
+    InitTargetFuncSettingsDialog(tempTargetFuncSettings);
 }
 //------------------------------------------------------------------
+
+void DialogGradConfig::on_btnTargetFuncGlobalSave_clicked()
+{
+    QString fn = ui->EditTargetFuncGlobalFile->text();
+    if (fn.isEmpty()) {
+        on_btnTargetFuncGlobalSaveAs_clicked();
+        return;
+    }
+
+    TargetFuncSettingsStruct tempTargetFuncSettings;
+    ReInitTargetFuncSettings(tempTargetFuncSettings);
+    tempTargetFuncSettings.SaveToFile(fn);
+}
+//------------------------------------------------------------------
+
+void DialogGradConfig::on_btnTargetFuncGlobalSaveAs_clicked()
+{
+    QString fn = QFileDialog::getSaveFileName(nullptr, "Select file",
+                                               ui->EditTargetFuncGlobalFile->text(),
+                                               "TargetFunc Settings Files (*.json)");
+    if (!fn.isEmpty())
+    {
+        TargetFuncSettingsStruct tempTargetFuncSettings;
+        ReInitTargetFuncSettings(tempTargetFuncSettings);
+        tempTargetFuncSettings.SaveToFile(fn);
+        ui->EditTargetFuncGlobalFile->setText(fn);
+    }
+}
+//------------------------------------------------------------------
+
+
 

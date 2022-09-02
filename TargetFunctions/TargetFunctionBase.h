@@ -27,10 +27,6 @@ struct TargetFuncSettingsStruct // Переделать, чтобы у кажд�
     bool IsUseCoveredFlag = true;
     bool IsUseLineBetweenTwoPoints = false;
 
-    // Перенести эти две строчки в GradModel ???
-    std::string ActiveTargetFuncFirstPhase = "AdditiveSphereFirstPhase";
-    std::string ActiveTargetFuncSecondPhase = "AdditiveSphereSecondPhase";
-
     void ParseJson(const QJsonObject &_jsonObject, const QJsonParseError &_parseError);
     bool LoadFromFile(const QString &_fileName);
     bool SaveToFile(const QString &_fileName);

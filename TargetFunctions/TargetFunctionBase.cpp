@@ -21,7 +21,7 @@ void TargetFunctionBase::InitMembersByGlobalSettings(const TargetFuncSettingsStr
 
 void TargetFuncSettingsStruct::ParseJson(const QJsonObject &_jsonObject, const QJsonParseError &_parseError)
 {
-    if ( !_jsonObject["General"].isObject() )
+    if ( !_jsonObject["GeneralSettings"].isObject() )
     {
         qDebug() << _parseError.errorString();
         return;
@@ -29,14 +29,14 @@ void TargetFuncSettingsStruct::ParseJson(const QJsonObject &_jsonObject, const Q
 
     const QJsonObject &GeneralSettingsObject = _jsonObject["GeneralSettings"].toObject();
 
-    Aarf =             GeneralObject["Aarf"].toDouble();
-    A2 =               GeneralObject["A2"].toDouble();
-    p =                GeneralObject["p"].toDouble();
-    offX =             GeneralObject["offX"].toDouble();
-    k_step_ot =        GeneralObject["k_step_ot"].toDouble();
-    R_nodeOverlap =    GeneralObject["R_nodeOverlap"].toDouble();
-    IsUseCoveredFlag = GeneralObject["IsUseCoveredFlag"].toBool();
-    IsUseLineBetweenTwoPoints = GeneralObject["IsUseLineBetweenTwoPoints"].toBool();
+    Aarf =             GeneralSettingsObject["Aarf"].toDouble();
+    A2 =               GeneralSettingsObject["A2"].toDouble();
+    p =                GeneralSettingsObject["p"].toDouble();
+    offX =             GeneralSettingsObject["offX"].toDouble();
+    k_step_ot =        GeneralSettingsObject["k_step_ot"].toDouble();
+    R_nodeOverlap =    GeneralSettingsObject["R_nodeOverlap"].toDouble();
+    IsUseCoveredFlag = GeneralSettingsObject["IsUseCoveredFlag"].toBool();
+    IsUseLineBetweenTwoPoints = GeneralSettingsObject["IsUseLineBetweenTwoPoints"].toBool();
 }
 //----------------------------------------------------------
 
@@ -82,6 +82,8 @@ bool TargetFuncSettingsStruct::SaveToFile(const QString &_fileName)
         qDebug() << (_fileName + " not found");
         return false;
     }
+
+    FileName = _fileName;
 
     QJsonDocument jsonDoc;
     QJsonObject mainObject;

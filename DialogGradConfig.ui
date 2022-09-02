@@ -338,9 +338,9 @@
           <string>Open Settings FIle...</string>
          </property>
         </widget>
-        <widget class="QLineEdit" name="EditTargetFuncGLobalFile">
+        <widget class="QLineEdit" name="EditTargetFuncGlobalFile">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="geometry">
           <rect>
@@ -349,6 +349,9 @@
            <width>431</width>
            <height>24</height>
           </rect>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </widget>

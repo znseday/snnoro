@@ -60,7 +60,15 @@ protected:
 
     std::map<std::string, TargetFunctionBase*> TargetFunctions;
 
+    std::string ActiveTargetFuncFirstPhase = "AdditiveSphereFirstPhase";
+    std::string ActiveTargetFuncSecondPhase = "AdditiveSphereSecondPhase";
+
 public:
+
+    void SetActiveTargetFuncFirstPhase(const std::string &s) {ActiveTargetFuncFirstPhase = s;}
+    std::string GetActiveTargetFuncFirstPhase() const {return ActiveTargetFuncFirstPhase;}
+    void SetActiveTargetFuncSecondPhase(const std::string &s) {ActiveTargetFuncSecondPhase = s;}
+    std::string GetActiveTargetFuncSecondPhase() const {return ActiveTargetFuncSecondPhase;}
 
     tf_gd_lib::GradDescent ProtoGradDesc;
     TargetFuncSettingsStruct TargetFuncSettingsGlobal;

@@ -6,6 +6,7 @@
 
 //#include "GradModel.h"
 class MyGradModel;
+class TargetFuncSettingsStruct;
 #include "UnitGradDescent.h"
 
 namespace Ui {
@@ -15,6 +16,10 @@ class DialogGradConfig;
 class DialogGradConfig : public QDialog
 {
     Q_OBJECT
+
+private:
+
+    void InitTargetFuncSettingsDialog(const TargetFuncSettingsStruct &_targetFuncSettings);
 
 public:
     explicit DialogGradConfig(QWidget *parent = nullptr);
@@ -27,6 +32,10 @@ public:
 
 private slots:
     void on_btnTargetFuncGlobalOpenFile_clicked();
+
+    void on_btnTargetFuncGlobalSave_clicked();
+
+    void on_btnTargetFuncGlobalSaveAs_clicked();
 
 private:
 
