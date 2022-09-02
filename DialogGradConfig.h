@@ -20,6 +20,7 @@ class DialogGradConfig : public QDialog
 private:
 
     void InitTargetFuncSettingsDialog(const TargetFuncSettingsStruct &_targetFuncSettings);
+    void InitGradDescDialog(const tf_gd_lib::GradDescent &_gd);
 
 public:
     explicit DialogGradConfig(QWidget *parent = nullptr);
@@ -36,6 +37,12 @@ private slots:
     void on_btnTargetFuncGlobalSave_clicked();
 
     void on_btnTargetFuncGlobalSaveAs_clicked();
+
+    void on_btnGradDescOpenFile_clicked();
+
+    void on_btnGradDescSave_clicked();
+
+    void on_btnGradDescSaveAs_clicked();
 
 private:
 

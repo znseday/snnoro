@@ -35,6 +35,7 @@ SOURCES += \
         FormGradGeneral.cpp \
         FormRelief.cpp \
         GradConfig.cpp \
+        GradDescSaveLoad.cpp \
         GradModel.cpp \
         MainGLWidget.cpp \
         MainWindow.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     FormGradGeneral.h \
     FormRelief.h \
     GradConfig.h \
+    GradDescSaveLoad.h \
     GradModel.h \
     MainGLWidget.h \
     MainWindow.h \

@@ -42,8 +42,6 @@ void TargetFuncSettingsStruct::ParseJson(const QJsonObject &_jsonObject, const Q
 
 bool TargetFuncSettingsStruct::LoadFromFile(const QString &_fileName)
 {
-    // Решить вопрос относительных и абсолютных путей
-
     QFile json(_fileName);
     if (json.open(QIODevice::ReadOnly))
     {

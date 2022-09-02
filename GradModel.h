@@ -63,12 +63,17 @@ protected:
     std::string ActiveTargetFuncFirstPhase = "AdditiveSphereFirstPhase";
     std::string ActiveTargetFuncSecondPhase = "AdditiveSphereSecondPhase";
 
+    QString GradDescFileName;
+
 public:
 
     void SetActiveTargetFuncFirstPhase(const std::string &s) {ActiveTargetFuncFirstPhase = s;}
-    std::string GetActiveTargetFuncFirstPhase() const {return ActiveTargetFuncFirstPhase;}
+    const std::string & GetActiveTargetFuncFirstPhase() const {return ActiveTargetFuncFirstPhase;}
     void SetActiveTargetFuncSecondPhase(const std::string &s) {ActiveTargetFuncSecondPhase = s;}
-    std::string GetActiveTargetFuncSecondPhase() const {return ActiveTargetFuncSecondPhase;}
+    const std::string & GetActiveTargetFuncSecondPhase() const {return ActiveTargetFuncSecondPhase;}
+
+    void SetGradDescFileName(const QString &fn) {GradDescFileName = fn;}
+    const QString GetGradDescFileName() const {return GradDescFileName;}
 
     tf_gd_lib::GradDescent ProtoGradDesc;
     TargetFuncSettingsStruct TargetFuncSettingsGlobal;
