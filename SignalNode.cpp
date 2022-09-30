@@ -81,7 +81,21 @@ double SignalNode::accessRateSphere(const Pos3d &p) const
                 (p.y()-Pos.y())*(p.y()-Pos.y()) +
                 (p.z()-Pos.z())*(p.z()-Pos.z());
 
-    double y = exp(-d2/(2.0*R*R));
+    double q = 10;
+    double k;
+
+    if (d2 >= (q*q))
+    {
+        k = 1;
+    }
+    else
+    {
+        k = d2/(q*q);
+        qDebug() << "d2 < (q*q)";
+    }
+
+
+    double y = exp(-d2/(2.0*R*R)) * k;
     return y;
 }
 //----------------------------------------------------------
@@ -127,15 +141,17 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 
 //    return k;
 
-    QVector2D v1 = { float(p.x() - Pos.x()), float(p.y() - Pos.y())};
+    QVector2D v1 = { float(p.x() - Pos.x()), float(p.y() - Pos.y()) };
     QVector2D v2 = { float(cos(Alpha)), float(sin(Alpha))};
 
-    if (v1.length() < 0.1)
+    double fix_zero = 0;
+    if (v1.length() < 1e-6)
     {
         qDebug() << "v1.length() =" << v1.length();
+        fix_zero = 20;
     }
 
-    double gamma = acos(QVector2D::dotProduct(v1, v2)/v1.length());
+    double gamma = acos(QVector2D::dotProduct(v1, v2)/ (v1.length()+fix_zero) ); // fix_zero???
 //    gamma *= 180.0/M_PI;
 //    qDebug() << "gamma =" << gamma;
 //    qDebug() << "Beta =" << Beta;
