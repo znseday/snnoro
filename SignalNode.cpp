@@ -145,13 +145,34 @@ double SignalNode::accessRateCone(const Pos3d &p) const
     QVector2D v2 = { float(cos(Alpha)), float(sin(Alpha))};
 
     double fix_zero = 0;
+
+    double c = QVector2D::dotProduct(v1, v2) / (v1.length()+fix_zero); // fix_zero???
+
     if (v1.length() < 1e-6)
     {
         qDebug() << "v1.length() =" << v1.length();
-        fix_zero = 20;
+//        fix_zero = 20; // ???
+        c = 0;
     }
 
-    double gamma = acos(QVector2D::dotProduct(v1, v2)/ (v1.length()+fix_zero) ); // fix_zero???
+
+
+    if (c > 1.0)
+    {
+//        qDebug() << "c > 1.0, c =" << c;
+        c = 1.0;
+    }
+
+    if (c < -1.0)
+    {
+//        qDebug() << "c < -1.0, c =" << c;
+        c = -1.0;
+    }
+
+    double gamma = acos( c ); // fix_zero???
+
+
+
 //    gamma *= 180.0/M_PI;
 //    qDebug() << "gamma =" << gamma;
 //    qDebug() << "Beta =" << Beta;
@@ -166,7 +187,28 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 
 //    qDebug() << "arfS =" << gamma;
 
-    return k * arfS;
+    double res = k * arfS;
+
+    if (std::isnan(k))
+    {
+        qDebug() << "sigma =" << sigma;
+        qDebug() << "gamma =" << gamma;
+        qDebug() << "c =" << c;
+
+        qDebug() << "std::isnan(k) in SignalNode::accessRateCone";
+    }
+
+    if (std::isnan(arfS))
+    {
+        qDebug() << "std::isnan(arfS) in SignalNode::accessRateCone";
+    }
+
+    if (std::isnan(res))
+    {
+        throw std::logic_error("std::isnan(res) in SignalNode::accessRateCone");
+    }
+
+    return res;
 }
 //----------------------------------------------------------
 
