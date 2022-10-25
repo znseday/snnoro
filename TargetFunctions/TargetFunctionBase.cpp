@@ -42,6 +42,7 @@ void TargetFuncSettingsStruct::ParseJson(const QJsonObject &_jsonObject, const Q
 
 bool TargetFuncSettingsStruct::LoadFromFile(const QString &_fileName)
 {
+    FileName = _fileName;
     QFile json(_fileName);
     if (json.open(QIODevice::ReadOnly))
     {
@@ -51,7 +52,6 @@ bool TargetFuncSettingsStruct::LoadFromFile(const QString &_fileName)
         {
             if (jsonDoc.isObject())
             {
-                FileName = _fileName;
 //                Name = _fileName.mid(0, _fileName.lastIndexOf('.'));
                 ParseJson(jsonDoc.object(), parseError);
             }

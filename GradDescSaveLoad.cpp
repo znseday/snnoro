@@ -25,16 +25,6 @@ static void GradDescParseJson(tf_gd_lib::GradDescent &_gd, const QJsonObject &_j
     _gd.SetMaxIters(GeneralSettingsObject["MaxIters"].toInt(0));
     _gd.SetMaxTime(GeneralSettingsObject["MaxTime"].toDouble(-1));
     _gd.SetCallBackFreq(GeneralSettingsObject["CallBackFreq"].toInt(1));
-
-//    Aarf =             GeneralSettingsObject["Aarf"].toDouble();
-//    A2 =               GeneralSettingsObject["A2"].toDouble();
-//    p =                GeneralSettingsObject["p"].toDouble();
-//    offX =             GeneralSettingsObject["offX"].toDouble();
-//    k_step_ot =        GeneralSettingsObject["k_step_ot"].toDouble();
-//    R_nodeOverlap =    GeneralSettingsObject["R_nodeOverlap"].toDouble();
-//    IsUseCoveredFlag = GeneralSettingsObject["IsUseCoveredFlag"].toBool();
-//    IsUseLineBetweenTwoPoints = GeneralSettingsObject["IsUseLineBetweenTwoPoints"].toBool();
-
 }
 //----------------------------------------------------------
 
@@ -93,15 +83,6 @@ bool GradDescSaveToFile(const tf_gd_lib::GradDescent &_gd, const QString &_fileN
     GeneralSettingsObject.insert("MaxIters", (int)_gd.GetMaxIters());
     GeneralSettingsObject.insert("MaxTime", _gd.GetMaxTime());
     GeneralSettingsObject.insert("Min_Eta", _gd.GetMin_Eta());
-
-//    GeneralSettingsObject.insert("A2", _gd.GetMin_Eta());
-//    GeneralSettingsObject.insert("Aarf", Aarf);
-//    GeneralSettingsObject.insert("IsUseCoveredFlag", IsUseCoveredFlag);
-//    GeneralSettingsObject.insert("R_nodeOverlap", R_nodeOverlap);
-//    GeneralSettingsObject.insert("k_step_ot", k_step_ot);
-//    GeneralSettingsObject.insert("offX", offX);
-//    GeneralSettingsObject.insert("p", p);
-//    GeneralSettingsObject.insert("IsUseLineBetweenTwoPoints", IsUseLineBetweenTwoPoints);
 
     mainObject.insert("GeneralSettings", GeneralSettingsObject);
 

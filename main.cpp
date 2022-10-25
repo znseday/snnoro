@@ -14,6 +14,9 @@
 
 int main(int argc, char * argv[])
 {
+    double c = acos(1.0);
+    qDebug() << "c =" << c;
+
     MyLibTest(); // Просто тестирование библиотеки
 
     srand((unsigned int)time(0));
