@@ -201,11 +201,14 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
             emit Signal_iCurConfigChanged(GradModel.Get_iCurConfig());
         }
 
+        double wx, wy, wz;
+        bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
+
         if (WorldMode == WorldModeType::AddingRoutePoints &&
             pe->buttons() & Qt::RightButton)
         {
-            double wx, wy, wz;
-            bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
+//            double wx, wy, wz;
+//            bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
             if (wExists)
             {
                 GradModel.AddNewPointToLastRoute(wx, wy);
@@ -215,16 +218,22 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
         if (WorldMode == WorldModeType::DeletingRoute &&
             pe->buttons() & Qt::RightButton) // было middle
         {
-            double wx, wy, wz;
-            bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
+//            double wx, wy, wz;
+//            bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
             if (wExists)
             {
-//                if ( GradModel.DeleteRoute(wx, wy) )
-//                    emit SignalRouteDeleted();
-//                else
-//                    throw std::runtime_error("GradModel.DeleteRoute(wx, wy) == false");
-
                 emit SignalRouteDeleted( GradModel.DeleteRoute(wx, wy) );
+            }
+        }
+
+        if (WorldMode == WorldModeType::SelectingSignalNode &&
+            pe->buttons() & Qt::LeftButton)
+        {
+            if (wExists)
+            {
+                GradModel.SelectCurNodeByPos(wx, wy);
+
+                WorldMode = WorldModeType::Nothing;
             }
         }
 

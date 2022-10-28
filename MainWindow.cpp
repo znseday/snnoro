@@ -160,6 +160,8 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     ui->actionFileSave_Grad_Config_As->setEnabled(true);
 
     ui->actionEdit_Delete_Route->setEnabled(true);
+    ui->actionEdit_Select_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Cur_Node->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
     ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
@@ -602,6 +604,8 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
     ui->actionFileSave_Grad_Config_As->setEnabled(true);
 
     ui->actionEdit_Delete_Route->setEnabled(true);
+    ui->actionEdit_Select_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Cur_Node->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
     ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
@@ -863,4 +867,36 @@ void MainWindow::on_actionDebug_Calc_Access_Rate_for_current_triggered()
 {
     GradModel.CalcAccessRateForCurrent();
 }
+//-------------------------------------------------------------
 
+void MainWindow::on_actionEdit_Select_Cur_Node_triggered()
+{
+    WorldMode = WorldModeType::SelectingSignalNode;
+//    ui->actionEdit_Editing_Cur_Node->setEnabled(true); // ?
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Editing_Cur_Node_triggered()
+{
+    if (ui->actionEdit_Editing_Cur_Node->isChecked())
+    {
+        if (GradModel.Get_iCurConfig() < 0 || GradModel.GetActiveConfig().Get_iCurNode() < 0)
+        {
+            ui->actionEdit_Editing_Cur_Node->setChecked(false);
+            qDebug() << "Cur Node is not selected";
+            return;
+        }
+//        else
+//        {
+//             if (GradModel.GetActiveConfig().Get_iCurNode() < 0)
+//        }
+
+
+        WorldMode = WorldModeType::EditingSignalNode;
+    }
+    else
+    {
+        WorldMode = WorldModeType::Nothing;
+    }
+}
+//-------------------------------------------------------------

@@ -130,6 +130,8 @@
     <addaction name="separator"/>
     <addaction name="actionEdit_Delete_Route"/>
     <addaction name="separator"/>
+    <addaction name="actionEdit_Select_Cur_Node"/>
+    <addaction name="actionEdit_Editing_Cur_Node"/>
     <addaction name="actionEdit_Edit_Signal_Nodes_for_All"/>
     <addaction name="actionEdit_Edit_Signal_Nodes_for_Current"/>
     <addaction name="separator"/>
@@ -431,6 +433,28 @@
   <action name="actionDebug_Calc_Access_Rate_for_current">
    <property name="text">
     <string>Calc Access Rate for current</string>
+   </property>
+  </action>
+  <action name="actionEdit_Select_Cur_Node">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Select Cur Node</string>
+   </property>
+   <property name="shortcut">
+    <string>J</string>
+   </property>
+  </action>
+  <action name="actionEdit_Editing_Cur_Node">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Editing Cur Node</string>
    </property>
   </action>
  </widget>

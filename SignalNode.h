@@ -26,6 +26,12 @@ enum class SignalNodeType
     Unknown
 };
 
+enum class SignalNodeStatus
+{
+    NotSelected,
+    Selected
+};
+
 
 struct BondType
 {
@@ -89,7 +95,7 @@ public:
     static GLUquadric * Quadric();
 
     void DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
-                  const Settings3dType & _settings3d) const;
+                  const Settings3dType & _settings3d, SignalNodeStatus _sns) const;
 
     int CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_result) const;
 };

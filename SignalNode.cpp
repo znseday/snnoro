@@ -276,7 +276,7 @@ GLUquadric* SignalNode::Quadric()
 //----------------------------------------------------------
 
 void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
-                          const Settings3dType & _settings3d) const
+                          const Settings3dType & _settings3d, SignalNodeStatus _sns) const
 {
     constexpr float zOffset = 0.01f;
     const auto & area = relief->GetArea();
@@ -297,6 +297,10 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
     double y = (Pos.y()-offsetY)*k;
     double z;
 
+    if (_sns == SignalNodeStatus::NotSelected)
+        glColor3f(0.6, 0.1, 0.1);
+    else
+        glColor3f(0.95, 0.05, 0.05);
 
     if (relief->GetIsMathRelief())
     {

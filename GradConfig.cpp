@@ -267,13 +267,18 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
         }
     }
 
-    for (const auto &node : Nodes)
+//    for (const auto &node : Nodes)
+//    {
+    for (size_t i = 0; i < Nodes.size(); ++i)
     {
-        glColor3f(0.9, 0.1, 0.1);
+//        glColor3f(0.9, 0.1, 0.1);
         glPointSize(3.0f);
         glLineWidth(1.0f);
 
-        node.DrawIn3D(_snt, Relief, Settings3d);
+        if ((int)i == iCurNode)
+            Nodes[i].DrawIn3D(_snt, Relief, Settings3d, SignalNodeStatus::Selected);
+        else
+            Nodes[i].DrawIn3D(_snt, Relief, Settings3d, SignalNodeStatus::NotSelected);
     }
 
     if (_snt == SignalNodeType::Cone)
@@ -737,6 +742,24 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, S
 void MyConfig::CalcAccessRateForCurrent()
 {
     qDebug() << Nodes.front().accessRateCone(Routes.front().Points.front().Pos);
+}
+//----------------------------------------------------------
+
+void MyConfig::SelectCurNodeByRealXY(double x, double y)
+{
+    double minDist = std::numeric_limits<double>::max();
+    for (size_t i = 0; i < Nodes.size(); ++i)
+    {
+        double dist = QLineF(Nodes[i].Pos.toPointF(), {x, y}).length();
+
+//        qDebug() << "i =" << i << "   dist =" << dist << "    x =" << x << "    y = " << y;
+
+        if (dist < minDist)
+        {
+            minDist = dist;
+            iCurNode = i;
+        }
+    }
 }
 //----------------------------------------------------------
 

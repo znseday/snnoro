@@ -17,7 +17,9 @@ enum class WorldModeType
     Nothing,
     ShowCoords,
     AddingRoutePoints,
-    DeletingRoute
+    DeletingRoute,
+    SelectingSignalNode,
+    EditingSignalNode
 };
 
 enum class NeedToSave

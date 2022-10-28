@@ -182,6 +182,8 @@ public:
 
     void CalcAccessRateForCurrent();
 
+    void SelectCurNodeByPos(double wx, double wy);
+
 };
 
 #endif // MYGRADMODEL_H

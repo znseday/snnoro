@@ -1477,6 +1477,30 @@ void MyGradModel::CalcAccessRateForCurrent()
 }
 //----------------------------------------------------------
 
+void MyGradModel::SelectCurNodeByPos(double wx, double wy)
+{
+    if (wx < -1 || wx > 1 ||    // потом убрать????
+        wy < -1 || wy > 1 )
+    {
+        qDebug() << "wx < -1 || wx > 1 ||"
+                    "wy < -1 || wy > 1";
+        return;
+    }
+
+    double realX, realY; //, realZ;
+    /*realZ =*/ Relief.CalcRealXYZbyNormXY(wx, wy, realX, realY);
+
+    if (iCurConfig >= 0)
+    {
+        Configs.at(iCurConfig).SelectCurNodeByRealXY(realX, realY);
+    }
+    else
+    {
+        qDebug() << "iCurConfig == -1. MyGradModel::SelectCurNodeByPos aborted";
+    }
+}
+//----------------------------------------------------------
+
 //TargetFuncEnum MyGradModel::ConvertStringToTargetFuncType(QString &str) // static member-function
 //{
 //    if (str.toUpper() == "ADDITIVE")

@@ -107,6 +107,10 @@ private slots:
 
     void on_actionDebug_Calc_Access_Rate_for_current_triggered();
 
+    void on_actionEdit_Select_Cur_Node_triggered();
+
+    void on_actionEdit_Editing_Cur_Node_triggered();
+
 private:
     Ui::MainWindow *ui;
 

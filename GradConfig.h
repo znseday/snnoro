@@ -33,8 +33,8 @@ protected:
     mutable GLint vport[4];
     mutable GLdouble modl[16], proj[16];
 
-    //QRectF Area;
     std::vector<SignalNode> Nodes;
+    int iCurNode = -1;
 
     double CurCost = std::numeric_limits<double>::max();
 
@@ -125,6 +125,10 @@ public:
 
 
     void CalcAccessRateForCurrent(); // DEBUG
+
+    void SelectCurNodeByRealXY(double x, double y);
+
+    int Get_iCurNode() const {return iCurNode;}
 };
 
 //bool operator<(const MyConfig &a, const MyConfig &b)
