@@ -885,45 +885,9 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     const QJsonObject &gradDescObject = _jsonObject["GradDesc"].toObject();
 
-//    ProtoGradDesc.SetAlpha(gradDescObject["Alpha"].toDouble(-1));
-//    ProtoGradDesc.SetEps(gradDescObject["Eps"].toDouble(-1));
-//    ProtoGradDesc.SetEta_FirstJump(gradDescObject["Eta_FirstJump"].toDouble(-1));
-//    ProtoGradDesc.SetEta_k_inc(gradDescObject["Eta_k_inc"].toDouble(-1));
-//    ProtoGradDesc.SetEta_k_dec(gradDescObject["Eta_k_dec"].toDouble(-1));
-//    ProtoGradDesc.SetMin_Eta(gradDescObject["Min_Eta"].toDouble(-1));
-//    ProtoGradDesc.SetFinDifMethod(gradDescObject["FinDifMethod"].toBool(false));
-//    ProtoGradDesc.SetMaxIters(gradDescObject["MaxIters"].toInt(0));
-//    ProtoGradDesc.SetMaxTime(gradDescObject["MaxTime"].toDouble(-1));
-//    ProtoGradDesc.SetCallBackFreq(gradDescObject["CallBackFreq"].toInt(1));
-
     GradDescFileName = gradDescObject["GradDescFileName"].toString();
 
     CorrectFileNameIfDoesntExist(GradDescFileName, SettingsDefaultDir, "GradDesc");
-
-//    if ( !QFile::exists(GradDescFileName) )
-//    {
-//        QFileInfo fileInfo(GradDescFileName);
-//        GradDescFileName = SettingsDefaultDir + "/" +fileInfo.fileName();
-//    }
-//    if ( !QFile::exists(GradDescFileName) )
-//    {
-//        auto res = QMessageBox::question(nullptr, "Question", "GradDesc file not Found. Would you like to choose GradDesc file?");
-//        if (res == QMessageBox::Yes)
-//        {
-//            GradDescFileName = QFileDialog::getOpenFileName(nullptr,
-//                                      "Choose GradDesc file", ".", "GradDesc Files (*.json)");
-
-//            if (GradDescFileName.isEmpty())
-//            {
-//                QMessageBox::critical(nullptr, "Error", "GradDesc file not set and won't be loaded");
-//            }
-
-//        }
-//        else
-//        {
-//            QMessageBox::critical(nullptr, "Error", "GradDesc file not set and won't be loaded");
-//        }
-//    }
 
     if (!GradDescLoadFromFile(ProtoGradDesc, GradDescFileName))
     {
@@ -951,31 +915,6 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     QString TargetFuncFileName = targetFuncObject["TargetFuncFileName"].toString();
 
     CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc");
-
-//    if ( !QFile::exists(TargetFuncFileName) )
-//    {
-//        QFileInfo fileInfo(TargetFuncFileName);
-//        TargetFuncFileName = SettingsDefaultDir + "/" +fileInfo.fileName();
-//    }
-//    if ( !QFile::exists(TargetFuncFileName) )
-//    {
-//        auto res = QMessageBox::question(nullptr, "Question", "TargetFunc file not Found. Would you like to choose TargetFunc file?");
-//        if (res == QMessageBox::Yes)
-//        {
-//            TargetFuncFileName = QFileDialog::getOpenFileName(nullptr,
-//                                      "Choose TargetFunc file", ".", "TargetFunc Files (*.json)");
-
-//            if (TargetFuncFileName.isEmpty())
-//            {
-//                QMessageBox::critical(nullptr, "Error", "TargetFunc file not set and won't be loaded");
-//            }
-
-//        }
-//        else
-//        {
-//            QMessageBox::critical(nullptr, "Error", "TargetFunc file not set and won't be loaded");
-//        }
-//    }
 
     if (!TargetFuncSettingsGlobal.LoadFromFile(TargetFuncFileName))
     {

@@ -13,17 +13,7 @@ using namespace std;
 
 bool operator<(const BondType &lhs, const BondType &rhs)
 {
-//    if (lhs.iRoute < rhs.iRoute)
-//        return true;
-//    else if (lhs.iRoute > rhs.iRoute)
-//        return
-//    size_t iRoute;
-//    size_t iPoint;
-//    double arf;
-//    double relDist;
-
 //    return std::tie(lhs.iRoute, lhs.iPoint, lhs.arf, lhs.relDist) < std::tie(rhs.iRoute, rhs.iPoint, rhs.arf, rhs.relDist);
-
     auto tupleRefs = [](const BondType & p) { return std::tie(p.iRoute, p.iPoint, p.arf, p.relDist); };
     return tupleRefs(lhs) < tupleRefs(rhs);
 }
@@ -91,7 +81,21 @@ double SignalNode::accessRateSphere(const Pos3d &p) const
                 (p.y()-Pos.y())*(p.y()-Pos.y()) +
                 (p.z()-Pos.z())*(p.z()-Pos.z());
 
-    double y = exp(-d2/(2.0*R*R));
+    double q = 10;
+    double k;
+
+    if (d2 >= (q*q))
+    {
+        k = 1;
+    }
+    else
+    {
+        k = d2/(q*q);
+        qDebug() << "d2 < (q*q)";
+    }
+
+
+    double y = exp(-d2/(2.0*R*R)) * k;
     return y;
 }
 //----------------------------------------------------------
@@ -100,13 +104,13 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 {
 //    return 1; // !!!!!!!!!!!!!!!!!!!!!!!!
 
-    QPointF interPoint;
-    int countIntersects = CalcIntersectWithLineToPoint(p, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
-    if (countIntersects < 2)
-    {
-        qDebug() << "countIntersects < 2 in SignalNode::accessRateCone";
-        return 2; // ???
-    }
+//    QPointF interPoint;
+//    int countIntersects = CalcIntersectWithLineToPoint(p, interPoint);   // Переделать так, чтобы дистанция возвращалась сразу из функции?
+//    if (countIntersects < 2)
+//    {
+//        qDebug() << "countIntersects < 2 in SignalNode::accessRateCone";
+//        return 2; // ???
+//    }
 
     //    if (!isOk)
 //        throw std::logic_error("There is not any instersection with ellipse in SignalNode::accessRateCone");
@@ -119,63 +123,92 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 
 //    interPoint = {100, 100};
 
-    double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), interPoint).length();
-
-    //    double dist_from_sn_to_intersect = sqrt( pow(Pos.toPointF().x() - interPoint.x(), 2)
-//                                           + pow(Pos.toPointF().y() - interPoint.y(), 2) );
-
-
-    double dist_from_sn_to_point_of_route = QLineF(Pos.toPointF(), p.toPointF()).length();
-
-//    if (dist_from_sn_to_point_of_route == 0)
-//    {
-////        qDebug() << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route;
-//        std::cout.precision(20);
-//        std::cout << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route << std::endl;
-//    }
-
-//    qDebug() << "chisl =" << chisl;
-//    qDebug() << "znam =" << znam;
-
-//    qDebug() << "dist_from_sn_to_intersect =" << dist_from_sn_to_intersect;
-//    qDebug() << "dist_from_sn_to_point_of_route =" << dist_from_sn_to_point_of_route;
-
-//    double k = QLineF(Pos.toPointF(), interPoint).length() / QLineF(Pos.toPointF(), p.toPointF()).length();
-//    double k = chisl / znam;
-//    double k = - dist_from_sn_to_point_of_route / dist_from_sn_to_intersect;
-
-    double k;// = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route + 10);
+//    double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), interPoint).length();
+//    double dist_from_sn_to_point_of_route = QLineF(Pos.toPointF(), p.toPointF()).length();
+//    double k;// = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route + 10);
 
 
-    // Переделать. Сделать физично.
-    // Вылетает ошибка при подсчете пересечений, когда узел оказывается в точке маршрута и расстояние до него 0
+//    // Переделать. Сделать физично.
+//    // Вылетает ошибка при подсчете пересечений, когда узел оказывается в точке маршрута и расстояние до него 0
 
-    if (dist_from_sn_to_point_of_route >= 100)
-        k = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route);
-    else
-        k = (dist_from_sn_to_intersect + 100) / (100.0);
+//    if (dist_from_sn_to_point_of_route >= 100)
+//        k = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route);
+//    else
+//        k = (dist_from_sn_to_intersect + 100) / (100.0);
 
-    if (fabs(k) < 0.01 || fabs(k) > 1000)
-        qDebug() << "k =" << k;  // k иногда уходит в inf !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//    if (fabs(k) < 0.01 || fabs(k) > 1000)
+//        qDebug() << "k =" << k;  // k иногда уходит в inf !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    return k; // временно!
+//    return k;
 
-//    auto [a, b, c] = CalcEllispe_abc();
+    QVector2D v1 = { float(p.x() - Pos.x()), float(p.y() - Pos.y()) };
+    QVector2D v2 = { float(cos(Alpha)), float(sin(Alpha))};
 
-//    double xt = c;
-//    double yt = 0;
+    double fix_zero = 0;
 
-//    double xt2 = xt*cos(-Alpha) + yt*sin(-Alpha);
-//    double yt2 = yt*cos(-Alpha) - xt*sin(-Alpha);
+    double c = QVector2D::dotProduct(v1, v2) / (v1.length()+fix_zero); // fix_zero???
 
-//    QVector2D q = Pos.toVector2D() - QVector2D(xt2, yt2); // знак q ?
+    if (v1.length() < 1e-6)
+    {
+        qDebug() << "v1.length() =" << v1.length();
+//        fix_zero = 20; // ???
+        c = 0;
+    }
 
-//    double x = Pos.x()-q.x(); // Возможно, это центр эллипса
-//    double y = Pos.y()-q.y(); // Возможно, это центр эллипса
 
-//    double d2 = (x-p.x())*(x-p.x())/(a*a) + (y-p.y())*(y-p.y())/(b*b);
-//    double res = exp(-d2/(2.0*R*R)); // R??? или a b ???
-//    return res;
+
+    if (c > 1.0)
+    {
+//        qDebug() << "c > 1.0, c =" << c;
+        c = 1.0;
+    }
+
+    if (c < -1.0)
+    {
+//        qDebug() << "c < -1.0, c =" << c;
+        c = -1.0;
+    }
+
+    double gamma = acos( c ); // fix_zero???
+
+
+
+//    gamma *= 180.0/M_PI;
+//    qDebug() << "gamma =" << gamma;
+//    qDebug() << "Beta =" << Beta;
+
+
+    double sigma = Beta/1.0;  // Beta in radians?
+    double k = /* 1/(sigma*sqrt(2.0*M_PI)) * */ exp(-0.5*gamma*gamma/(sigma*sigma));
+
+//    qDebug() << "gamma =" << gamma;
+
+    double arfS = accessRateSphere(p);
+
+//    qDebug() << "arfS =" << gamma;
+
+    double res = k * arfS;
+
+    if (std::isnan(k))
+    {
+        qDebug() << "sigma =" << sigma;
+        qDebug() << "gamma =" << gamma;
+        qDebug() << "c =" << c;
+
+        qDebug() << "std::isnan(k) in SignalNode::accessRateCone";
+    }
+
+    if (std::isnan(arfS))
+    {
+        qDebug() << "std::isnan(arfS) in SignalNode::accessRateCone";
+    }
+
+    if (std::isnan(res))
+    {
+        throw std::logic_error("std::isnan(res) in SignalNode::accessRateCone");
+    }
+
+    return res;
 }
 //----------------------------------------------------------
 

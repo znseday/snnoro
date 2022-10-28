@@ -551,6 +551,16 @@ void MyConfig::InitNodeCoordsFromParams(const std::vector<double> & _params, Sig
     {
         for (size_t i = 0; i < _params.size(); i+=3)
         {
+            if (std::isnan(_params[i]))
+                qDebug() << "isnan(_params[i])";
+
+            if (std::isnan(_params[i+1]))
+                qDebug() << "isnan(_params[i+1])";
+
+            if (std::isnan(_params[i+2]))
+                qDebug() << "isnan(_params[i+2])";
+
+
             Nodes.at(i/3).Pos.setX(_params[i]);
             Nodes.at(i/3).Pos.setY(_params[i+1]);
             Nodes.at(i/3).Pos.setZ( Relief->CalcRealZbyRealXY(_params[i], _params[i+1]) );
@@ -577,31 +587,35 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
 
     const auto & area = Relief->GetArea();
 
-    double min_x = area.right();   // Для поиска
-    double max_x = area.left();
-    double min_y = area.bottom();
-    double max_y = area.top();
 
-//    double min_x = area.left(); // для жесткий ограничений без поиска
-//    double max_x = area.right();
-//    double min_y = area.top();
-//    double max_y = area.bottom();
+    double min_x = area.left(); // для жесткий ограничений без поиска
+    double max_x = area.right();
+    double min_y = area.top();
+    double max_y = area.bottom();
 
-    for (const auto & route : Routes)
-    {
-        for (const auto & p1 : route.Points)
-        {
-            if (p1.Pos.x() < min_x)
-                min_x = p1.Pos.x();
-            if (p1.Pos.y() < min_y)
-                min_y = p1.Pos.y();
+//    for (const auto & route : Routes)
+//    {
+//        for (const auto & p1 : route.Points)
+//        {
+//            if (p1.Pos.x() < min_x)
+//                min_x = p1.Pos.x();
+//            if (p1.Pos.y() < min_y)
+//                min_y = p1.Pos.y();
 
-            if (p1.Pos.x() > max_x)
-                max_x = p1.Pos.x();
-            if (p1.Pos.y() > max_y)
-                max_y = p1.Pos.y();
-        }
-    }
+//            if (p1.Pos.x() > max_x)
+//                max_x = p1.Pos.x();
+//            if (p1.Pos.y() > max_y)
+//                max_y = p1.Pos.y();
+//        }
+//    }
+
+//    min_x -= 200;
+//    min_y -= 200;
+//    max_x += 200;
+//    max_y += 200;
+
+//    min_x = min_y = 1000;
+//    max_x = max_y = 5000;
 
     size_t i = 0;
     for (const auto & node : Nodes)
