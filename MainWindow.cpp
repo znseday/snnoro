@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::AfterShow()
 {
     //on_actionFileOpen_Grad_Descent_triggered();
-    on_actionWorld_Show_Coords_toggled(true);
+//    on_actionWorld_Show_Coords_toggled(true);
 
     on_actionFileOpen_Grad_Descent_triggered();
 }
@@ -161,7 +161,8 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
 
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Select_Cur_Node->setEnabled(true);
-    ui->actionEdit_Editing_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Angle_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Pos_Cur_Node->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
     ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
@@ -194,6 +195,8 @@ void MainWindow::on_actionGradSetDraw3_triggered()
 
 void MainWindow::on_actionGradSwitch_Show_One_All_triggered()
 {
+//    qDebug() << __PRETTY_FUNCTION__;
+
     if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.SwitchDrawOnlyOne();
@@ -370,10 +373,10 @@ void MainWindow::on_actionFileSave_Grad_Config_triggered()
 }
 //-------------------------------------------------------------
 
-void MainWindow::on_actionWorld_Show_Coords_toggled(bool _toggled)
-{
-    mainGLWidget->SetIsShowCoordsAlways(_toggled);
-}
+//void MainWindow::on_actionWorld_Show_Coords_toggled(bool _toggled)
+//{
+//    mainGLWidget->SetIsShowCoordsAlways(_toggled);
+//}
 //-------------------------------------------------------------
 
 void MainWindow::SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists)
@@ -427,10 +430,11 @@ void MainWindow::SlotReceiveRouteDeleted(bool isDeleted)
     else
         qDebug() << "Warning: SlotReceiveRouteDeleted: isDeleted == false";
 
-    if (ui->actionWorld_Show_Coords->isChecked())
-        WorldMode = WorldModeType::ShowCoords;
-    else
-        WorldMode = WorldModeType::Nothing;
+//    if (ui->actionWorld_Show_Coords->isChecked())
+//        WorldMode = WorldModeType::ShowCoords;
+//    else
+
+    WorldMode = WorldModeType::Nothing;
 }
 //-------------------------------------------------------------
 
@@ -508,10 +512,12 @@ void MainWindow::on_actionEdit_Finish_Route_triggered()
     ui->actionEdit_Finish_Route->setEnabled(false);
     ui->actionEdit_Add_New_Route->setEnabled(true);
 
-    if (ui->actionWorld_Show_Coords->isChecked())
-        WorldMode = WorldModeType::ShowCoords;
-    else
-        WorldMode = WorldModeType::Nothing;
+//    if (ui->actionWorld_Show_Coords->isChecked())
+//        WorldMode = WorldModeType::ShowCoords;
+//    else
+
+
+    WorldMode = WorldModeType::Nothing;
 }
 //-------------------------------------------------------------
 
@@ -605,7 +611,8 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
 
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Select_Cur_Node->setEnabled(true);
-    ui->actionEdit_Editing_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Pos_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Angle_Cur_Node->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
     ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
@@ -876,23 +883,19 @@ void MainWindow::on_actionEdit_Select_Cur_Node_triggered()
 }
 //-------------------------------------------------------------
 
-void MainWindow::on_actionEdit_Editing_Cur_Node_triggered()
+void MainWindow::on_actionEdit_Editing_Pos_Cur_Node_triggered()
 {
-    if (ui->actionEdit_Editing_Cur_Node->isChecked())
+    if (ui->actionEdit_Editing_Pos_Cur_Node->isChecked())
     {
         if (GradModel.Get_iCurConfig() < 0 || GradModel.GetActiveConfig().Get_iCurNode() < 0)
         {
-            ui->actionEdit_Editing_Cur_Node->setChecked(false);
+            ui->actionEdit_Editing_Pos_Cur_Node->setChecked(false);
             qDebug() << "Cur Node is not selected";
             return;
         }
-//        else
-//        {
-//             if (GradModel.GetActiveConfig().Get_iCurNode() < 0)
-//        }
 
-
-        WorldMode = WorldModeType::EditingSignalNode;
+        WorldMode = WorldModeType::EditingPosSignalNode;
+        ui->actionEdit_Editing_Angle_Cur_Node->setChecked(false);
     }
     else
     {
@@ -900,3 +903,25 @@ void MainWindow::on_actionEdit_Editing_Cur_Node_triggered()
     }
 }
 //-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Editing_Angle_Cur_Node_triggered()
+{
+    if (ui->actionEdit_Editing_Angle_Cur_Node->isChecked())
+    {
+        if (GradModel.Get_iCurConfig() < 0 || GradModel.GetActiveConfig().Get_iCurNode() < 0)
+        {
+            ui->actionEdit_Editing_Angle_Cur_Node->setChecked(false);
+            qDebug() << "Cur Node is not selected";
+            return;
+        }
+
+        WorldMode = WorldModeType::EditingAngleSignalNode;
+        ui->actionEdit_Editing_Pos_Cur_Node->setChecked(false);
+    }
+    else
+    {
+        WorldMode = WorldModeType::Nothing;
+    }
+}
+//-------------------------------------------------------------
+

@@ -763,6 +763,58 @@ void MyConfig::SelectCurNodeByRealXY(double x, double y)
 }
 //----------------------------------------------------------
 
+void MyConfig::PutCurNodeByRealXYZ(double x, double y, double z)
+{
+    if (iCurNode < 0)
+    {
+        qDebug() << "iCurNode < 0 in MyConfig::PutCurNodeByRealXYZ";
+        return;
+    }
+
+    Nodes.at(iCurNode).Pos = {(float)x, (float)y, (float)z};
+}
+//----------------------------------------------------------
+
+void MyConfig::SetDirectCurNodeByRealXYZ(double x, double y, double z)
+{
+    if (iCurNode < 0)
+    {
+        qDebug() << "iCurNode < 0 in MyConfig::PutCurNodeByRealXYZ";
+        return;
+    }
+
+    double xLoc = x - Nodes.at(iCurNode).Pos.x();
+    double yLoc = y - Nodes.at(iCurNode).Pos.y();
+
+    double alpha = 0;
+
+    if (xLoc > 0)
+    {
+        alpha = atan(yLoc / xLoc);
+    }
+    else if (xLoc < 0)
+    {
+        if (yLoc >= 0)
+            alpha = atan(yLoc / xLoc) + M_PI;
+        else
+            alpha = atan(yLoc / xLoc) - M_PI;
+    }
+    else // xLoc == 0
+    {
+        if (yLoc > 0)
+            alpha = M_PI / 2.0;
+        else if (yLoc < 0)
+            alpha = -M_PI / 2.0;
+        else
+        {
+            alpha = Nodes.at(iCurNode).Alpha;   // xLoc = 0 and yLoc = 0
+        }
+    }
+
+    Nodes.at(iCurNode).Alpha = alpha;
+}
+//----------------------------------------------------------
+
 void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) const
 {
     constexpr float zOffset = 0.01f;

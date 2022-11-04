@@ -156,6 +156,8 @@ public:
     void ApplySignalNodesToAllConfigs();
     void ApplyRoutesToAllConfigs(NeedToSave _NeedToSave);
 
+    void ApplyCurNodeFromCurConfigToAllConfigs();
+
     const std::vector<SignalNode> & GetSignalNodes() const {return Nodes;}
     std::vector<SignalNode> & SignalNodesDirectAccess() {return Nodes;}
 
@@ -183,7 +185,8 @@ public:
     void CalcAccessRateForCurrent();
 
     void SelectCurNodeByPos(double wx, double wy);
-
+    void PutCurNodeByPos(double wx, double wy);
+    void SetDirectCurNodeByPos(double wx, double wy);
 };
 
 #endif // MYGRADMODEL_H

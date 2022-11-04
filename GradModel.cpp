@@ -571,6 +571,27 @@ void MyGradModel::ApplyRoutesToAllConfigs(NeedToSave _NeedToSave)
 }
 //----------------------------------------------------------
 
+void MyGradModel::ApplyCurNodeFromCurConfigToAllConfigs()
+{
+    if (iCurConfig >= 0 && Configs.at(iCurConfig).Get_iCurNode() >= 0)
+    {
+        const auto & curConfig = GetCurrentConfig();
+        int ind = curConfig.Get_iCurNode();
+        const auto & curNode = curConfig.GetNodes().at(ind);
+
+        for (auto & cnf : Configs)
+        {
+//            cnf.SetNode(ind, curNode); // TO DO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        }
+
+        // и в Node этого класса
+
+    }
+    else
+        qDebug() << "CurNode is not selected in MyGradModel::ApplyCurNodeFromCurConfigToAllConfigs. Abort.";
+}
+//----------------------------------------------------------
+
 const MyConfig &MyGradModel::GetCurrentConfig() const
 {
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
@@ -594,33 +615,9 @@ void MyGradModel::OnMousePress(QMouseEvent *pe)
     OldX = pe->pos().x();
     OldY = pe->pos().y();
 
-    //qDebug() << "x =" << OldX;
-    //qDebug() << "y =" << OldY;
-
     if (!DrawOnlyOne)
     {
         iCurConfig = CalcCurViewPortNumber(pe->pos().x(), pe->pos().y());
-
-        // emit signal about iCurConfig ?
-
-//        size_t i = 0;
-//        for (const auto & v : ViewPorts)
-//        {
-//            //qDebug() << v;
-
-//            if ( !v.isValid() )
-//                throw std::runtime_error("!v.isValid() ");
-
-//            if ( v.contains(pe->x(), pe->y()) )
-//                iCurConfig = i;
-
-//            i++;
-//        }
-    }
-
-    if (pe->type() == QMouseEvent::MouseButtonDblClick && iCurConfig >= 0)
-    {
-        SwitchDrawOnlyOne();
     }
 }
 //----------------------------------------------------------
@@ -1479,13 +1476,13 @@ void MyGradModel::CalcAccessRateForCurrent()
 
 void MyGradModel::SelectCurNodeByPos(double wx, double wy)
 {
-    if (wx < -1 || wx > 1 ||    // потом убрать????
-        wy < -1 || wy > 1 )
-    {
-        qDebug() << "wx < -1 || wx > 1 ||"
-                    "wy < -1 || wy > 1";
-        return;
-    }
+//    if (wx < -1 || wx > 1 ||    // потом убрать????
+//        wy < -1 || wy > 1 )
+//    {
+//        qDebug() << "wx < -1 || wx > 1 ||"
+//                    "wy < -1 || wy > 1";
+//        return;
+//    }
 
     double realX, realY; //, realZ;
     /*realZ =*/ Relief.CalcRealXYZbyNormXY(wx, wy, realX, realY);
@@ -1497,6 +1494,38 @@ void MyGradModel::SelectCurNodeByPos(double wx, double wy)
     else
     {
         qDebug() << "iCurConfig == -1. MyGradModel::SelectCurNodeByPos aborted";
+    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::PutCurNodeByPos(double wx, double wy)
+{
+    double realX, realY, realZ;
+    realZ = Relief.CalcRealXYZbyNormXY(wx, wy, realX, realY);
+
+    if (iCurConfig >= 0)
+    {
+        Configs.at(iCurConfig).PutCurNodeByRealXYZ(realX, realY, realZ);
+    }
+    else
+    {
+        qDebug() << "iCurConfig == -1. MyGradModel::PutCurNodeByPos aborted";
+    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::SetDirectCurNodeByPos(double wx, double wy)
+{
+    double realX, realY, realZ;
+    realZ = Relief.CalcRealXYZbyNormXY(wx, wy, realX, realY);
+
+    if (iCurConfig >= 0)
+    {
+        Configs.at(iCurConfig).SetDirectCurNodeByRealXYZ(realX, realY, realZ);
+    }
+    else
+    {
+        qDebug() << "iCurConfig == -1. MyGradModel::SetDirectCurNodeByPos aborted";
     }
 }
 //----------------------------------------------------------

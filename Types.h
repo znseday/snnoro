@@ -15,11 +15,12 @@ enum class WorkModeType
 enum class WorldModeType
 {
     Nothing,
-    ShowCoords,
+//    ShowCoords,
     AddingRoutePoints,
     DeletingRoute,
     SelectingSignalNode,
-    EditingSignalNode
+    EditingPosSignalNode,
+    EditingAngleSignalNode
 };
 
 enum class NeedToSave

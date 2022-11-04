@@ -127,6 +127,8 @@ public:
     void CalcAccessRateForCurrent(); // DEBUG
 
     void SelectCurNodeByRealXY(double x, double y);
+    void PutCurNodeByRealXYZ(double x, double y, double z);
+    void SetDirectCurNodeByRealXYZ(double x, double y, double z);
 
     int Get_iCurNode() const {return iCurNode;}
 };

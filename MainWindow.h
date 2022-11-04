@@ -73,7 +73,7 @@ private slots:
 
     void on_actionFileSave_Grad_Config_triggered();
 
-    void on_actionWorld_Show_Coords_toggled(bool arg1);
+//    void on_actionWorld_Show_Coords_toggled(bool arg1);
 
     void on_actionEdit_Add_New_Route_triggered();
 
@@ -109,7 +109,11 @@ private slots:
 
     void on_actionEdit_Select_Cur_Node_triggered();
 
-    void on_actionEdit_Editing_Cur_Node_triggered();
+    void on_actionEdit_Editing_Pos_Cur_Node_triggered();
+
+    void on_actionEdit_Editing_Angle_Cur_Node_triggered();
+
+//    void on_actionWorld_Show_Coords_triggered();
 
 private:
     Ui::MainWindow *ui;

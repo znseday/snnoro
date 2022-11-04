@@ -237,6 +237,33 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
             }
         }
 
+        if (WorldMode == WorldModeType::EditingPosSignalNode &&
+            pe->buttons() & Qt::LeftButton)
+        {
+            if (wExists)
+            {
+                GradModel.PutCurNodeByPos(wx, wy);
+//                WorldMode = WorldModeType::Nothing;
+            }
+        }
+
+        if (WorldMode == WorldModeType::EditingAngleSignalNode &&
+            pe->buttons() & Qt::LeftButton)
+        {
+            if (wExists)
+            {
+                GradModel.SetDirectCurNodeByPos(wx, wy);
+//                WorldMode = WorldModeType::Nothing;
+            }
+        }
+
+        if (pe->type() == QMouseEvent::MouseButtonDblClick &&
+                GradModel.Get_iCurConfig() >= 0 &&
+                WorldMode == WorldModeType::Nothing)
+        {
+            GradModel.SwitchDrawOnlyOne();
+        }
+
         this->repaint();
     }
 }

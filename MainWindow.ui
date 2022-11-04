@@ -117,7 +117,6 @@
     <property name="title">
      <string>World</string>
     </property>
-    <addaction name="actionWorld_Show_Coords"/>
     <addaction name="separator"/>
     <addaction name="actionWorld_Show_Abonents"/>
    </widget>
@@ -131,7 +130,8 @@
     <addaction name="actionEdit_Delete_Route"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Select_Cur_Node"/>
-    <addaction name="actionEdit_Editing_Cur_Node"/>
+    <addaction name="actionEdit_Editing_Pos_Cur_Node"/>
+    <addaction name="actionEdit_Editing_Angle_Cur_Node"/>
     <addaction name="actionEdit_Edit_Signal_Nodes_for_All"/>
     <addaction name="actionEdit_Edit_Signal_Nodes_for_Current"/>
     <addaction name="separator"/>
@@ -317,17 +317,6 @@
     <string>Save Grad Config</string>
    </property>
   </action>
-  <action name="actionWorld_Show_Coords">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show Coords</string>
-   </property>
-  </action>
   <action name="actionEdit_Add_New_Route">
    <property name="text">
     <string>Add New Route</string>
@@ -446,7 +435,7 @@
     <string>J</string>
    </property>
   </action>
-  <action name="actionEdit_Editing_Cur_Node">
+  <action name="actionEdit_Editing_Pos_Cur_Node">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -454,7 +443,30 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Editing Cur Node</string>
+    <string>Editing Pos of Cur Node</string>
+   </property>
+   <property name="toolTip">
+    <string>Editing Pos of Cur Node</string>
+   </property>
+   <property name="shortcut">
+    <string>M</string>
+   </property>
+  </action>
+  <action name="actionEdit_Editing_Angle_Cur_Node">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Editing Angle of Cur Node</string>
+   </property>
+   <property name="toolTip">
+    <string>Editing Angle of Cur Node</string>
+   </property>
+   <property name="shortcut">
+    <string>A</string>
    </property>
   </action>
  </widget>

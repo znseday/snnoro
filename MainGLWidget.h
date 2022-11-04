@@ -36,7 +36,7 @@ private:
 
     MyGradModel &GradModel;
 
-    bool IsShowCoordsAlways = false;
+    bool IsShowCoordsAlways = true;
 
     QOpenGLFramebufferObject *MyFBO = nullptr;
 

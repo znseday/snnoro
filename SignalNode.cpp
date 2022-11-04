@@ -157,6 +157,7 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 
 
 
+
     if (c > 1.0)
     {
 //        qDebug() << "c > 1.0, c =" << c;
