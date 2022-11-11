@@ -47,6 +47,7 @@ SOURCES += \
         TargetFunctions/TargetFunctionsFirstPhase.cpp \
         TargetFunctions/TargetFunctionsSecondPhase.cpp \
         Test_tf_gd_lib.cpp \
+        TypesAndUtils.cpp \
         main.cpp
 
 # Default rules for deployment.
@@ -79,7 +80,7 @@ HEADERS += \
     TargetFunctions/TargetFunctionsFirstPhase.h \
     TargetFunctions/TargetFunctionsSecondPhase.h \
     Test_tf_gd_lib.h \
-    Types.h
+    TypesAndUtils.h
 
 FORMS += \
     DialogAboReport.ui \

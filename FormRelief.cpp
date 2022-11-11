@@ -782,6 +782,7 @@ void FormRelief::on_actionFile_Open_Relief_triggered()
     if (!Relief.LoadFromFile(ImageSrcFileName))
         throw std::runtime_error("Relief File Not Found or Couldn't be read");
 
+    qDebug() << Relief.GetImageFileName(); // Тестировать все кейсы
 }
 //-------------------------------------------------------------
 

@@ -61,4 +61,6 @@ public:
     virtual ~IGradDrawable() = default;
 };
 
+void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, const QString &_what);
+
 #endif // MYTYPES_H

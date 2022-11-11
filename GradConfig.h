@@ -6,7 +6,7 @@
 #include "SignalNode.h"
 #include "UnitGradDescent.h"
 #include "Route.h"
-#include "Types.h"
+#include "TypesAndUtils.h"
 #include "Relief.h"
 
 #include <GL/glu.h>

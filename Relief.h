@@ -7,7 +7,7 @@
 //#include <QVector3D>
 #include <QColor>
 
-#include "Types.h"
+#include "TypesAndUtils.h"
 #include <iostream>
 #include <map>
 #include <QRectF>

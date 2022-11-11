@@ -15,7 +15,7 @@ class QWheelEvent;
 class QOpenGLFramebufferObject;
 //#include <QOpenGLFunctions>
 
-#include "Types.h"
+#include "TypesAndUtils.h"
 #include "GradModel.h"
 
 class MainGLWidget : public QOpenGLWidget, public IGradDrawable

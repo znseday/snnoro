@@ -6,7 +6,7 @@
 //#include "MainGLWidget.h"
 class MainGLWidget;
 
-#include "Types.h"
+#include "TypesAndUtils.h"
 
 #include "GradModel.h"
 
