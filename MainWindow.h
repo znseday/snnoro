@@ -115,6 +115,8 @@ private slots:
 
 //    void on_actionWorld_Show_Coords_triggered();
 
+    void on_actionEdit_Apply_Cur_Node_to_All_Configs_triggered();
+
 private:
     Ui::MainWindow *ui;
 

@@ -29,7 +29,7 @@ using namespace std;
 constexpr float RotSpeed = 0.12f;
 constexpr float TransSpeed = 0.006f;
 
-static const QString ReliefsDefaultDir = "Reliefs";
+//static const QString ReliefsDefaultDir = "Reliefs";
 static const QString SettingsDefaultDir = "Settings";
 
 static void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, const QString &_what)
@@ -581,10 +581,10 @@ void MyGradModel::ApplyCurNodeFromCurConfigToAllConfigs()
 
         for (auto & cnf : Configs)
         {
-//            cnf.SetNode(ind, curNode); // TO DO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            cnf.SetNode(ind, curNode);
         }
 
-        // и в Node этого класса
+        Nodes.at(ind) = curNode;
 
     }
     else

@@ -15,6 +15,8 @@ using namespace std;
 //bool IsUseReliefRandomSeed = true;
 //unsigned ReliefRandomSeed = 100;
 
+const QString ReliefsDefaultDir = "Reliefs";
+
 ostream & operator<<(ostream &s, const ReliefMatInfoStruct ob)
 {
     s << "IsUseReliefRandomSeed = " << ob.IsUseReliefRandomSeed << endl;
@@ -537,6 +539,8 @@ void Relief3D::SaveToFile(const QString &_fileName)
     QJsonDocument jsonDoc;
     QJsonObject resultObject;
 
+    resultObject.insert("ImageFileName", ImageFileName);
+
     QJsonObject areaObject;
     areaObject.insert("left", Area.left());
     areaObject.insert("right", Area.right());
@@ -614,6 +618,8 @@ void Relief3D::ParseJson(const QJsonObject &_jsonObject, const QJsonParseError &
         qDebug() << _parseError.errorString();
         return;
     }
+
+    ImageFileName = _jsonObject["ImageFileName"].toString();
 
     const QJsonObject &areaObject = _jsonObject["Area"].toObject();
     double l = areaObject["left"].toDouble(-1);

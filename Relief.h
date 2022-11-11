@@ -15,9 +15,11 @@
 class QJsonObject;
 class QJsonParseError;
 
+//constexpr char *ReliefsDefaultDir = "Reliefs";
+extern const QString ReliefsDefaultDir;
+
 struct ReliefMatInfoStruct
 {
-
     bool IsUseReliefRandomSeed = true;
     unsigned ReliefRandomSeed = 100;
 
@@ -72,6 +74,8 @@ protected:
     double Global_kz = 1.0;
     double AverZ = 0; // in Gl coords
 
+    QString ImageFileName;
+
 public:
     Relief3D() = default;
     ~Relief3D();
@@ -116,6 +120,10 @@ public:
     const QString & GetFileName() const {return FileName;}
 
     double GetDeltaDiag() const {return DeltaDiag;}
+
+    void SetImageFileName(const QString &_fn) {ImageFileName = _fn;}
+    const QString & GetImageFileName() const {return ImageFileName;}
+
 };
 
 #endif // RELIEF_H

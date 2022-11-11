@@ -131,6 +131,7 @@ public:
     void SetDirectCurNodeByRealXYZ(double x, double y, double z);
 
     int Get_iCurNode() const {return iCurNode;}
+    void SetNode(int ind, const SignalNode &_node);
 };
 
 //bool operator<(const MyConfig &a, const MyConfig &b)

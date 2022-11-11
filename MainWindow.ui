@@ -138,6 +138,7 @@
     <addaction name="actionEdit_Edit_Routes"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Change_Count_of_Nodes"/>
+    <addaction name="actionEdit_Apply_Cur_Node_to_All_Configs"/>
    </widget>
    <widget class="QMenu" name="menuDebug">
     <property name="title">
@@ -467,6 +468,14 @@
    </property>
    <property name="shortcut">
     <string>A</string>
+   </property>
+  </action>
+  <action name="actionEdit_Apply_Cur_Node_to_All_Configs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Apply Cur Node to All Configs</string>
    </property>
   </action>
  </widget>

@@ -777,6 +777,8 @@ void MyConfig::PutCurNodeByRealXYZ(double x, double y, double z)
 
 void MyConfig::SetDirectCurNodeByRealXYZ(double x, double y, double z)
 {
+    (void)z;
+
     if (iCurNode < 0)
     {
         qDebug() << "iCurNode < 0 in MyConfig::PutCurNodeByRealXYZ";
@@ -815,6 +817,12 @@ void MyConfig::SetDirectCurNodeByRealXYZ(double x, double y, double z)
 }
 //----------------------------------------------------------
 
+void MyConfig::SetNode(int ind, const SignalNode &_node)
+{
+    Nodes.at(ind) = _node;
+}
+//----------------------------------------------------------
+
 void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) const
 {
     constexpr float zOffset = 0.01f;
@@ -830,16 +838,16 @@ void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) co
 
     double offsetX = area.x()+hW; // in meters
     double offsetY = area.y()+hH; // in meters
-    double offsetZ = 0;
+//    double offsetZ = 0;
 
     glLineWidth(1.0f);
     gluQuadricDrawStyle(Quadric(), GLU_FILL);
 
     for (const auto &node : Nodes)
     {
-        double xNode = (node.Pos.x()-offsetX)*k;
-        double yNode = (node.Pos.y()-offsetY)*k;
-        double zNode;
+//        double xNode = (node.Pos.x()-offsetX)*k;
+//        double yNode = (node.Pos.y()-offsetY)*k;
+//        double zNode;
 
         for (const auto & r : Routes)
         {

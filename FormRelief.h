@@ -108,12 +108,16 @@ private slots:
     void on_actionRelief_Calc_Discrete_Img_triggered();
     void on_actionRelief_Calc_Relief_And_Save_As_triggered();
 
+    void on_actionFile_Open_Relief_triggered();
+
 private:
     Ui::FormRelief *ui;
 
     QWidget *wgtForScrollArea;
     QImage ImgReliefSrc;
     QImage ImgReliefDst;
+
+    QString ImageSrcFileName;
 
     MyPicSrcWidget *lblPicSrc;
     MyPicDstWidget *lblPicDst;

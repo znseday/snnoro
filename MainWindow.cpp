@@ -162,6 +162,7 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     ui->actionEdit_Delete_Route->setEnabled(true);
     ui->actionEdit_Select_Cur_Node->setEnabled(true);
     ui->actionEdit_Editing_Angle_Cur_Node->setEnabled(true);
+    ui->actionEdit_Apply_Cur_Node_to_All_Configs->setEnabled(true);
     ui->actionEdit_Editing_Pos_Cur_Node->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
@@ -613,6 +614,7 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
     ui->actionEdit_Select_Cur_Node->setEnabled(true);
     ui->actionEdit_Editing_Pos_Cur_Node->setEnabled(true);
     ui->actionEdit_Editing_Angle_Cur_Node->setEnabled(true);
+    ui->actionEdit_Apply_Cur_Node_to_All_Configs->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
     ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
@@ -925,3 +927,8 @@ void MainWindow::on_actionEdit_Editing_Angle_Cur_Node_triggered()
 }
 //-------------------------------------------------------------
 
+void MainWindow::on_actionEdit_Apply_Cur_Node_to_All_Configs_triggered()
+{
+    GradModel.ApplyCurNodeFromCurConfigToAllConfigs();
+}
+//-------------------------------------------------------------

@@ -137,6 +137,9 @@ void FormRelief::on_actionFile_Open_Image_triggered()
         return;
 
     ImgReliefSrc.load(fileName);
+
+    ImageSrcFileName = fileName;
+
     ImgReliefSrc = ImgReliefSrc.convertToFormat(QImage::Format_ARGB32);
 
     ImgReliefDst = ImgReliefSrc;
@@ -730,6 +733,9 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
     int cols = TempGrid.front().size(); // Размер сетки
 
     Relief.Clear();
+
+    Relief.SetImageFileName(ImageSrcFileName);
+
     double l = ui->EditXStart->text().toDouble();
     double b = ui->EditYStart->text().toDouble();
     double r = l + ui->EditWidth->text().toDouble();
@@ -761,5 +767,22 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
 }
 //-------------------------------------------------------------
 
+void FormRelief::on_actionFile_Open_Relief_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+        "Open Relief file", ".", "Relief Files (*.json)");
+
+    if (fileName.isEmpty())
+        return;
+
+    ImageSrcFileName = fileName;
+
+    CorrectFileNameIfDoesntExist(ImageSrcFileName, ReliefsDefaultDir, "Relief");
+
+    if (!Relief.LoadFromFile(ImageSrcFileName))
+        throw std::runtime_error("Relief File Not Found or Couldn't be read");
+
+}
+//-------------------------------------------------------------
 
 
