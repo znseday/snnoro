@@ -17,6 +17,9 @@ class QJsonParseError;
 
 //constexpr char *ReliefsDefaultDir = "Reliefs";
 extern const QString ReliefsDefaultDir;
+extern const QString ReliefsExtension;
+extern const QString ReliefsImagesDefaultDir;
+extern const QString ReliefsImagesExtension;
 
 struct ReliefMatInfoStruct
 {

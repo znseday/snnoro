@@ -404,10 +404,10 @@
   </action>
   <action name="actionFile_Open_Relief">
    <property name="text">
-    <string>Open Relief</string>
+    <string>Open Relief...</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+O</string>
+    <string>Ctrl+Shift+O</string>
    </property>
   </action>
  </widget>

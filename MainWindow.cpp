@@ -93,19 +93,12 @@ MainWindow::MainWindow(QWidget *parent) :
     mainGLWidget->setMouseTracking(true);
 
     dlgAboReport.InitDialog();
-
-//    on_actionFileStart_Grad_Descent_triggered();
-
-//    on_actionFileOpen_Grad_Descent_triggered();
 }
 //-------------------------------------------------------------
 
 void MainWindow::AfterShow()
 {
-    //on_actionFileOpen_Grad_Descent_triggered();
-//    on_actionWorld_Show_Coords_toggled(true);
-
-    on_actionFileOpen_Grad_Descent_triggered();
+//    on_actionFileOpen_Grad_Descent_triggered();
 }
 //-------------------------------------------------------------
 
@@ -196,8 +189,6 @@ void MainWindow::on_actionGradSetDraw3_triggered()
 
 void MainWindow::on_actionGradSwitch_Show_One_All_triggered()
 {
-//    qDebug() << __PRETTY_FUNCTION__;
-
     if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.SwitchDrawOnlyOne();

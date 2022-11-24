@@ -137,6 +137,8 @@ private:
 
     std::vector<std::vector<CorolAndZ_pair>> TempGrid;
 
+    bool LoadSrcImage(const QString &_fn);
+
     void PrintImgReliefDstFromTempGrid();
 
 public slots:

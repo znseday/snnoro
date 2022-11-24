@@ -29,8 +29,10 @@ using namespace std;
 constexpr float RotSpeed = 0.12f;
 constexpr float TransSpeed = 0.006f;
 
-//static const QString ReliefsDefaultDir = "Reliefs";
+
 static const QString SettingsDefaultDir = "Settings";
+static const QString SettingsGDExtension = "*.json";
+static const QString SettingsTFExtension = "*.json";
 
 //static void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, const QString &_what)
 //{
@@ -737,33 +739,7 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     {
         QString ReliefFileName = configObject["ReliefFileName"].toString();
 
-        CorrectFileNameIfDoesntExist(ReliefFileName, ReliefsDefaultDir, "Relief");
-
-//        if ( !QFile::exists(ReliefFileName) )
-//        {
-//            QFileInfo fileInfo(ReliefFileName);
-//            ReliefFileName = ReliefsDefaultDir + "/" + fileInfo.fileName();
-//        }
-
-//        if ( !QFile::exists(ReliefFileName) )
-//        {
-//            auto res = QMessageBox::question(nullptr, "Question", "Relief File not Found. Would you like to choose Relif file?");
-//            if (res == QMessageBox::Yes)
-//            {
-//                ReliefFileName = QFileDialog::getOpenFileName(nullptr,
-//                                          "Choose Relief file", ".", "Relif Files (*.json)");
-
-//                if (ReliefFileName.isEmpty())
-//                {
-//                    QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
-//                }
-
-//            }
-//            else
-//            {
-//                QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
-//            }
-//        }
+        CorrectFileNameIfDoesntExist(ReliefFileName, ReliefsDefaultDir, "Relief", ReliefsExtension);
 
         if (!Relief.LoadFromFile(ReliefFileName))
             throw std::runtime_error("Relief File Not Found or Couldn't be read");
@@ -884,7 +860,7 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     GradDescFileName = gradDescObject["GradDescFileName"].toString();
 
-    CorrectFileNameIfDoesntExist(GradDescFileName, SettingsDefaultDir, "GradDesc");
+    CorrectFileNameIfDoesntExist(GradDescFileName, SettingsDefaultDir, "GradDesc", SettingsGDExtension);
 
     if (!GradDescLoadFromFile(ProtoGradDesc, GradDescFileName))
     {
@@ -911,7 +887,7 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     QString TargetFuncFileName = targetFuncObject["TargetFuncFileName"].toString();
 
-    CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc");
+    CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc", SettingsTFExtension);
 
     if (!TargetFuncSettingsGlobal.LoadFromFile(TargetFuncFileName))
     {

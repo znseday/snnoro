@@ -5,7 +5,10 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, const QString &_what)
+void CorrectFileNameIfDoesntExist(QString &_fileName,
+                                  const QString &_defDir,
+                                  const QString &_what,
+                                  const QString &_extension)
 {
     if ( !QFile::exists(_fileName) )
     {
@@ -15,11 +18,13 @@ void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, co
 
     if ( !QFile::exists(_fileName) )
     {
-        auto res = QMessageBox::question(nullptr, "Question", _what + " File not Found. Would you like to choose " + _what + " file?");
+        auto res = QMessageBox::question(nullptr, "Question",
+                                         _what + " File not Found. Would you like to choose " + _what + " file?");
         if (res == QMessageBox::Yes)
         {
             _fileName = QFileDialog::getOpenFileName(nullptr,
-                                      "Choose " + _what + " file", ".", _what + " Files (*.json)");
+                                      "Choose " + _what + " file", ".",
+                                      _what + " Files (" + _extension + ")");
 
             if (_fileName.isEmpty())
             {

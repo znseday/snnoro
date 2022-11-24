@@ -13,6 +13,8 @@
 #include <QJsonArray>
 #include <QMouseEvent>
 
+static const QString LegendExtension = "*.json";
+
 void MyPicSrcWidget::mousePressEvent(QMouseEvent *pe)
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -55,8 +57,6 @@ void MyPicSrcWidget::paintEvent([[maybe_unused]] QPaintEvent *pe)
 
         if (IsMouseDown)
             painter.drawRect(FrameRect);
-
-        //painter.drawLine(100,100,200,200);
     }
 }
 //-------------------------------------------------------------
@@ -69,10 +69,6 @@ void MyPicDstWidget::mousePressEvent(QMouseEvent *pe)
     OldX = pe->pos().x();
     OldY = pe->pos().y();
 
-//    if (pe->button() == Qt::LeftButton) // Убрать?
-//    {
-//        IsMouseDown = true;
-//    }
     if (pe->button() == Qt::RightButton)
     {
         emit SignalSendChangePoint(OldX, OldY);
@@ -131,36 +127,29 @@ FormRelief::~FormRelief()
 void FormRelief::on_actionFile_Open_Image_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Image file", ".", "Image Files (*.png *jpg *bmp)");
+        "Open Image file", ".", "Image Files (" + ReliefsImagesExtension + ")");
 
     if (fileName.isEmpty())
         return;
 
-    ImgReliefSrc.load(fileName);
+    if (!LoadSrcImage(fileName))
+        QMessageBox::critical(this, "Error", "Image's been not loaded");
 
-    ImageSrcFileName = fileName;
 
-    ImgReliefSrc = ImgReliefSrc.convertToFormat(QImage::Format_ARGB32);
+//    ImgReliefSrc.load(fileName);
 
-    ImgReliefDst = ImgReliefSrc;
+//    ImageSrcFileName = fileName;
 
-    //ImgReliefDst = ImgReliefDst.convertToFormat(QImage::Format_ARGB32); // ????????
+//    ImgReliefSrc = ImgReliefSrc.convertToFormat(QImage::Format_ARGB32);
 
-//    ImgRelief = ImgRelief.convertToFormat(QImage::Format_RGB888);  // 24bit
+//    ImgReliefDst = ImgReliefSrc;
 
-    //ui->horizontalLayout_2->sets
+//    wgtForScrollArea->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height()*2);
 
-//    ui->lblImage->setFixedSize(ImgRelief.width(), ImgRelief.height());
-//    ui->lblImage->setPixmap(QPixmap::fromImage(ImgRelief));
+//    lblPicSrc->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
+//    lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
 
-    wgtForScrollArea->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height()*2);
-
-    lblPicSrc->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
-    lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
-
-    //lblPic->setPixmap(QPixmap::fromImage(ImgRelief));
-
-    ui->actionRelief_Calc_Discrete_Img->setEnabled(true);
+//    ui->actionRelief_Calc_Discrete_Img->setEnabled(true);
 }
 //-------------------------------------------------------------
 
@@ -549,6 +538,28 @@ rgbaType FormRelief::AnalyseImageAreaForColor(int xStart, int yStart, int xEnd, 
 }
 //-------------------------------------------------------------
 
+bool FormRelief::LoadSrcImage(const QString &_fn)
+{
+    if (!ImgReliefSrc.load(_fn))
+        return false;
+
+    ImageSrcFileName = _fn;
+
+    ImgReliefSrc = ImgReliefSrc.convertToFormat(QImage::Format_ARGB32);
+
+    ImgReliefDst = ImgReliefSrc;
+
+    wgtForScrollArea->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height()*2);
+
+    lblPicSrc->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
+    lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
+
+    ui->actionRelief_Calc_Discrete_Img->setEnabled(true);
+
+    return true;
+}
+//-------------------------------------------------------------
+
 void FormRelief::SlotReceiveRectFrame(QRect _rect)
 {
 //    QModelIndexList list =  ui->tableColors->selectionModel()->selectedIndexes();
@@ -613,7 +624,7 @@ void FormRelief::SlotReceiveChangePoint(int x, int y)
 void FormRelief::on_actionFile_Save_Legend_As_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Legend file", ".", "Legend Files (*.json)");
+        "Save Legend file", ".", "Legend Files (" + LegendExtension + ")");
 
     if (fileName == "")
     {
@@ -649,7 +660,7 @@ void FormRelief::on_actionFile_Save_Legend_As_triggered()
 void FormRelief::on_actionFile_Load_Legend_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Legend file", ".", "Legend Files (*.json)");
+        "Open Legend file", ".", "Legend Files (" + LegendExtension + ")");
 
     if (fileName == "")
     {
@@ -703,11 +714,6 @@ void FormRelief::on_actionFile_Load_Legend_triggered()
 
 void FormRelief::on_chbColorToLegend_stateChanged([[maybe_unused]] int arg1)
 {
-//    if (ui->chbColorToLegend->isChecked())
-//        lblPicSrc->setEnabled(true);
-//    else
-//        lblPicSrc->setEnabled(false);
-
     lblPicSrc->setEnabled(ui->chbColorToLegend->isChecked());
 }
 //-------------------------------------------------------------
@@ -720,7 +726,7 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
     }
 
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Relief file", ".", "Relief Files (*.json)");
+        "Save Relief file", ".", "Relief Files (" + ReliefsExtension + ")");
 
     if (fileName == "")
     {
@@ -770,19 +776,22 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
 void FormRelief::on_actionFile_Open_Relief_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Relief file", ".", "Relief Files (*.json)");
+        "Open Relief file", ".", "Relief Files (" + ReliefsExtension + ")");
 
     if (fileName.isEmpty())
         return;
 
-    ImageSrcFileName = fileName;
-
-    CorrectFileNameIfDoesntExist(ImageSrcFileName, ReliefsDefaultDir, "Relief");
-
-    if (!Relief.LoadFromFile(ImageSrcFileName))
+    if (!Relief.LoadFromFile(fileName))
         throw std::runtime_error("Relief File Not Found or Couldn't be read");
 
-    qDebug() << Relief.GetImageFileName(); // Тестировать все кейсы
+    ImageSrcFileName = Relief.GetImageFileName();
+    CorrectFileNameIfDoesntExist(ImageSrcFileName, ReliefsImagesDefaultDir, "Image for Relief", ReliefsImagesExtension);
+    Relief.SetImageFileName(ImageSrcFileName);
+
+    qDebug() << Relief.GetImageFileName();
+
+    if (!LoadSrcImage(Relief.GetImageFileName()))
+        QMessageBox::critical(this, "Error", "Image's been not loaded");
 }
 //-------------------------------------------------------------
 

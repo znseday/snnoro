@@ -15,7 +15,6 @@ enum class WorkModeType
 enum class WorldModeType
 {
     Nothing,
-//    ShowCoords,
     AddingRoutePoints,
     DeletingRoute,
     SelectingSignalNode,
@@ -36,24 +35,6 @@ enum class NeedToSave
 //    Probabilistic
 //};
 
-//struct TargetFuncSettingsStruct // Переделать, чтобы у каждый целевой функции
-//                                // был свой пакет настроек
-//{
-//    double Aarf = 1e8;
-//    double A2 = 4e7;
-//    double p = 1e-5;
-//    double offX = 0.01;
-//    double k_step_ot = 0.03;
-//    double R_nodeOverlap = 50;
-//    bool IsUseCoveredFlag = true;
-//    bool IsUseLineBetweenTwoPoints = false;
-
-////    TargetFuncEnum TargetFuncType = TargetFuncEnum::Empty;
-//    std::string ActiveTargetFuncFirstPhase = "AdditiveSphereFirstPhase";
-//    std::string ActiveTargetFuncSecondPhase = "AdditiveSphereSecondPhase";
-//};
-
-
 class IGradDrawable
 {
 public:
@@ -61,6 +42,9 @@ public:
     virtual ~IGradDrawable() = default;
 };
 
-void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, const QString &_what);
+void CorrectFileNameIfDoesntExist(QString &_fileName,
+                                  const QString &_defDir,
+                                  const QString &_what,
+                                  const QString &_extension);
 
 #endif // MYTYPES_H
