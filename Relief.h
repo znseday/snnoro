@@ -20,6 +20,8 @@ extern const QString ReliefsDefaultDir;
 extern const QString ReliefsExtension;
 extern const QString ReliefsImagesDefaultDir;
 extern const QString ReliefsImagesExtension;
+extern const QString ReliefsLegendsDefaultDir;
+extern const QString ReliefsLegendsExtension;
 
 struct ReliefMatInfoStruct
 {
@@ -78,6 +80,7 @@ protected:
     double AverZ = 0; // in Gl coords
 
     QString ImageFileName;
+    QString LegendFileName;
 
 public:
     Relief3D() = default;
@@ -127,6 +130,8 @@ public:
     void SetImageFileName(const QString &_fn) {ImageFileName = _fn;}
     const QString & GetImageFileName() const {return ImageFileName;}
 
+    void SetLegendFileName(const QString &_fn) {LegendFileName = _fn;}
+    const QString & GetLegendFileName() const {return LegendFileName;}
 };
 
 #endif // RELIEF_H

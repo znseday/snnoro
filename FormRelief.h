@@ -76,6 +76,7 @@ public:
     MyPicDstWidget(const QString &text, const QImage &_imgDst, QWidget *parent = nullptr) : QLabel(text, parent), ImgDst(_imgDst) {};
 };
 //-------------------------------------------------------------
+//-------------------------------------------------------------
 
 namespace Ui {
 class FormRelief;
@@ -118,6 +119,7 @@ private:
     QImage ImgReliefDst;
 
     QString ImageSrcFileName;
+    QString LegendFileName;
 
     MyPicSrcWidget *lblPicSrc;
     MyPicDstWidget *lblPicDst;
@@ -138,6 +140,7 @@ private:
     std::vector<std::vector<CorolAndZ_pair>> TempGrid;
 
     bool LoadSrcImage(const QString &_fn);
+    bool LoadLegend(const QString &_fn);
 
     void PrintImgReliefDstFromTempGrid();
 

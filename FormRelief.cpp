@@ -560,15 +560,62 @@ bool FormRelief::LoadSrcImage(const QString &_fn)
 }
 //-------------------------------------------------------------
 
+bool FormRelief::LoadLegend(const QString &_fn)
+{
+    QFile json(_fn);
+    if (json.open(QIODevice::ReadOnly))
+    {
+        QJsonParseError parseError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(json.readAll(), &parseError);
+        if (parseError.error == QJsonParseError::NoError)
+        {
+            LegendFileName = _fn;
+
+            if (jsonDoc.isObject())
+            {
+                QJsonObject mainObject = jsonDoc.object();
+
+                int Count = mainObject["Count"].toInt(0);
+                ui->EditColorCount->setText(QString().setNum(Count));
+                on_btnApply_clicked();
+
+                int i = 0;
+                const QJsonArray &layersArray = mainObject["Colors"].toArray();
+                for (auto it = layersArray.begin(); it != layersArray.end(); ++it, ++i)
+                {
+                    const QJsonObject &colorInfoObject = it->toObject();
+                    QColor c;
+                    c.setNamedColor(colorInfoObject["Color"].toString("red"));
+                    ui->tableColors->item(i, 0)->setBackground(QBrush(c));
+                    double h = colorInfoObject["Height"].toDouble();
+                    ui->tableColors->item(i, 1)->setText(QString().setNum(h));
+                }
+                if (Count != i)
+                    throw std::runtime_error("Count != i in FormRelief::on_actionFile_Load_Legend_triggered()");
+            }
+        }
+        else
+        {
+            qDebug() << parseError.errorString();
+            return false;
+        }
+    }
+    else
+    {
+        qDebug() << "json file not open";
+        return false;
+    }
+
+    return true;
+}
+//-------------------------------------------------------------
+
 void FormRelief::SlotReceiveRectFrame(QRect _rect)
 {
 //    QModelIndexList list =  ui->tableColors->selectionModel()->selectedIndexes();
-
 //    if (list.isEmpty())
 //        return;
-
 //    int firstRow = list.first().row();
-
 //    int firstRow = LastSelectedColorRow;
     if (LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount())
     {
@@ -668,47 +715,51 @@ void FormRelief::on_actionFile_Load_Legend_triggered()
         return;
     }
 
-    QFile json(fileName);
-    if (json.open(QIODevice::ReadOnly))
-    {
-        QJsonParseError parseError;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(json.readAll(), &parseError);
-        if (parseError.error == QJsonParseError::NoError)
-        {
-            if (jsonDoc.isObject())
-            {
-                QJsonObject mainObject = jsonDoc.object();
+    if (!LoadLegend(fileName))
+        QMessageBox::critical(this, "Error", "Legend's been not loaded");
 
-                int Count = mainObject["Count"].toInt(0);
-                ui->EditColorCount->setText(QString().setNum(Count));
-                on_btnApply_clicked();
 
-                int i = 0;
-                const QJsonArray &layersArray = mainObject["Colors"].toArray();
-                for (auto it = layersArray.begin(); it != layersArray.end(); ++it, ++i)
-                {
-                    const QJsonObject &colorInfoObject = it->toObject();
-                    QColor c;
-                    c.setNamedColor(colorInfoObject["Color"].toString("red"));
-                    ui->tableColors->item(i, 0)->setBackground(QBrush(c));
-                    double h = colorInfoObject["Height"].toDouble();
-                    ui->tableColors->item(i, 1)->setText(QString().setNum(h));
-                }
-                if (Count != i)
-                    throw std::runtime_error("Count != i in FormRelief::on_actionFile_Load_Legend_triggered()");
-            }
-        }
-        else
-        {
-            qDebug() << parseError.errorString();
-            return;
-        }
-    }
-    else
-    {
-        qDebug() << "json file not open";
-        return;
-    }
+//    QFile json(fileName);
+//    if (json.open(QIODevice::ReadOnly))
+//    {
+//        QJsonParseError parseError;
+//        QJsonDocument jsonDoc = QJsonDocument::fromJson(json.readAll(), &parseError);
+//        if (parseError.error == QJsonParseError::NoError)
+//        {
+//            if (jsonDoc.isObject())
+//            {
+//                QJsonObject mainObject = jsonDoc.object();
+
+//                int Count = mainObject["Count"].toInt(0);
+//                ui->EditColorCount->setText(QString().setNum(Count));
+//                on_btnApply_clicked();
+
+//                int i = 0;
+//                const QJsonArray &layersArray = mainObject["Colors"].toArray();
+//                for (auto it = layersArray.begin(); it != layersArray.end(); ++it, ++i)
+//                {
+//                    const QJsonObject &colorInfoObject = it->toObject();
+//                    QColor c;
+//                    c.setNamedColor(colorInfoObject["Color"].toString("red"));
+//                    ui->tableColors->item(i, 0)->setBackground(QBrush(c));
+//                    double h = colorInfoObject["Height"].toDouble();
+//                    ui->tableColors->item(i, 1)->setText(QString().setNum(h));
+//                }
+//                if (Count != i)
+//                    throw std::runtime_error("Count != i in FormRelief::on_actionFile_Load_Legend_triggered()");
+//            }
+//        }
+//        else
+//        {
+//            qDebug() << parseError.errorString();
+//            return;
+//        }
+//    }
+//    else
+//    {
+//        qDebug() << "json file not open";
+//        return;
+//    }
 }
 //-------------------------------------------------------------
 
@@ -741,6 +792,7 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
     Relief.Clear();
 
     Relief.SetImageFileName(ImageSrcFileName);
+    Relief.SetLegendFileName(LegendFileName);
 
     double l = ui->EditXStart->text().toDouble();
     double b = ui->EditYStart->text().toDouble();
@@ -787,11 +839,16 @@ void FormRelief::on_actionFile_Open_Relief_triggered()
     ImageSrcFileName = Relief.GetImageFileName();
     CorrectFileNameIfDoesntExist(ImageSrcFileName, ReliefsImagesDefaultDir, "Image for Relief", ReliefsImagesExtension);
     Relief.SetImageFileName(ImageSrcFileName);
-
-    qDebug() << Relief.GetImageFileName();
-
+    qDebug() << "Relief.GetImageFileName(); =" << Relief.GetImageFileName();
     if (!LoadSrcImage(Relief.GetImageFileName()))
         QMessageBox::critical(this, "Error", "Image's been not loaded");
+
+    LegendFileName = Relief.GetLegendFileName();
+    CorrectFileNameIfDoesntExist(LegendFileName, ReliefsLegendsDefaultDir, "Legend for Relief", ReliefsLegendsExtension);
+    Relief.SetLegendFileName(LegendFileName);
+    qDebug() << "Relief.GetLegendFileName(); =" << Relief.GetLegendFileName();
+    if (!LoadLegend(Relief.GetLegendFileName()))
+        QMessageBox::critical(this, "Error", "Legend's been not loaded");
 }
 //-------------------------------------------------------------
 

@@ -19,6 +19,8 @@ const QString ReliefsDefaultDir = "Reliefs";
 const QString ReliefsImagesDefaultDir = "Reliefs/SrcImages";
 const QString ReliefsExtension = "*.json";
 const QString ReliefsImagesExtension = "*.png *.jpg *.bmp";
+const QString ReliefsLegendsDefaultDir = "Reliefs/Legends";
+const QString ReliefsLegendsExtension = "*.json";
 
 ostream & operator<<(ostream &s, const ReliefMatInfoStruct ob)
 {
@@ -543,6 +545,7 @@ void Relief3D::SaveToFile(const QString &_fileName)
     QJsonObject resultObject;
 
     resultObject.insert("ImageFileName", ImageFileName);
+    resultObject.insert("LegendFileName", LegendFileName);
 
     QJsonObject areaObject;
     areaObject.insert("left", Area.left());
@@ -622,7 +625,8 @@ void Relief3D::ParseJson(const QJsonObject &_jsonObject, const QJsonParseError &
         return;
     }
 
-    ImageFileName = _jsonObject["ImageFileName"].toString("empty");
+    ImageFileName  = _jsonObject["ImageFileName"].toString("empty");
+    LegendFileName = _jsonObject["LegendFileName"].toString("empty");
 
     const QJsonObject &areaObject = _jsonObject["Area"].toObject();
     double l = areaObject["left"].toDouble(-1);
