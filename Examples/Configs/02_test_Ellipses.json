@@ -1,0 +1,100 @@
+{
+    "Configuration": {
+        "Area": {
+            "bottom": 0,
+            "left": 0,
+            "right": 10000,
+            "top": 8000
+        },
+        "Count": 50,
+        "IsRandomNodeCoords": true,
+        "IsRandomRelief": false,
+        "IsRandomRoutes": false,
+        "Nodes": [
+            {
+                "Beta": 29.999999999999996,
+                "R": 2000
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 2000
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 2000
+            }
+        ],
+        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_02.json",
+        "ReliefInfo": {
+            "IsUseReliefRandomSeed": true,
+            "ReliefCoeffs": {
+                "A_r1": 0.01,
+                "A_r2": 0.02
+            },
+            "ReliefRandomSeed": 100
+        },
+        "RouteCount": 2,
+        "Routes": [
+            {
+                "Abonent": {
+                    "v": 0
+                },
+                "Name": "Unnamed",
+                "PointCount": 3,
+                "Points": [
+                    {
+                        "w": 0.1,
+                        "x": 1616.7823486328125,
+                        "y": 3523.0712890625,
+                        "z": 1100
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 3099.780517578125,
+                        "y": 4663.8388671875,
+                        "z": 1032.3426513671875
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 4468.7021484375,
+                        "y": 3043.94873046875,
+                        "z": 1140.7615966796875
+                    }
+                ],
+                "Weight": 1
+            },
+            {
+                "Abonent": {
+                    "v": 0
+                },
+                "Name": "Unnamed",
+                "PointCount": 2,
+                "Points": [
+                    {
+                        "w": 0.1,
+                        "x": 6567.71484375,
+                        "y": 7972.06591796875,
+                        "z": 160.26100158691406
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 9739.0498046875,
+                        "y": 7652.65087890625,
+                        "z": 735.0322265625
+                    }
+                ],
+                "Weight": 1
+            }
+        ],
+        "SignalNodeCount": 3,
+        "SignalNodeType": "Cone"
+    },
+    "GradDesc": {
+        "GradDescFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/GD_04.json"
+    },
+    "TargetFunctionSettings": {
+        "TargetFuncFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/TF_02.json",
+        "TargetFuncFirstPhase": "AdditiveConeFirstPhase",
+        "TargetFuncSecondPhase": "AdditiveConeSecondPhase"
+    }
+}

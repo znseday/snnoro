@@ -203,23 +203,8 @@ void FormRelief::on_actionRelief_Calc_Discrete_Img_triggered()
     double dxPic = w/double(cols); // в пикселах
     double dyPic = h/double(rows); // в пикселах
 
-//    Relief.Clear();
-//    double l = ui->EditXStart->text().toDouble();
-//    double b = ui->EditYStart->text().toDouble();
-//    double r = l + ui->EditWidth->text().toDouble();
-//    double t = b + ui->EditHeight->text().toDouble();
-//    Relief.SetArea(l, b, r, t);
-
-//    if (!Relief.GetArea().isValid())
-//        throw std::runtime_error("!Relief.GetArea().isValid()");
-
-    //double dxReal = Relief.GetArea().width()/double(cols);
-    //double dyReal = Relief.GetArea().height()/double(rows);
-
     for (int i = 0; i < rows; ++i)
     {
-        //std::vector<std::pair<int, int>> row;
-        //double yReal = b + (rows - i - 1)*dyReal;
         TempGrid.push_back({});
 
         for (int j = 0; j < cols; ++j)
@@ -228,34 +213,14 @@ void FormRelief::on_actionRelief_Calc_Discrete_Img_triggered()
             int yStart = i*dyPic;
             int xEnd = (j+1)*dxPic;
             int yEnd = (i+1)*dyPic;
-//            int Z = AnalyseImageAreaForZ(j*dxPic, i*dyPic, (j+1)*dxPic, (i+1)*dyPic);
+
             auto res = AnalyseImageAreaForZ(xStart, yStart, xEnd, yEnd);
-            //double xReal = l + dxReal/2 + j*dxReal;
 
             TempGrid.back().emplace_back(res);
-
-//            for (int y = yStart; y < yEnd; ++y)
-//            {
-//        //        QRgb *tempLine = reinterpret_cast<QRgb*>(ImgRelief.scanLine(y));
-//                rgbaType *tempLine = reinterpret_cast<rgbaType*>(ImgReliefDst.scanLine(y));
-//                tempLine += xStart;
-//                for (int x = xStart; x < xEnd; ++x)
-//                {
-//                        tempLine->r = color.r;
-//                        tempLine->g = color.g;
-//                        tempLine->b = color.b;
-
-//                    tempLine++;
-//                }
-//            }
-
-            //row.emplace_back(xReal, Z);
-            //Relief.AddPoint(xReal, yReal, Z);
         }
-        //Relief.AddRow(yReal + dyReal/2, row);
+
     }
 
-//    lblPicDst->repaint();
     PrintImgReliefDstFromTempGrid();
 
     ui->actionRelief_Calc_Relief_And_Save_As->setEnabled(true);
@@ -610,6 +575,75 @@ bool FormRelief::LoadLegend(const QString &_fn)
 }
 //-------------------------------------------------------------
 
+void FormRelief::CalcDiscreteImgByExistentRelief()
+{
+    if (ImgReliefSrc.isNull())
+    {
+        qDebug() << "ImgReliefSrc.isNull()";
+        return;
+    }
+//    int colorCount = ui->tableColors->rowCount();
+//    if (colorCount < 2)
+//    {
+//        QMessageBox::critical(this, "Error", "There must be at least 2 colors in the legend");
+//        return;
+//    }
+
+    TempGrid.clear();
+
+    CalcLegendColor();
+
+    int rows = ui->EditRowCount->text().toInt(); // Размер сетки
+    int cols = ui->EditColCount->text().toInt(); // Размер сетки
+
+    if (rows != (int)Relief.GetReliefMap().size())
+    {
+        throw std::runtime_error("rows != (int)Relief.GetReliefMap().size() in FormRelief::CalcDiscreteImgByExistentRelief()");
+    }
+
+    if (cols != (int)Relief.GetReliefMap().cbegin()->second.size())
+    {
+        throw std::runtime_error("cols != (int)Relief.GetReliefMap().cbegin()->second.size() in FormRelief::CalcDiscreteImgByExistentRelief()");
+    }
+
+//    for (const auto & rs : Relief.GetReliefMap())  // rows
+    for (auto r_it = Relief.GetReliefMap().crbegin(); r_it != Relief.GetReliefMap().crend(); ++r_it)
+    {
+        TempGrid.push_back({});
+
+        for (const auto & cs : r_it->second)  // cols
+        {
+//            int xStart = j*dxPic;
+//            int yStart = i*dyPic;
+//            int xEnd = (j+1)*dxPic;
+//            int yEnd = (i+1)*dyPic;
+//            auto res = AnalyseImageAreaForZ(xStart, yStart, xEnd, yEnd);
+
+            int z = cs.second;
+
+            auto it = std::find_if(LegendColor.Colors.cbegin(), LegendColor.Colors.cend(), [z](const auto & colorPair)
+                {
+                    return colorPair.second == z;
+                });
+
+            if (it == LegendColor.Colors.cend())
+            {
+                throw std::runtime_error("Z in Relief not found in Legend");
+            }
+
+            CorolAndZ_pair res = *it;
+
+            TempGrid.back().emplace_back(res);
+        }
+
+    }
+
+    PrintImgReliefDstFromTempGrid();
+
+    ui->actionRelief_Calc_Relief_And_Save_As->setEnabled(true);
+}
+//-------------------------------------------------------------
+
 void FormRelief::SlotReceiveRectFrame(QRect _rect)
 {
 //    QModelIndexList list =  ui->tableColors->selectionModel()->selectedIndexes();
@@ -717,49 +751,6 @@ void FormRelief::on_actionFile_Load_Legend_triggered()
 
     if (!LoadLegend(fileName))
         QMessageBox::critical(this, "Error", "Legend's been not loaded");
-
-
-//    QFile json(fileName);
-//    if (json.open(QIODevice::ReadOnly))
-//    {
-//        QJsonParseError parseError;
-//        QJsonDocument jsonDoc = QJsonDocument::fromJson(json.readAll(), &parseError);
-//        if (parseError.error == QJsonParseError::NoError)
-//        {
-//            if (jsonDoc.isObject())
-//            {
-//                QJsonObject mainObject = jsonDoc.object();
-
-//                int Count = mainObject["Count"].toInt(0);
-//                ui->EditColorCount->setText(QString().setNum(Count));
-//                on_btnApply_clicked();
-
-//                int i = 0;
-//                const QJsonArray &layersArray = mainObject["Colors"].toArray();
-//                for (auto it = layersArray.begin(); it != layersArray.end(); ++it, ++i)
-//                {
-//                    const QJsonObject &colorInfoObject = it->toObject();
-//                    QColor c;
-//                    c.setNamedColor(colorInfoObject["Color"].toString("red"));
-//                    ui->tableColors->item(i, 0)->setBackground(QBrush(c));
-//                    double h = colorInfoObject["Height"].toDouble();
-//                    ui->tableColors->item(i, 1)->setText(QString().setNum(h));
-//                }
-//                if (Count != i)
-//                    throw std::runtime_error("Count != i in FormRelief::on_actionFile_Load_Legend_triggered()");
-//            }
-//        }
-//        else
-//        {
-//            qDebug() << parseError.errorString();
-//            return;
-//        }
-//    }
-//    else
-//    {
-//        qDebug() << "json file not open";
-//        return;
-//    }
 }
 //-------------------------------------------------------------
 
@@ -849,6 +840,16 @@ void FormRelief::on_actionFile_Open_Relief_triggered()
     qDebug() << "Relief.GetLegendFileName(); =" << Relief.GetLegendFileName();
     if (!LoadLegend(Relief.GetLegendFileName()))
         QMessageBox::critical(this, "Error", "Legend's been not loaded");
+
+    ui->EditXStart->setText(QString().setNum(Relief.GetArea().left()));
+    ui->EditYStart->setText(QString().setNum(Relief.GetArea().top()));
+    ui->EditWidth->setText(QString().setNum(Relief.GetArea().width()));
+    ui->EditHeight->setText(QString().setNum(Relief.GetArea().height()));
+
+    ui->EditRowCount->setText(QString().setNum(Relief.GetReliefMap().size()));
+    ui->EditColCount->setText(QString().setNum(Relief.GetReliefMap().cbegin()->second.size()));
+
+    CalcDiscreteImgByExistentRelief();
 }
 //-------------------------------------------------------------
 

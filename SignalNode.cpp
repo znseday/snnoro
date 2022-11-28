@@ -81,7 +81,7 @@ double SignalNode::accessRateSphere(const Pos3d &p) const
                 (p.y()-Pos.y())*(p.y()-Pos.y()) +
                 (p.z()-Pos.z())*(p.z()-Pos.z());
 
-    double q = 10;
+    double q = 3; // Сделать настроиваемым параметром???
     double k;
 
     if (d2 >= (q*q))

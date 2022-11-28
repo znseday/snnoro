@@ -142,6 +142,8 @@ private:
     bool LoadSrcImage(const QString &_fn);
     bool LoadLegend(const QString &_fn);
 
+    void CalcDiscreteImgByExistentRelief();
+
     void PrintImgReliefDstFromTempGrid();
 
 public slots:

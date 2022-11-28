@@ -32,7 +32,7 @@
                 "R": 200
             }
         ],
-        "ReliefFileName": "../snnoro/Examples/Reliefs/Relief_06_test_points_2.json",
+        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_06_test_points_2.json",
         "ReliefInfo": {
             "IsUseReliefRandomSeed": true,
             "ReliefCoeffs": {

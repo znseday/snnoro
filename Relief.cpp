@@ -363,7 +363,6 @@ void Relief3D::BuildReliefToGL(bool _is2d)
 
     const double aspect = Area.width()/Area.height();
 
-//    double wInside, hInside, xStartInside, yStartInside;
     if (aspect > 1)
     {
         wInside = 2.0;
@@ -403,16 +402,16 @@ void Relief3D::BuildReliefToGL(bool _is2d)
             points[i][j] = QVector3D(xStartInside + j * dx, yStartInside + i * dy, 0);
 
             if (points[i][j].x() < -1)
-                qDebug() << "points[i][j].x() < -1";        // !!!!!!!!!!!!
+                qDebug() << "points[i][j].x() < -1";
 
             if (points[i][j].x() > 1)
-                qDebug() << "points[i][j].x() > 1";         // !!!!!!!!!!!!
+                qDebug() << "points[i][j].x() > 1";
 
             if (points[i][j].y() < -1)
-                qDebug() << "points[i][j].y() < -1";        // !!!!!!!!!!!!
+                qDebug() << "points[i][j].y() < -1";
 
             if (points[i][j].y() > 1)
-                qDebug() << "points[i][j].y() > 1";         // !!!!!!!!!!!!
+                qDebug() << "points[i][j].y() > 1";
 
 
             if (IsMathRelief)
@@ -448,7 +447,6 @@ void Relief3D::BuildReliefToGL(bool _is2d)
 
     Global_kz = 2.0/max(Area.width(), Area.height());
 
-//    double averZ = 0;
     AverZ = 0;
     for (int i = 0; i < RowCount; i++)
         for (int j = 0; j < ColCount; j++)
@@ -463,9 +461,6 @@ void Relief3D::BuildReliefToGL(bool _is2d)
     AverZ /= (RowCount*ColCount);
 
 //    Global_kz = 1/maxZ;
-
-//    glPushMatrix();
-//    glTranslatef(0,0, -AverZ);
 
     glBegin(GL_QUADS);
     for (int i = 0; i < RowCount-1; i++)
@@ -500,8 +495,6 @@ void Relief3D::BuildReliefToGL(bool _is2d)
         }
     }
     glEnd();
-
-//    glPopMatrix();
 
     glEndList(); // закончить список
 

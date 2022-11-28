@@ -132,6 +132,8 @@ public:
 
     void SetLegendFileName(const QString &_fn) {LegendFileName = _fn;}
     const QString & GetLegendFileName() const {return LegendFileName;}
+
+    const auto & GetReliefMap() const {return ReliefMap;}
 };
 
 #endif // RELIEF_H

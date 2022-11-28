@@ -1,0 +1,14 @@
+{
+    "GeneralSettings": {
+        "Alpha": 0.4,
+        "CallBackFreq": 1,
+        "Eps": 1e-06,
+        "Eta_FirstJump": 10,
+        "Eta_k_dec": 2,
+        "Eta_k_inc": 1.1,
+        "FinDifMethod": false,
+        "MaxIters": 500,
+        "MaxTime": 5,
+        "Min_Eta": 1e-08
+    }
+}

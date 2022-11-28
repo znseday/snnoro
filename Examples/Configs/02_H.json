@@ -1,0 +1,138 @@
+{
+    "Configuration": {
+        "Area": {
+            "bottom": 0,
+            "left": 0,
+            "right": 10000,
+            "top": 8000
+        },
+        "Count": 20,
+        "IsRandomNodeCoords": true,
+        "IsRandomRelief": false,
+        "IsRandomRoutes": false,
+        "Nodes": [
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            }
+        ],
+        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_02_H_with_Image_and_Legend.json",
+        "ReliefInfo": {
+            "IsUseReliefRandomSeed": true,
+            "ReliefCoeffs": {
+                "A_r1": 0.01,
+                "A_r2": 0.02
+            },
+            "ReliefRandomSeed": 100
+        },
+        "RouteCount": 2,
+        "Routes": [
+            {
+                "Abonent": {
+                    "v": 0
+                },
+                "Name": "Unnamed",
+                "PointCount": 4,
+                "Points": [
+                    {
+                        "w": 0.1,
+                        "x": 172.0475311279297,
+                        "y": 395.0566711425781,
+                        "z": 956.6637573242188
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 206.27056884765625,
+                        "y": 350.9469909667969,
+                        "z": 963.16259765625
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 231.36746215820312,
+                        "y": 297.7111511230469,
+                        "z": 946.9838256835938
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 221.48080444335938,
+                        "y": 253.60145568847656,
+                        "z": 900
+                    }
+                ],
+                "Weight": 1
+            },
+            {
+                "Abonent": {
+                    "v": 0
+                },
+                "Name": "Unnamed",
+                "PointCount": 6,
+                "Points": [
+                    {
+                        "w": 0.1,
+                        "x": 193.34185791015625,
+                        "y": 550.2011108398438,
+                        "z": 716.4535522460938
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 228.32540893554688,
+                        "y": 555.524658203125,
+                        "z": 344.352294921875
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 273.19561767578125,
+                        "y": 579.1005249023438,
+                        "z": 600
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 313.50274658203125,
+                        "y": 559.3272705078125,
+                        "z": 787.5686645507812
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 323.389404296875,
+                        "y": 513.696533203125,
+                        "z": 724.7337036132812
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 327.9524841308594,
+                        "y": 471.10784912109375,
+                        "z": 781.0374145507812
+                    }
+                ],
+                "Weight": 1
+            }
+        ],
+        "SignalNodeCount": 5,
+        "SignalNodeType": "Sphere"
+    },
+    "GradDesc": {
+        "GradDescFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/GD_02_H.json"
+    },
+    "TargetFunctionSettings": {
+        "TargetFuncFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/TF_02_H.json",
+        "TargetFuncFirstPhase": "AdditiveSphereFirstPhase",
+        "TargetFuncSecondPhase": "AdditiveSphereSecondPhase"
+    }
+}
