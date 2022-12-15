@@ -39,6 +39,7 @@ SOURCES += \
         GradModel.cpp \
         MainGLWidget.cpp \
         MainWindow.cpp \
+        MathRelief.cpp \
         MathUtils.cpp \
         Relief.cpp \
         Route.cpp \
@@ -72,6 +73,7 @@ HEADERS += \
     GradModel.h \
     MainGLWidget.h \
     MainWindow.h \
+    MathRelief.h \
     MathUtils.h \
     Relief.h \
     Route.h \

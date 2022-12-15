@@ -27,7 +27,7 @@ protected:
     size_t nDraws = 1;
     std::vector<SignalNode> Nodes;
     std::vector<Route> Routes;
-    ReliefMatInfoStruct ReliefMatInfo; // ?
+//    ReliefMatInfoStruct ReliefMatInfo; // ?
     std::vector<MyConfig> Configs;
     std::vector<QRect> ViewPorts;
 
@@ -60,7 +60,7 @@ protected:
 
     QJsonArray RepresentRoutesAsJsonArray() const;
     QJsonArray RepresentNodesAsJsonArray() const;
-    QJsonObject RepresentReliefInfoAsJsonObject() const;
+//    QJsonObject RepresentReliefInfoAsJsonObject() const;
 
     std::map<std::string, TargetFunctionBase*> TargetFunctions;
 

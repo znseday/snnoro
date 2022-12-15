@@ -123,22 +123,10 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             double x = (p.Pos.x()-offsetX)*k;
             double y = (p.Pos.y()-offsetY)*k;
 
-            double z;
-
-            if (Relief->GetIsMathRelief())
-            {
-//                z = ???;
-                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-                //glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
-                z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
-                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
-            }
+            double z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
+            glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
         }
         glEnd();
-
 
         for (const auto & p : r.Points)
         {
@@ -147,53 +135,28 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             else
                 glColor3f(0.1f, 0.1f, 0.8f);
 
-
             //glPointSize(3.0 + p.Weight*16.0);
             //glBegin(GL_POINTS);
             //glVertex3f((p.Pos.x()-offsetX)*k, (p.Pos.y()-offsetY)*k, 0);
             //glEnd();
 
-
-
             glPushMatrix();    
             double x = (p.Pos.x()-offsetX)*k;
             double y = (p.Pos.y()-offsetY)*k;
-            double z;
+            double z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
+            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
 
-            if (Relief->GetIsMathRelief())
-            {
-                // z = ???;
-                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-//                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
-
-                z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
-                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
-            }
             gluQuadricDrawStyle(Quadric(), GLU_FILL);
             gluSphere(Quadric(), 0.02 + 0.05*sqrt(p.Weight), 12, 12);
             glPopMatrix();
         }
 
-        if (/*false && */isDrawAbonents)
+        if (/*false && */ isDrawAbonents)
         {
             const auto & abo = r.GetAbonent();
             double x = (abo.Pos.x()-offsetX)*k;
             double y = (abo.Pos.y()-offsetY)*k;
-            double z = 0;
-
-            if (Relief->GetIsMathRelief())
-            {
-                // z = ???;
-                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-//                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
-                z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
-            }
+            double z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
 
             constexpr float kTri = 0.02f;
 
@@ -892,23 +855,12 @@ void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) co
 
                 double x = (Result.x()-offsetX)*k;
                 double y = (Result.y()-offsetY)*k;
-                double z;
+                double z = zOffset + (_settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(Result.x(), Result.y()) : 0);
 
-                if (Relief->GetIsMathRelief())
-                {
-                    glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-                }
-                else
-                {
-//                    z = (Pos.z()-offsetZ)*relief->Get_kz();
-
-                    z = zOffset + (_settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(Result.x(), Result.y()) : 0);
-                    glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
-                }
+                glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
 
                 gluSphere(Quadric(), 0.015, 6, 6);
                 glPopMatrix();
-
             }
         }
 

@@ -469,7 +469,7 @@ void MyGradModel::NewGradModelBulk()
     Routes.clear();
     IsRandomRoutes = false;
 
-    ReliefMatInfo = ReliefMatInfoStruct();
+//    ReliefMatInfo = ReliefMatInfoStruct();
     Relief.Clear();
 
     IsRandomRelief = false;
@@ -693,17 +693,17 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     }
 
     // Здесь должна быть загрузка параметров рельефа
-    const QJsonObject &reliefInfoObject = configObject["ReliefInfo"].toObject();
+//    const QJsonObject &reliefInfoObject = configObject["ReliefInfo"].toObject();
 
-    ReliefMatInfo.IsUseReliefRandomSeed = reliefInfoObject["IsUseReliefRandomSeed"].toBool(false);
-    ReliefMatInfo.ReliefRandomSeed = reliefInfoObject["ReliefRandomSeed"].toInt(200);
+//    ReliefMatInfo.IsUseReliefRandomSeed = reliefInfoObject["IsUseReliefRandomSeed"].toBool(false);
+//    ReliefMatInfo.ReliefRandomSeed = reliefInfoObject["ReliefRandomSeed"].toInt(200);
 
-    const QJsonObject &reliefCoeffsObject = reliefInfoObject["ReliefCoeffs"].toObject();
+//    const QJsonObject &reliefCoeffsObject = reliefInfoObject["ReliefCoeffs"].toObject();
 
-    ReliefMatInfo.A_r1 = reliefCoeffsObject["A_r1"].toDouble(-1);
-    ReliefMatInfo.A_r2 = reliefCoeffsObject["A_r2"].toDouble(-1);
+//    ReliefMatInfo.A_r1 = reliefCoeffsObject["A_r1"].toDouble(-1);
+//    ReliefMatInfo.A_r2 = reliefCoeffsObject["A_r2"].toDouble(-1);
 
-    cout << "ReliefInfo:" << endl << ReliefMatInfo << endl;
+//    cout << "ReliefInfo:" << endl << ReliefMatInfo << endl;
 
     IsRandomRelief = configObject["IsRandomRelief"].toBool(true);
     if (!IsRandomRelief)
@@ -928,21 +928,21 @@ QJsonArray MyGradModel::RepresentNodesAsJsonArray() const
 }
 //----------------------------------------------------------
 
-QJsonObject MyGradModel::RepresentReliefInfoAsJsonObject() const
-{
-    QJsonObject ReliefInfoObject;
+//QJsonObject MyGradModel::RepresentReliefInfoAsJsonObject() const
+//{
+//    QJsonObject ReliefInfoObject;
 
-    ReliefInfoObject.insert("IsUseReliefRandomSeed", ReliefMatInfo.IsUseReliefRandomSeed);
-    ReliefInfoObject.insert("ReliefRandomSeed", (int64_t)ReliefMatInfo.ReliefRandomSeed); // int64_t ?
+//    ReliefInfoObject.insert("IsUseReliefRandomSeed", ReliefMatInfo.IsUseReliefRandomSeed);
+//    ReliefInfoObject.insert("ReliefRandomSeed", (int64_t)ReliefMatInfo.ReliefRandomSeed); // int64_t ?
 
-    QJsonObject ReliefCoeffsObject;
-    ReliefCoeffsObject.insert("A_r1", ReliefMatInfo.A_r1);
-    ReliefCoeffsObject.insert("A_r2", ReliefMatInfo.A_r2);
+//    QJsonObject ReliefCoeffsObject;
+//    ReliefCoeffsObject.insert("A_r1", ReliefMatInfo.A_r1);
+//    ReliefCoeffsObject.insert("A_r2", ReliefMatInfo.A_r2);
 
-    ReliefInfoObject.insert("ReliefCoeffs", ReliefCoeffsObject);
+//    ReliefInfoObject.insert("ReliefCoeffs", ReliefCoeffsObject);
 
-    return ReliefInfoObject;
-}
+//    return ReliefInfoObject;
+//}
 //----------------------------------------------------------
 
 const MyConfig & MyGradModel::GetActiveConfig() const
@@ -997,9 +997,6 @@ bool MyGradModel::LoadFromFile(const QString &_fileName)
 
 
     CreatePopulation(configCount);
-
-    if (Relief.GetIsMathRelief())
-        Relief.CreateMathRelief(ReliefMatInfo);
 
     Relief.ReCreateListsGL();
     Relief.BuildReliefToGL(false);
@@ -1349,19 +1346,19 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
 //    ConfigurationObject.insert("TargetCostFunction", "MyFunction"); // Not used
 
-    QJsonObject AreaObject; // Для математичесокго рельефа
-    AreaObject.insert("bottom", 0);
-    AreaObject.insert("left", 0);
-    AreaObject.insert("right", 10000);
-    AreaObject.insert("top", 8000);
-    ConfigurationObject.insert("Area", AreaObject); // Для математичесокго рельефа
+//    QJsonObject AreaObject; // Для математичесокго рельефа
+//    AreaObject.insert("bottom", 0);
+//    AreaObject.insert("left", 0);
+//    AreaObject.insert("right", 10000);
+//    AreaObject.insert("top", 8000);
+//    ConfigurationObject.insert("Area", AreaObject); // Для математичесокго рельефа
 
     ConfigurationObject.insert("Count", (int)Configs.size());
     ConfigurationObject.insert("IsRandomNodeCoords", IsRandomNodeCoords);
     ConfigurationObject.insert("IsRandomRelief", IsRandomRelief);
     ConfigurationObject.insert("IsRandomRoutes", IsRandomRoutes);
 
-    ConfigurationObject.insert("ReliefInfo", RepresentReliefInfoAsJsonObject());
+//    ConfigurationObject.insert("ReliefInfo", RepresentReliefInfoAsJsonObject());
     ConfigurationObject.insert("ReliefFileName", Relief.GetFileName() );
 
     mainObject.insert("Configuration", ConfigurationObject);
