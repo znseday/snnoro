@@ -678,6 +678,8 @@ void MyGradModel::DrawSeveralConfigs()
 
 size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseError &_parseError)
 {
+    (void)_parseError; // Возможно, использовать в дальнейшем
+
     qDebug() << "MyGradModel:";
     qDebug() << "Name = " << Name;
 
@@ -687,10 +689,10 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 //    Configs.reserve(ConfigCount);
     qDebug() << "ConfigCount = " << ConfigCount;
 
-    if ( !configObject["Area"].isObject() )
-    {
-        qDebug() << _parseError.errorString(); return 0;
-    }
+//    if ( !configObject["Area"].isObject() )
+//    {
+//        qDebug() << _parseError.errorString(); return 0;
+//    }
 
     // Здесь должна быть загрузка параметров рельефа
 //    const QJsonObject &reliefInfoObject = configObject["ReliefInfo"].toObject();
