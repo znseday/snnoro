@@ -132,7 +132,7 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
         return;
 
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Config file", ".", "Config Files (*.json)");
+        "Open Config file", ".", "Config Files (" + ConfigsExtension + ")");
 
 
     if (fileName.isEmpty())
@@ -351,7 +351,7 @@ void MainWindow::on_actionFileSave_Grad_Config_triggered()
     if ( GradModel.GetFileName() == "" )
     {
         QString fileName = QFileDialog::getSaveFileName(this,
-            "Save Config file", ".", "Config Files (*.json)");
+            "Save Config file", ".", "Config Files (" + ConfigsExtension + ")");
 
         if (fileName == "")
         {
@@ -516,7 +516,7 @@ void MainWindow::on_actionEdit_Finish_Route_triggered()
 void MainWindow::on_actionFileSave_Grad_Config_As_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Config file", ".", "Config Files (*.json)");
+        "Save Config file", ".", "Config Files (" + ConfigsExtension + ")");
 
     if (fileName == "")
     {

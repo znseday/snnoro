@@ -5,14 +5,13 @@
 #include <set>
 
 #include "TypesAndUtils.h"
-//#include <QVector2D>
-//#include <QVector3D>
-class QVector3D;
-#include <QRectF>
 
+class QVector3D;
+
+#include <QRectF>
 #include <QJsonObject>
 
-//#include "Relief.h"
+extern const QString SignalNodesExtension;
 
 #include <GL/glu.h>
 

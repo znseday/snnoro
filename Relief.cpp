@@ -17,10 +17,10 @@ using namespace std;
 
 const QString ReliefsDefaultDir = "Reliefs";
 const QString ReliefsImagesDefaultDir = "Reliefs/SrcImages";
-const QString ReliefsExtension = "*.json";
+const QString ReliefsExtension = "*.relief";
 const QString ReliefsImagesExtension = "*.png *.jpg *.bmp";
 const QString ReliefsLegendsDefaultDir = "Reliefs/Legends";
-const QString ReliefsLegendsExtension = "*.json";
+const QString ReliefsLegendsExtension = "*.rlgd";
 
 ostream & operator<<(ostream &s, const ReliefMatInfoStruct ob)
 {

@@ -14,6 +14,8 @@
 
 constexpr double arfThreshold = 0.5;
 
+const QString ConfigsExtension = "*.cnf";
+
 using namespace std;
 
 void MyConfig::StatsStruct::Reset()

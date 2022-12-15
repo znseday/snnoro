@@ -11,6 +11,8 @@
 
 using namespace std;
 
+const QString SignalNodesExtension = "*.snf";
+
 bool operator<(const BondType &lhs, const BondType &rhs)
 {
 //    return std::tie(lhs.iRoute, lhs.iPoint, lhs.arf, lhs.relDist) < std::tie(rhs.iRoute, rhs.iPoint, rhs.arf, rhs.relDist);

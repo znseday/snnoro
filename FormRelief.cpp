@@ -13,7 +13,6 @@
 #include <QJsonArray>
 #include <QMouseEvent>
 
-static const QString LegendExtension = "*.json";
 
 void MyPicSrcWidget::mousePressEvent(QMouseEvent *pe)
 {
@@ -705,7 +704,7 @@ void FormRelief::SlotReceiveChangePoint(int x, int y)
 void FormRelief::on_actionFile_Save_Legend_As_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Legend file", ".", "Legend Files (" + LegendExtension + ")");
+        "Save Legend file", ".", "Legend Files (" + ReliefsLegendsExtension + ")");
 
     if (fileName == "")
     {
@@ -741,7 +740,7 @@ void FormRelief::on_actionFile_Save_Legend_As_triggered()
 void FormRelief::on_actionFile_Load_Legend_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Legend file", ".", "Legend Files (" + LegendExtension + ")");
+        "Open Legend file", ".", "Legend Files (" + ReliefsLegendsExtension + ")");
 
     if (fileName == "")
     {
