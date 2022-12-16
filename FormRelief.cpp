@@ -123,6 +123,62 @@ FormRelief::~FormRelief()
 }
 //-------------------------------------------------------------
 
+bool FormRelief::CheckIsLegendSavedAndSaveIfNecessary()
+{
+    if ( !IsLegendSaved )
+    {
+        auto res = QMessageBox::question(this, "Question",
+                                         "Legend is not saved. Would you like to save it?",
+                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+        if (res == QMessageBox::Yes)
+        {
+            on_actionFile_Save_Legend_As_triggered();  // try save
+            return IsLegendSaved;
+        }
+        else if (res == QMessageBox::No)
+            return true;
+        else if (res == QMessageBox::Cancel)
+            return false;
+        else
+        {
+            QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
+            return false;
+        }
+    }
+    else
+        return true;
+}
+//-------------------------------------------------------------
+
+bool FormRelief::CheckIsReliefSavedAndSaveIfNecessary()
+{
+    if ( !IsReliefSaved )
+    {
+        auto res = QMessageBox::question(this, "Question",
+                                         "Relief is not saved. Would you like to save it?",
+                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+        if (res == QMessageBox::Yes)
+        {
+            on_actionRelief_Calc_Relief_And_Save_As_triggered(); // try save
+            return IsLegendSaved;
+        }
+        else if (res == QMessageBox::No)
+            return true;
+        else if (res == QMessageBox::Cancel)
+            return false;
+        else
+        {
+            QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
+            return false;
+        }
+    }
+    else
+        return true;
+}
+//-------------------------------------------------------------
+
 void FormRelief::on_actionFile_Open_Image_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -136,18 +192,12 @@ void FormRelief::on_actionFile_Open_Image_triggered()
 
 
 //    ImgReliefSrc.load(fileName);
-
 //    ImageSrcFileName = fileName;
-
 //    ImgReliefSrc = ImgReliefSrc.convertToFormat(QImage::Format_ARGB32);
-
 //    ImgReliefDst = ImgReliefSrc;
-
 //    wgtForScrollArea->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height()*2);
-
 //    lblPicSrc->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
 //    lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
-
 //    ui->actionRelief_Calc_Discrete_Img->setEnabled(true);
 }
 //-------------------------------------------------------------
@@ -172,6 +222,8 @@ void FormRelief::on_btnApply_clicked()
         QTableWidgetItem *pItem2 = new QTableWidgetItem(QString().setNum(i*100));
         ui->tableColors->setItem(i, 1, pItem2);
     }
+
+    IsLegendSaved = false;
 }
 //-------------------------------------------------------------
 
@@ -223,6 +275,8 @@ void FormRelief::on_actionRelief_Calc_Discrete_Img_triggered()
     PrintImgReliefDstFromTempGrid();
 
     ui->actionRelief_Calc_Relief_And_Save_As->setEnabled(true);
+
+    IsReliefSaved = false;
 }
 //-------------------------------------------------------------
 
@@ -274,6 +328,8 @@ void FormRelief::PrintImgReliefDstFromTempGrid()
 
 void FormRelief::on_actionFile_Close_triggered()
 {
+    // Добавить проверку на сохранение
+
     this->close();
 }
 //-------------------------------------------------------------
@@ -570,6 +626,7 @@ bool FormRelief::LoadLegend(const QString &_fn)
         return false;
     }
 
+    IsLegendSaved = true;
     return true;
 }
 //-------------------------------------------------------------
@@ -662,6 +719,8 @@ void FormRelief::SlotReceiveRectFrame(QRect _rect)
 //    ui->tableColors->item(firstRow, 0)->background().setColor(QColor(color.r, color.g, color.b));
 
     ui->tableColors->item(LastSelectedColorRow, 0)->setBackground(QBrush(QColor(color.r, color.g, color.b)));
+
+    IsLegendSaved = false;
 }
 //-------------------------------------------------------------
 
@@ -698,6 +757,17 @@ void FormRelief::SlotReceiveChangePoint(int x, int y)
     TempGrid.at(row).at(col) = LegendColor.Colors.at(LastSelectedColorRow);
 
     PrintImgReliefDstFromTempGrid();
+
+    IsReliefSaved = false;
+}
+//-------------------------------------------------------------
+
+void FormRelief::closeEvent(QCloseEvent *event)
+{
+    if (CheckIsLegendSavedAndSaveIfNecessary() && CheckIsReliefSavedAndSaveIfNecessary())
+        event->accept();
+    else
+        event->ignore();
 }
 //-------------------------------------------------------------
 
@@ -733,12 +803,20 @@ void FormRelief::on_actionFile_Save_Legend_As_triggered()
     if (jsonFile.open(QFile::WriteOnly))
         jsonFile.write(jsonDoc.toJson());
     else
+    {
         qDebug() << "json file not open to write";
+        return;
+    }
+
+    IsLegendSaved = true;
 }
 //-------------------------------------------------------------
 
 void FormRelief::on_actionFile_Load_Legend_triggered()
 {
+    if (!CheckIsLegendSavedAndSaveIfNecessary())
+        return;
+
     QString fileName = QFileDialog::getOpenFileName(this,
         "Open Legend file", ".", "Legend Files (" + ReliefsLegendsExtension + ")");
 
@@ -750,6 +828,8 @@ void FormRelief::on_actionFile_Load_Legend_triggered()
 
     if (!LoadLegend(fileName))
         QMessageBox::critical(this, "Error", "Legend's been not loaded");
+
+    IsLegendSaved = true;
 }
 //-------------------------------------------------------------
 
@@ -761,6 +841,9 @@ void FormRelief::on_chbColorToLegend_stateChanged([[maybe_unused]] int arg1)
 
 void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
 {
+//    if (!CheckIsReliefSavedAndSaveIfNecessary())
+//        return;
+
     if (TempGrid.empty())
     {
         throw std::logic_error("TempGrid is empty in PrintImgReliefDstFromTempGrid()");
@@ -774,7 +857,6 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
         qDebug() << (fileName + " not found");
         return;
     }
-
 
     int rows = TempGrid.size();         // Размер сетки
     int cols = TempGrid.front().size(); // Размер сетки
@@ -812,11 +894,16 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
     }
 
     Relief.SaveToFile(fileName);
+
+    IsReliefSaved = true;
 }
 //-------------------------------------------------------------
 
 void FormRelief::on_actionFile_Open_Relief_triggered()
 {
+    if (!CheckIsReliefSavedAndSaveIfNecessary())
+        return;
+
     QString fileName = QFileDialog::getOpenFileName(this,
         "Open Relief file", ".", "Relief Files (" + ReliefsExtension + ")");
 
@@ -849,7 +936,14 @@ void FormRelief::on_actionFile_Open_Relief_triggered()
     ui->EditColCount->setText(QString().setNum(Relief.GetReliefMap().cbegin()->second.size()));
 
     CalcDiscreteImgByExistentRelief();
+
+    IsReliefSaved = true;
 }
 //-------------------------------------------------------------
 
-
+void FormRelief::on_tableColors_itemChanged(QTableWidgetItem *item)
+{
+    (void)item;
+    IsLegendSaved = false;
+}
+//-------------------------------------------------------------

@@ -439,47 +439,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     formAboCalc.close();
 
-    if ( !GradModel.GetIsSaved() )
-    {
-        auto res = QMessageBox::question(this, "Question",
-                                         "Grad Config file is not saved. Would you like to save it?",
-                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-
-        if (res == QMessageBox::Yes)
-        {
-            // try save
-            on_actionFileSave_Grad_Config_triggered();
-            if (IsGradDescFileSavedSuccessfully)
-            {
-                event->accept();
-                return;
-            }
-            else
-            {
-                event->ignore();
-                return;
-            }
-        }
-        else if (res == QMessageBox::No)
-        {
-            event->accept();
-            return;
-        }
-        else if (res == QMessageBox::Cancel)
-        {
-            event->ignore();
-            return;
-        }
-        else
-        {
-            QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
-            event->accept();
-        }
-    }
-    else
-    {
+    if (CheckIsSavedAndSaveIfNecessary())
         event->accept();
-    }
+    else
+        event->ignore();
 }
 //-------------------------------------------------------------
 
@@ -539,25 +502,14 @@ bool MainWindow::CheckIsSavedAndSaveIfNecessary()
 
         if (res == QMessageBox::Yes)
         {
-            // try save
-            on_actionFileSave_Grad_Config_triggered();
-            if (IsGradDescFileSavedSuccessfully)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            on_actionFileSave_Grad_Config_triggered(); // try save
+            return IsGradDescFileSavedSuccessfully;
+
         }
         else if (res == QMessageBox::No)
-        {
             return true;
-        }
         else if (res == QMessageBox::Cancel)
-        {
             return false;
-        }
         else
         {
             QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
@@ -565,9 +517,7 @@ bool MainWindow::CheckIsSavedAndSaveIfNecessary()
         }
     }
     else
-    {
         return true;
-    }
 }
 //-------------------------------------------------------------
 
@@ -577,7 +527,7 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
         return;
 
     // Здесь сделать что-нибудь еще: новая конфигурация
-    //DialogGradConfigNew.InitDialog(GradModel);
+    // DialogGradConfigNew.InitDialog(GradModel);
 
     if (DialogGradConfigNew.exec() == QDialog::Accepted)
     {

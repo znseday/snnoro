@@ -35,7 +35,7 @@ class MyPicSrcWidget : public QLabel
 {
     Q_OBJECT
 private:
-    int /*CurX, CurY, */OldX, OldY;
+    int OldX, OldY;
     QRect FrameRect;
     const QImage &ImgSrc;
     bool IsMouseDown = false;
@@ -111,6 +111,8 @@ private slots:
 
     void on_actionFile_Open_Relief_triggered();
 
+    void on_tableColors_itemChanged(QTableWidgetItem *item);
+
 private:
     Ui::FormRelief *ui;
 
@@ -139,6 +141,9 @@ private:
 
     std::vector<std::vector<CorolAndZ_pair>> TempGrid;
 
+    bool IsLegendSaved = true;
+    bool IsReliefSaved = true;
+
     bool LoadSrcImage(const QString &_fn);
     bool LoadLegend(const QString &_fn);
 
@@ -146,10 +151,17 @@ private:
 
     void PrintImgReliefDstFromTempGrid();
 
+    bool CheckIsLegendSavedAndSaveIfNecessary();
+    bool CheckIsReliefSavedAndSaveIfNecessary();
+
 public slots:
 
     void SlotReceiveRectFrame(QRect _rect);
     void SlotReceiveChangePoint(int x, int y);
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // FORMRELIEF_H
