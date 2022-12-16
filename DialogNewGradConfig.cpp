@@ -77,7 +77,7 @@ bool DialogNewGradConfig::CreateNewGradModel(MyGradModel &_gradModel)
 void DialogNewGradConfig::on_btnReliefFileBrowse_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Relief File", ".", "Relief Files (*.json)");
+        "Open Relief File", ".", "Relief Files (" + ReliefsExtension + ")");
 
     if (fileName == "")
     {

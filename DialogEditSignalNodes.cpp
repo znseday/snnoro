@@ -233,7 +233,7 @@ void DialogEditSignalNodes::SlotLoadButtonClicked()
     }
 
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Signal Node file", ".", "Open Signal Node file (*.json)");
+        "Open Signal Node file", ".", "Open Signal Node file (" + SignalNodesExtension + ")");
 
     if (fileName == "")
     {
@@ -321,7 +321,7 @@ void DialogEditSignalNodes::SlotSaveButtonClicked()
     }
 
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Signal Node file", ".", "Save Signal Node file (*.json)");
+        "Save Signal Node file", ".", "Save Signal Node file (" + SignalNodesExtension + ")");
 
     if (fileName == "")
     {

@@ -11,6 +11,8 @@
 
 #include <GL/glu.h>
 
+extern const QString ConfigsExtension;
+
 class TargetFunctionBase;
 
 struct Settings3dType

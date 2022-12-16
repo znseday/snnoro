@@ -172,7 +172,7 @@ void DialogGradConfig::on_btnTargetFuncGlobalOpenFile_clicked()
 {
     QString fn = QFileDialog::getOpenFileName(nullptr, "Select file",
                                               ui->EditTargetFuncGlobalFile->text(),
-                                              "TargetFunc Settings Files (*.json)");
+                                              "TargetFunc Settings Files (" + SettingsTFExtension + ")");
 
     if (fn.isEmpty())
     {
@@ -211,7 +211,7 @@ void DialogGradConfig::on_btnTargetFuncGlobalSaveAs_clicked()
 {
     QString fn = QFileDialog::getSaveFileName(nullptr, "Select TargetFunc file",
                                                ui->EditTargetFuncGlobalFile->text(),
-                                               "TargetFunc Settings Files (*.json)");
+                                               "TargetFunc Settings Files (" + SettingsTFExtension + ")");
     if (!fn.isEmpty())
     {
         TargetFuncSettingsStruct tempTargetFuncSettings;
@@ -226,7 +226,7 @@ void DialogGradConfig::on_btnGradDescOpenFile_clicked()
 {
     QString fn = QFileDialog::getOpenFileName(nullptr, "Select GradDesc file",
                                               ui->EditGradDescFile->text(),
-                                              "GradDesc Settings Files (*.json)");
+                                              "GradDesc Settings Files (" + SettingsGDExtension + ")");
 
     if (fn.isEmpty())
     {
@@ -265,7 +265,7 @@ void DialogGradConfig::on_btnGradDescSaveAs_clicked()
 {
     QString fn = QFileDialog::getSaveFileName(nullptr, "Select GradDesc file",
                                                ui->EditGradDescFile->text(),
-                                               "GradDesc Settings Files (*.json)");
+                                               "GradDesc Settings Files (" + SettingsGDExtension + ")");
     if (!fn.isEmpty())
     {
         tf_gd_lib::GradDescent tempGradDescSettings;

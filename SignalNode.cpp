@@ -11,6 +11,8 @@
 
 using namespace std;
 
+const QString SignalNodesExtension = "*.snf";
+
 bool operator<(const BondType &lhs, const BondType &rhs)
 {
 //    return std::tie(lhs.iRoute, lhs.iPoint, lhs.arf, lhs.relDist) < std::tie(rhs.iRoute, rhs.iPoint, rhs.arf, rhs.relDist);
@@ -303,15 +305,10 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
     else
         glColor3f(0.95, 0.05, 0.05);
 
-    if (relief->GetIsMathRelief())
-    {
-        glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-    }
-    else
-    {
-        z = (Pos.z()-offsetZ)*relief->Get_kz();
-        glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
-    }
+
+    z = (Pos.z()-offsetZ)*relief->Get_kz();
+    glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
+
     gluQuadricDrawStyle(Quadric(), GLU_FILL);
     gluSphere(Quadric(), 0.02, 12, 12);
     glPopMatrix();
@@ -344,15 +341,8 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         double y = (Pos.y()-offsetY)*k;
         double z;
 
-        if (relief->GetIsMathRelief())
-        {
-            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-        }
-        else
-        {
-            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
-            glVertex3f(x, y, z);
-        }
+        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
+        glVertex3f(x, y, z);
     }
 
     for (int i = 0; i <= nr; i++)
@@ -363,17 +353,8 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         double y = (yt-offsetY)*k;
         double z;
 
-        if (relief->GetIsMathRelief())
-        {
-            // z = ???;
-            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-        }
-        else
-        {
-//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(xt, yt) : 0));
-            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
-            glVertex3f(x, y, z);
-        }
+        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
+        glVertex3f(x, y, z);
     }
 
     if (_snt == SignalNodeType::Cone) // здесь копипаст
@@ -382,15 +363,8 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         double y = (Pos.y()-offsetY)*k;
         double z;
 
-        if (relief->GetIsMathRelief())
-        {
-            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-        }
-        else
-        {
-            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
-            glVertex3f(x, y, z);
-        }
+        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
+        glVertex3f(x, y, z);
     }
 
     glEnd();
@@ -427,15 +401,8 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
             double y = (tp.y()-offsetY)*k;
             double z;
 
-            if (relief->GetIsMathRelief())
-            {
-                glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-                z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
-                glVertex3f(x, y, z);
-            }
+            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
+            glVertex3f(x, y, z);
         }
 
         glEnd();

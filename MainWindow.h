@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 
-//#include "MainGLWidget.h"
 class MainGLWidget;
 
 #include "TypesAndUtils.h"
