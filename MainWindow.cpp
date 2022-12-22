@@ -29,14 +29,16 @@ MainWindow::MainWindow(QWidget *parent) :
     lblWorldY = new QLabel("n/a");
     lblWorldZ = new QLabel("n/a");
     lbl_iCurConfig = new QLabel("n/a");
+    lblCoord = new QLabel("n/a");
 
-    lblGlX->setFixedWidth(120);
-    lblGlY->setFixedWidth(120);
-    lblGlZ->setFixedWidth(120);
-    lblWorldX->setFixedWidth(150);
-    lblWorldY->setFixedWidth(150);
-    lblWorldZ->setFixedWidth(150);
-    lbl_iCurConfig->setFixedWidth(120);
+    lblGlX->setFixedWidth(100);
+    lblGlY->setFixedWidth(100);
+    lblGlZ->setFixedWidth(100);
+    lblWorldX->setFixedWidth(120);
+    lblWorldY->setFixedWidth(120);
+    lblWorldZ->setFixedWidth(120);
+    lbl_iCurConfig->setFixedWidth(100);
+    lblCoord->setFixedWidth(220);
 
     ui->statusbar->addWidget(lblGlX);
     ui->statusbar->addWidget(lblGlY);
@@ -45,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addWidget(lblWorldY);
     ui->statusbar->addWidget(lblWorldZ);
     ui->statusbar->addWidget(lbl_iCurConfig);
+    ui->statusbar->addWidget(lblCoord);
 
     mainGLWidget = new MainGLWidget(WorkMode, GradModel, WorldMode);
 
@@ -89,6 +92,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&formAboCalc, SIGNAL(SignalShowAboReport()),
             this, SLOT(SlotReceiveShowAboReport()));
+
+    connect(&GradModel, SIGNAL(SignalSendNodeCoords(int, double, double, double)),
+            this, SLOT(SlotReceiveNodeCoords(int, double, double, double)));
 
     mainGLWidget->setMouseTracking(true);
 
@@ -260,6 +266,7 @@ void MainWindow::on_actionGradStart_Phase_1_triggered()
     GradModel.StartGradDescent_Phase_1(mainGLWidget);
 
     mainGLWidget->repaint();
+    UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 }
 //-------------------------------------------------------------
@@ -300,6 +307,7 @@ void MainWindow::on_actionGradStart_Phase_2_triggered()
     GradModel.StartGradDescent_Phase_2(mainGLWidget);
 
     mainGLWidget->repaint();
+    UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 }
 //-------------------------------------------------------------
@@ -373,23 +381,23 @@ void MainWindow::on_actionFileSave_Grad_Config_triggered()
 
 void MainWindow::SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists)
 {
-    if (wExists) // Пытаемся отловить ошибку, когда в интерполяцию рельефа залетает nan
-    {
-//        if (wx == std::numeric_limits<double>::quiet_NaN() ||
-//            wx == std::numeric_limits<double>::signaling_NaN() )
-        if (std::isnan(wx))
-        {
-            throw std::logic_error("wx == nan in SlotReceiveWorldCoords");
-        }
-        if (std::isnan(wy))
-        {
-            throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
-        }
-        if (std::isnan(wz))
-        {
-            throw std::logic_error("wz == nan in SlotReceiveWorldCoords");
-        }
-    }
+//    if (wExists) // Пытаемся отловить ошибку, когда в интерполяцию рельефа залетает nan
+//    {
+////        if (wx == std::numeric_limits<double>::quiet_NaN() ||
+////            wx == std::numeric_limits<double>::signaling_NaN() )
+//        if (std::isnan(wx))
+//        {
+//            throw std::logic_error("wx == nan in SlotReceiveWorldCoords");
+//        }
+//        if (std::isnan(wy))
+//        {
+//            throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
+//        }
+//        if (std::isnan(wz))
+//        {
+//            throw std::logic_error("wz == nan in SlotReceiveWorldCoords");
+//        }
+//    }
 
     lblGlX->setText("Gl X = " + (wExists?QString().setNum(wx):"n/a"));
     lblGlY->setText("Gl Y = " + (wExists?QString().setNum(wy):"n/a"));
@@ -521,6 +529,23 @@ bool MainWindow::CheckIsSavedAndSaveIfNecessary()
 }
 //-------------------------------------------------------------
 
+void MainWindow::UpdateCurNodeCoordsOnLabel()
+{
+    try
+    {
+        int n = GradModel.GetCurrentConfig().Get_iCurNode();
+        const auto & sn = GradModel.GetCurrentConfig().GetCurNode();
+        SlotReceiveNodeCoords(n, sn.Pos.x(), sn.Pos.y(), sn.Pos.z());
+    }
+    catch (std::exception & e)
+    {
+//        qDebug() << "catch (std::exception & e) in MainWindow::on_actionEdit_Edit_Signal_Nodes_for_Current_triggered()";
+//        qDebug() << "e.what() =" << e.what();
+        lblCoord->setText("n/a");
+    }
+}
+//-------------------------------------------------------------
+
 void MainWindow::on_actionFileNew_Grad_Config_triggered()
 {
     if (!CheckIsSavedAndSaveIfNecessary())
@@ -619,10 +644,13 @@ void MainWindow::on_actionEdit_Edit_Signal_Nodes_for_Current_triggered()
         return;
     }
 
-
     if (DialogSignalNodesEdit.exec() == QDialog::Accepted)
     {
-        DialogSignalNodesEdit.ChangeSignalNodesParameters_ForCurrent(GradModel.GetNodesType(), GradModel.CurrentConfigAccess().NodesAccess(), GradModel.GetRelief());
+        DialogSignalNodesEdit.ChangeSignalNodesParameters_ForCurrent(GradModel.GetNodesType(),
+                                                                     GradModel.CurrentConfigAccess().NodesAccess(),
+                                                                    GradModel.GetRelief());
+
+        UpdateCurNodeCoordsOnLabel();
 
         //GradModel.ApplySignalNodesToAllConfigs();
         mainGLWidget->repaint();
@@ -647,6 +675,7 @@ void MainWindow::on_actionGradStart_Phase_1_for_Current_Config_triggered()
     GradModel.StartGradDescent_Phase_1_for_Current(mainGLWidget);
 
     mainGLWidget->repaint();
+    UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 }
 //-------------------------------------------------------------
@@ -658,6 +687,7 @@ void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
     GradModel.StartGradDescent_Phase_2_for_Current(mainGLWidget);
 
     mainGLWidget->repaint();
+    UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 }
 //-------------------------------------------------------------
@@ -745,7 +775,18 @@ void MainWindow::SlotReceiveShowAboReport()
 
 void MainWindow::SlotReceive_iCurConfigChanged(int i)
 {
+    UpdateCurNodeCoordsOnLabel();
+
     lbl_iCurConfig->setText("iCurConfig: " + QString().setNum(i));
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveNodeCoords(int n, double x, double y, double z)
+{
+    lblCoord->setText("Node " + QString().setNum(n) + ": {" +
+                        QString().setNum(x) + "; " +
+                        QString().setNum(y) + "; " +
+                        QString().setNum(z) + "}");
 }
 //-------------------------------------------------------------
 

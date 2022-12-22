@@ -20,8 +20,9 @@ class QWheelEvent;
 extern const QString SettingsGDExtension;
 extern const QString SettingsTFExtension;
 
-class MyGradModel
+class MyGradModel : public QObject
 {
+    Q_OBJECT
 protected:
 
     size_t nDraws = 1;
@@ -191,6 +192,11 @@ public:
     void SelectCurNodeByPos(double wx, double wy);
     void PutCurNodeByPos(double wx, double wy);
     void SetDirectCurNodeByPos(double wx, double wy);
+
+signals:
+
+    void SignalSendNodeCoords(int, double, double, double);
+
 };
 
 #endif // MYGRADMODEL_H

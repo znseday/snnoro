@@ -150,9 +150,13 @@ private:
 
     QLabel *lbl_iCurConfig;
 
+    QLabel *lblCoord;
+
     bool IsGradDescFileSavedSuccessfully = false;
     void TryToSaveGradDescToFile();
     bool CheckIsSavedAndSaveIfNecessary();
+
+    void UpdateCurNodeCoordsOnLabel();
 
 public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);
@@ -165,6 +169,8 @@ public slots:
     void SlotReceiveShowAboReport();
 
     void SlotReceive_iCurConfigChanged(int i);
+
+    void SlotReceiveNodeCoords(int n, double x, double y, double z);
 
     // QPaintDevice interface
 public:

@@ -782,6 +782,15 @@ void MyConfig::SetDirectCurNodeByRealXYZ(double x, double y, double z)
 }
 //----------------------------------------------------------
 
+const SignalNode & MyConfig::GetCurNode() const
+{
+    if (iCurNode < 0 || iCurNode >= (int)Nodes.size())
+        throw std::runtime_error("iCurNode < 0 || iCurNode >= (int)Nodes.size() in MyConfig::GetCurNode()");
+
+    return Nodes.at(iCurNode);
+}
+//----------------------------------------------------------
+
 void MyConfig::SetNode(int ind, const SignalNode &_node)
 {
     Nodes.at(ind) = _node;

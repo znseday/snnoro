@@ -565,10 +565,10 @@ void MyGradModel::ApplyCurNodeFromCurConfigToAllConfigs()
 }
 //----------------------------------------------------------
 
-const MyConfig &MyGradModel::GetCurrentConfig() const
+const MyConfig & MyGradModel::GetCurrentConfig() const
 {
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
-        throw std::exception();
+        throw std::runtime_error("iCurConfig < 0 || iCurConfig >= (int)Configs.size() in MyGradModel::GetCurrentConfig()");
 
     return Configs.at(iCurConfig);
 }
@@ -577,7 +577,7 @@ const MyConfig &MyGradModel::GetCurrentConfig() const
 MyConfig & MyGradModel::CurrentConfigAccess()
 {
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
-        throw std::exception();
+        throw std::runtime_error("iCurConfig < 0 || iCurConfig >= (int)Configs.size() in MyGradModel::CurrentConfigAccess()");
 
     return Configs.at(iCurConfig);
 }
@@ -1435,7 +1435,16 @@ void MyGradModel::SelectCurNodeByPos(double wx, double wy)
 
     if (iCurConfig >= 0)
     {
-        Configs.at(iCurConfig).SelectCurNodeByRealXY(realX, realY);
+        auto & cnf = Configs.at(iCurConfig);
+
+        cnf.SelectCurNodeByRealXY(realX, realY);
+
+        const auto & sn = cnf.GetNodes().at(cnf.Get_iCurNode());
+
+        emit SignalSendNodeCoords(cnf.Get_iCurNode(),
+                                  sn.Pos.x(),
+                                  sn.Pos.y(),
+                                  sn.Pos.z());
     }
     else
     {
