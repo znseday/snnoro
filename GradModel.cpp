@@ -614,8 +614,18 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
     }
     else if (QApplication::keyboardModifiers() == Qt::AltModifier)
     {
-        Configs.at(iCurConfig).Settings3d.TrX += TransSpeed*dx;
-        Configs.at(iCurConfig).Settings3d.TrY -= TransSpeed*dy;
+        double k1 = Configs.at(iCurConfig).Settings3d.IsPerspective ? -Configs.at(iCurConfig).Settings3d.TrZ / 10.0  : 1;
+
+        double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
+                    ((ViewPorts.at(iCurConfig).width() + ViewPorts.at(iCurConfig).height()) / 2.0 / 30.0) :
+                    120.0 / ((ViewPorts.at(iCurConfig).width() + ViewPorts.at(iCurConfig).height()) / 2.0);
+
+//        double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
+//                    300.0 / ((ViewPorts.at(iCurConfig).width() + ViewPorts.at(iCurConfig).height()) / 2.0) :
+//                    1;
+
+        Configs.at(iCurConfig).Settings3d.TrX += k1*k2*TransSpeed*dx;
+        Configs.at(iCurConfig).Settings3d.TrY -= k1*k2*TransSpeed*dy;
     }
     else
     {
