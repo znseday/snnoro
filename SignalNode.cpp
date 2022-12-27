@@ -294,7 +294,7 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
     double offsetY = area.y()+hH; // in meters
     double offsetZ = 0;
 
-    glPushMatrix();
+
 
     double x = (Pos.x()-offsetX)*k;
     double y = (Pos.y()-offsetY)*k;
@@ -305,12 +305,29 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
     else
         glColor3f(0.95, 0.05, 0.05);
 
-
     z = (Pos.z()-offsetZ)*relief->Get_kz();
-    glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
 
-    gluQuadricDrawStyle(Quadric(), GLU_FILL);
-    gluSphere(Quadric(), 0.02, 12, 12);
+//    glPointSize(5.0f);
+//    glBegin(GL_POINTS);
+//        glVertex3d(x, y, z);
+//    glEnd();
+
+    glPushMatrix();
+
+        glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
+
+        gluQuadricDrawStyle(Quadric(), GLU_FILL);
+
+        if (_sns == SignalNodeStatus::Selected)
+        {
+            qDebug() << "_settings3d.TrZ =" << _settings3d.TrZ;
+            qDebug() << "z =" << z;
+            qDebug() << "pow =" << pow(fabs(fabs(_settings3d.TrZ) - z), 0.25);
+        }
+
+//        gluSphere(Quadric(), 0.01 * pow(fabs(fabs(_settings3d.TrZ) - z), 0.25), 12, 12);
+        gluSphere(Quadric(), 0.015, 12, 12);
+
     glPopMatrix();
 
     const int nr = 32;

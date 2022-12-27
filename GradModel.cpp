@@ -27,7 +27,7 @@
 using namespace std;
 
 constexpr float RotSpeed = 0.12f;
-constexpr float TransSpeed = 0.006f;
+constexpr float TransSpeed = 0.004f;
 
 
 static const QString SettingsDefaultDir = "Settings";
@@ -103,9 +103,13 @@ void MyGradModel::DrawOneConfig(size_t ind, bool OnlyOne)
         //iCurConfig = ind;
         //DrawOnlyOne = true;
 
-        double minSize = min(Width, Height);
+        int minSize = min(Width, Height);
+        BigViewPort = {5, 5, minSize-5*2, minSize-5*2};
 
-        glViewport(5, 5, minSize-5*2, minSize-5*2);
+//        qDebug() << "BigViewPort.top() =" << BigViewPort.top();
+
+        glViewport(BigViewPort.left(), BigViewPort.top(), BigViewPort.width(), BigViewPort.height());
+//        glViewport(5, 5, minSize-5*2, minSize-5*2);
 //        glViewport(50, 50, minSize-100, minSize-100);
 
         glClearColor(0, 0, 0, 1);
@@ -614,15 +618,24 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
     }
     else if (QApplication::keyboardModifiers() == Qt::AltModifier)
     {
-        double k1 = Configs.at(iCurConfig).Settings3d.IsPerspective ? -Configs.at(iCurConfig).Settings3d.TrZ / 10.0  : 1;
+        double k1 = Configs.at(iCurConfig).Settings3d.IsPerspective ? -Configs.at(iCurConfig).Settings3d.TrZ / 2.5  : 1;
 
-        double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
-                    ((ViewPorts.at(iCurConfig).width() + ViewPorts.at(iCurConfig).height()) / 2.0 / 30.0) :
-                    120.0 / ((ViewPorts.at(iCurConfig).width() + ViewPorts.at(iCurConfig).height()) / 2.0);
+
+        const auto & vPort = DrawOnlyOne ? BigViewPort : ViewPorts.at(iCurConfig);
 
 //        double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
-//                    300.0 / ((ViewPorts.at(iCurConfig).width() + ViewPorts.at(iCurConfig).height()) / 2.0) :
-//                    1;
+//                    (vPort.width() + vPort.height()) / 2.0 / 300.0 :
+//                    550 / ((vPort.width() + vPort.height()) / 2.0);
+
+
+        double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
+                    550 / ((vPort.width() + vPort.height()) / 2.0) :
+                    550 / ((vPort.width() + vPort.height()) / 2.0);
+
+
+        qDebug() << "k1 =" << k1;
+        qDebug() << "k2 =" << k2;
+        qDebug() << "Height =" << Height;
 
         Configs.at(iCurConfig).Settings3d.TrX += k1*k2*TransSpeed*dx;
         Configs.at(iCurConfig).Settings3d.TrY -= k1*k2*TransSpeed*dy;
@@ -648,7 +661,7 @@ void MyGradModel::OnMouseWheel(QWheelEvent *pe)
         return;
 
     //if (Configs.at(iCurConfig).Settings3d.IsPerpective)
-    Configs.at(iCurConfig).Settings3d.TrZ += pe->angleDelta().y() / 600.0f;
+    Configs.at(iCurConfig).Settings3d.TrZ += pe->angleDelta().y() / 600.0f / 2.0f;
 }
 //----------------------------------------------------------
 

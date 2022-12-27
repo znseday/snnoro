@@ -147,7 +147,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
 
             gluQuadricDrawStyle(Quadric(), GLU_FILL);
-            gluSphere(Quadric(), 0.02 + 0.05*sqrt(p.Weight), 12, 12);
+            gluSphere(Quadric(), (0.01 + 0.025*sqrt(p.Weight)) * pow(fabs(Settings3d.TrZ), 0.25), 12, 12);
             glPopMatrix();
         }
 

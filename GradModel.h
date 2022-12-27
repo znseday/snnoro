@@ -32,6 +32,8 @@ protected:
     std::vector<MyConfig> Configs;
     std::vector<QRect> ViewPorts;
 
+    QRect BigViewPort;
+
     QString Name = "Unknown";
     QString FileName;
     bool IsSaved = true;
