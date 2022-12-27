@@ -10,7 +10,13 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include <QPainter>
+#include <QGraphicsScene>
+#include <QOpenGLTexture>
+
 #include <iostream>
+
+
 
 using namespace std;
 
@@ -141,6 +147,12 @@ void MainGLWidget::resizeGL(int w, int h)
 
 void MainGLWidget::paintGL()
 {
+//    QPainter painter(this); // Наличие QPainter вырубает работу мультисэмплинга(((
+//    //painter.draw();
+//    painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing); // Этот антиалайзинг работает, но мультисэмплинг нет
+//    painter.beginNativePainting();
+
+
     if (WorkMode == WorkModeType::Nothing)
         return;
 
@@ -157,6 +169,16 @@ void MainGLWidget::paintGL()
 
 //        cout << __PRETTY_FUNCTION__ << endl;
     }
+
+
+//    QPainter painter(this);
+
+//    painter.endNativePainting();
+
+//    painter.drawLine(100, 100, 300, 300);
+//    painter.drawText(10, 30, "Hellow");
+
+//    painter.end();
 }
 //----------------------------------------------------------
 

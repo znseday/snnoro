@@ -611,6 +611,8 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
     int dy = CurrentY - OldY;
 
 
+
+
     if (QApplication::keyboardModifiers() == Qt::ControlModifier) // Отследить состояние клавиши Ctrl
     {
         if (Configs.at(iCurConfig).Settings3d.IsPerspective)
@@ -620,7 +622,6 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
     {
         double k1 = Configs.at(iCurConfig).Settings3d.IsPerspective ? -Configs.at(iCurConfig).Settings3d.TrZ / 2.5  : 1;
 
-
         const auto & vPort = DrawOnlyOne ? BigViewPort : ViewPorts.at(iCurConfig);
 
 //        double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
@@ -629,13 +630,13 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
 
 
         double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
-                    550 / ((vPort.width() + vPort.height()) / 2.0) :
-                    550 / ((vPort.width() + vPort.height()) / 2.0);
+                    550.0 / ((vPort.width() + vPort.height()) / 2.0) :
+                    550.0 / ((vPort.width() + vPort.height()) / 2.0);
 
 
-        qDebug() << "k1 =" << k1;
-        qDebug() << "k2 =" << k2;
-        qDebug() << "Height =" << Height;
+//        qDebug() << "k1 =" << k1;
+//        qDebug() << "k2 =" << k2;
+//        qDebug() << "Height =" << Height;
 
         Configs.at(iCurConfig).Settings3d.TrX += k1*k2*TransSpeed*dx;
         Configs.at(iCurConfig).Settings3d.TrY -= k1*k2*TransSpeed*dy;

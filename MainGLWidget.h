@@ -49,6 +49,7 @@ private:
     bool MouseToWorld(int clientX, int clientY,
                       GLdouble &_worldX, GLdouble &_worldY, GLdouble &_worldZ);
 
+
 protected:
 
     void initializeGL() override;
