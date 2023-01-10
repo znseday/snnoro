@@ -195,6 +195,9 @@ public:
     void PutCurNodeByPos(double wx, double wy);
     void SetDirectCurNodeByPos(double wx, double wy);
 
+    void SetShowGridOnRelief(bool _isShow);
+
+
 signals:
 
     void SignalSendNodeCoords(int, double, double, double);

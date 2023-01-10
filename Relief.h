@@ -33,10 +33,15 @@ protected:
     QRectF Area;
     QString FileName;
 
-    GLuint ReliefCompileList = 0;
+    GLuint ReliefCompileList = 0;    
     bool IsReliefBuilt = false;
     GLuint Relief2dCompileList = 0;
     bool IsRelief2dBuilt = false;
+
+    GLuint GridCompileList = 0;
+    bool IsGridBuilt = false;
+    GLuint Grid2dCompileList = 0;
+    bool IsGrid2dBuilt = false;
 
 //    bool IsReliefCreated = false; // ?
 
@@ -81,8 +86,11 @@ public:
 
     QColor CalcColorByZ(double z) const;
 
-    void ReCreateListsGL();
+    void ReCreateReliefListsGL();
     void BuildReliefToGL(bool _is2d);
+
+    void ReCreateGridListsGL();
+    void ReBuildGridToGL(bool _is2d, const double dx, const double dy, const int nDetail);
 
     void Draw(bool _is2d);
 
@@ -108,6 +116,8 @@ public:
     const QString & GetLegendFileName() const {return LegendFileName;}
 
     const auto & GetReliefMap() const {return ReliefMap;}
+
+    void ClearGrid();
 };
 
 #endif // RELIEF_H

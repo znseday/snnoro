@@ -1024,7 +1024,7 @@ bool MyGradModel::LoadFromFile(const QString &_fileName)
 
     CreatePopulation(configCount);
 
-    Relief.ReCreateListsGL();
+    Relief.ReCreateReliefListsGL();
     Relief.BuildReliefToGL(false);
     Relief.BuildReliefToGL(true);
 
@@ -1505,6 +1505,24 @@ void MyGradModel::SetDirectCurNodeByPos(double wx, double wy)
     else
     {
         qDebug() << "iCurConfig == -1. MyGradModel::SetDirectCurNodeByPos aborted";
+    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::SetShowGridOnRelief(bool _isShow)
+{
+    if (_isShow)
+    {
+        Relief.ReCreateGridListsGL();
+//        Relief.ReBuildGridToGL(true, 5000, 3000, 201);
+//        Relief.ReBuildGridToGL(false, 5000, 3000, 201);
+
+        Relief.ReBuildGridToGL(true, 100, 100, 201);
+        Relief.ReBuildGridToGL(false, 100, 100, 201);
+    }
+    else
+    {
+        Relief.ClearGrid();
     }
 }
 //----------------------------------------------------------

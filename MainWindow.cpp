@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::AfterShow()
 {
-//    on_actionFileOpen_Grad_Descent_triggered();
+    on_actionFileOpen_Grad_Descent_triggered();
 }
 //-------------------------------------------------------------
 
@@ -112,6 +112,7 @@ int MainWindow::GetGLWidth() const
 {
     return mainGLWidget->width();
 }
+//-------------------------------------------------------------
 
 int MainWindow::GetGLHeight() const
 {
@@ -169,6 +170,7 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
     ui->actionWorld_Show_Abonents->setEnabled(true);
+    ui->actionWorld_Show_Grid->setEnabled(true);
 
     GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
@@ -587,6 +589,7 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
     ui->actionWorld_Show_Abonents->setEnabled(true);
+    ui->actionWorld_Show_Grid->setEnabled(true);
 
     GradModel.Set_nDraws(35);
     mainGLWidget->repaint();
@@ -912,5 +915,21 @@ void MainWindow::on_actionEdit_Editing_Angle_Cur_Node_triggered()
 void MainWindow::on_actionEdit_Apply_Cur_Node_to_All_Configs_triggered()
 {
     GradModel.ApplyCurNodeFromCurConfigToAllConfigs();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Grid_triggered()
+{
+    GradModel.SetShowGridOnRelief(ui->actionWorld_Show_Grid->isChecked());
+    mainGLWidget->repaint();
+
+//    if (ui->actionWorld_Show_Grid->isChecked())
+//    {
+//        GradModel.SetShowGridOnRelief();
+//    }
+//    else
+//    {
+
+//    }
 }
 //-------------------------------------------------------------
