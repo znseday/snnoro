@@ -19,8 +19,24 @@ const QString ReliefsExtension = "*.relief";
 const QString ReliefsImagesExtension = "*.png *.jpg *.bmp";
 const QString ReliefsLegendsDefaultDir = "Reliefs/Legends";
 const QString ReliefsLegendsExtension = "*.rlgd";
+//----------------------------------------------------------
 
+QJsonObject GridSettingsStruct::RepresentAsJsonObject() const
+{
+    QJsonObject res;
+    res.insert("dx", dx);
+    res.insert("dy", dy);
+    res.insert("nDetails", nDetails);
+    return res;
+}
+//----------------------------------------------------------
 
+void GridSettingsStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
+{
+    dx = _jsonObject["dx"].toDouble(100);
+    dy = _jsonObject["dy"].toDouble(100);
+    nDetails = _jsonObject["nDetails"].toDouble(50);
+}
 //----------------------------------------------------------
 //----------------------------------------------------------
 
@@ -193,7 +209,7 @@ QColor Relief3D::CalcColorByZ(double z) const
 }
 //----------------------------------------------------------
 
-void Relief3D::ReCreateListsGL()
+void Relief3D::ReCreateReliefListsGL()
 {
     if (ReliefCompileList)
     {
@@ -208,6 +224,9 @@ void Relief3D::ReCreateListsGL()
 
     ReliefCompileList = glGenLists(1);
     Relief2dCompileList = glGenLists(1);
+
+    IsReliefBuilt = false;
+    IsRelief2dBuilt = false;
 }
 //----------------------------------------------------------
 
@@ -217,7 +236,6 @@ void Relief3D::BuildReliefToGL(bool _is2d)
         throw std::runtime_error("IsReliefBuilt == true in Relief3D::BuildReliefToGL");
     if (_is2d && IsRelief2dBuilt)
         throw std::runtime_error("IsRelief2dBuilt == true in Relief3D::BuildReliefToGL");
-
 
     int RowCount = ReliefMap.size();
     int ColCount = ReliefMap.begin()->second.size();
@@ -352,6 +370,105 @@ void Relief3D::BuildReliefToGL(bool _is2d)
 }
 //----------------------------------------------------------
 
+void Relief3D::ReCreateGridListsGL()
+{
+    ClearGrid();
+
+    GridCompileList = glGenLists(1);
+    Grid2dCompileList = glGenLists(1);
+
+//    qDebug() << "GridCompileList =" << GridCompileList;
+//    qDebug() << "Grid2dCompileList =" << Grid2dCompileList;
+}
+//----------------------------------------------------------
+
+void Relief3D::ReBuildGridToGL(bool _is2d, const double dx, const double dy,
+                               const int nDetail)
+{
+    if (!_is2d && IsGridBuilt)
+        throw std::runtime_error("IsGridBuilt == true in Relief3D::ReBuildGridToGL");
+    if (_is2d && IsGrid2dBuilt)
+        throw std::runtime_error("IsGrid2dBuilt == true in Relief3D::ReBuildGridToGL");
+
+    int RowCount = Area.height() / dy;
+    int ColCount = Area.width() / dx;
+
+    if (!_is2d)
+        glNewList(GridCompileList, GL_COMPILE);
+    else
+        glNewList(Grid2dCompileList, GL_COMPILE);
+
+    std::vector<QVector3D> oneRow(ColCount);
+    std::vector<std::vector<QVector3D>> points(RowCount, oneRow);
+
+    const double aspect = Area.width()/Area.height();
+
+    double dxInside = 2.0*dx/Area.width();
+    double dyInside = 2.0*dy/Area.height();
+
+    if (aspect > 1)
+        dyInside /= aspect;
+    else
+        dxInside *= aspect;
+
+
+    constexpr float zOffset = 0.0001f;
+
+    glColor3f(0.5f, 0.5f, 0.5f);
+
+    for (int j = 0; j <= ColCount; j++)
+    {
+        float x = xStartInside + j * dxInside;
+
+        glBegin(GL_LINE_STRIP);
+
+        for (int i = 0; i < nDetail; ++i)
+        {
+            if (_is2d && i > 0 && i < nDetail-1)
+                continue;
+
+            float y = yStartInside + i * (hInside / (nDetail-1));
+
+            float z = Global_kz * CalcRealZbyRealXY((x-xStartInside)/wInside*Area.width()+Area.left(),
+                                                    (y-yStartInside)/hInside*Area.height()+Area.top());
+
+            glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+        }
+
+        glEnd();
+    }
+
+    for (int i = 0; i <= RowCount; i++)
+    {
+        float y = yStartInside + i * dyInside;
+
+        glBegin(GL_LINE_STRIP);
+
+        for (int j = 0; j < nDetail; ++j)
+        {
+            if (_is2d && j > 0 && j < nDetail-1)
+                continue;
+
+            float x = xStartInside + j * (wInside / (nDetail-1));
+
+            float z = Global_kz * CalcRealZbyRealXY((x-xStartInside)/wInside*Area.width()+Area.left(),
+                                                    (y-yStartInside)/hInside*Area.height()+Area.top());
+
+            glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+        }
+
+        glEnd();
+    }
+
+    glEndList(); // закончить список
+
+    if (!_is2d)
+        IsGridBuilt = true;
+    else
+        IsGrid2dBuilt = true;
+}
+//----------------------------------------------------------
+
 void Relief3D::Draw(bool _is2d)
 {
     if (!_is2d && !IsReliefBuilt)
@@ -359,10 +476,40 @@ void Relief3D::Draw(bool _is2d)
     if (_is2d && !IsRelief2dBuilt)
         throw runtime_error("IsRelief2dBuilt == false in Relief3D::Draw");
 
+//    glEnable(GL_POLYGON_OFFSET_FILL);
+//    /* glColorMask(0,0,0,0); */
+//    glCallList(1);
+//    /* glColorMask(1,1,1,1); */
+//    glDisable(GL_POLYGON_OFFSET_FILL);
+
     if (!_is2d)
+    {
         glCallList(ReliefCompileList);
+        if (IsGridBuilt)
+        {
+//            glEnable(GL_POLYGON_OFFSET_LINE);
+//            glPolygonOffset(1.0, 1.0);
+
+//            glDisable(GL_DEPTH_TEST);
+
+            glDepthFunc(GL_ALWAYS);
+            glCallList(GridCompileList);
+//            glDisable(GL_POLYGON_OFFSET_LINE);
+            glDepthFunc(GL_LESS);
+//            glEnable(GL_DEPTH_TEST);
+        }
+    }
     else
+    {
         glCallList(Relief2dCompileList);
+        if (IsGrid2dBuilt)
+        {
+            //glEnable(GL_POLYGON_OFFSET_LINE);
+            //glPolygonOffset(1.0, 1.0);
+            glCallList(Grid2dCompileList);
+            //glDisable(GL_POLYGON_OFFSET_LINE);
+        }
+    }
 }
 //----------------------------------------------------------
 
@@ -440,6 +587,8 @@ void Relief3D::Clear()
     Relief2dCompileList = 0;
     IsRelief2dBuilt = false;
 
+    ClearGrid();
+
     MinX = std::numeric_limits<double>::max();
     MinY = std::numeric_limits<double>::max();
 
@@ -505,6 +654,20 @@ void Relief3D::CalcDeltaDiag()
 }
 //----------------------------------------------------------
 
+void Relief3D::ClearGrid()
+{
+    if (GridCompileList)
+        glDeleteLists(GridCompileList, 1);
+    if (Grid2dCompileList)
+        glDeleteLists(Grid2dCompileList, 1);
+
+    GridCompileList = 0;
+    IsGridBuilt = false;
+    Grid2dCompileList = 0;
+    IsGrid2dBuilt = false;
+}
+//----------------------------------------------------------
+
 bool Relief3D::LoadFromFile(const QString &_fileName)
 {
     Clear();
@@ -546,5 +709,6 @@ bool Relief3D::LoadFromFile(const QString &_fileName)
     return true;
 }
 //----------------------------------------------------------
+
 
 

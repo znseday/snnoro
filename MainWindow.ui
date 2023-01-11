@@ -119,6 +119,8 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionWorld_Show_Abonents"/>
+    <addaction name="separator"/>
+    <addaction name="actionWorld_Show_Grid"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -476,6 +478,17 @@
    </property>
    <property name="text">
     <string>Apply Cur Node to All Configs</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Grid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Grid</string>
    </property>
   </action>
  </widget>

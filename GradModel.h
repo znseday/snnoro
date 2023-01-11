@@ -28,7 +28,6 @@ protected:
     size_t nDraws = 1;
     std::vector<SignalNode> Nodes;
     std::vector<Route> Routes;
-//    ReliefMatInfoStruct ReliefMatInfo; // ?
     std::vector<MyConfig> Configs;
     std::vector<QRect> ViewPorts;
 
@@ -48,6 +47,7 @@ protected:
 
     bool IsRandomRoutes = false;
 
+    GridSettingsStruct GridSettings;
     Relief3D Relief;
     bool IsRandomRelief = true;
 
@@ -63,7 +63,6 @@ protected:
 
     QJsonArray RepresentRoutesAsJsonArray() const;
     QJsonArray RepresentNodesAsJsonArray() const;
-//    QJsonObject RepresentReliefInfoAsJsonObject() const;
 
     std::map<std::string, TargetFunctionBase*> TargetFunctions;
 
@@ -194,6 +193,11 @@ public:
     void SelectCurNodeByPos(double wx, double wy);
     void PutCurNodeByPos(double wx, double wy);
     void SetDirectCurNodeByPos(double wx, double wy);
+
+    void SetShowGridOnRelief(bool _isShow);
+
+    void SetGridSettings(const GridSettingsStruct &_gs) {GridSettings = _gs;}
+    const GridSettingsStruct & GetGridSettings() const {return GridSettings;}
 
 signals:
 
