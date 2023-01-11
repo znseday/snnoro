@@ -292,6 +292,8 @@ void MainWindow::on_actionGradSettings_triggered()
         DialogGradSettings.ReInitGradModel(GradModel);
 
         GradModel.MarkAsNotSaved();
+//        GradModel.SetGridSettings(ui->actionWorld_Show_Grid->ac)
+        on_actionWorld_Show_Grid_triggered();
 
         mainGLWidget->repaint();
     }

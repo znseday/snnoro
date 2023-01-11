@@ -54,28 +54,8 @@ DialogGradConfig::~DialogGradConfig()
 
 void DialogGradConfig::InitDialog(const MyGradModel &_gm)
 {
-//    ui->EditMinEta->setText(QString().setNum(_gm.ProtoGradDesc.GetMin_Eta()));
-//    ui->EditFirstJump->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_FirstJump()));
-//    ui->Edit_k_mult->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_k_inc()));
-//    ui->Edit_k_div->setText(QString().setNum(_gm.ProtoGradDesc.GetEta_k_dec()));
-//    ui->EditAlpha->setText(QString().setNum(_gm.ProtoGradDesc.GetAlpha()));
-//    ui->Edit_eps->setText(QString().setNum(_gm.ProtoGradDesc.GetEps()));
-//    ui->EditCallbackFreq->setText(QString().setNum(_gm.ProtoGradDesc.GetCallBackFreq()));
-//    ui->chbFinMethod->setChecked(_gm.ProtoGradDesc.GetFinDifMethod());
-//    ui->EditMaxIters->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxIters()));
-//    ui->EditMaxTime->setText(QString().setNum(_gm.ProtoGradDesc.GetMaxTime()));
-
     InitGradDescDialog(_gm.ProtoGradDesc);
     ui->EditGradDescFile->setText(_gm.GetGradDescFileName());
-
-//    ui->EditAarf->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.Aarf));
-//    ui->EditA2->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.A2));
-//    ui->EditR_nodeOverlap->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.R_nodeOverlap));
-//    ui->Edit_k_step_ot->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.k_step_ot));
-//    ui->Edit_offX->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.offX));
-//    ui->Edit_p->setText(QString().setNum(_gm.TargetFuncSettingsGlobal.p));
-//    ui->chbIsUseCoveredFlag->setChecked(_gm.TargetFuncSettingsGlobal.IsUseCoveredFlag);
-//    ui->chbIsUseLineBetweenTwoPoints->setChecked(_gm.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
 
     InitTargetFuncSettingsDialog(_gm.TargetFuncSettingsGlobal);
 
@@ -106,6 +86,10 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
         QMessageBox::warning(this, "Warning", "TargetFunctionSecondPhase is Unknown!");
     else
         ui->cbTargetFuncSecondPhase->setCurrentText(QString().fromStdString(it_TargetFunc_2->first));
+
+    ui->EditGrid_dx->setText(QString().setNum(_gm.GetGridSettings().dx));
+    ui->EditGrid_dy->setText(QString().setNum(_gm.GetGridSettings().dy));
+    ui->EditGrid_nDetails->setText(QString().setNum(_gm.GetGridSettings().nDetails));
 }
 //------------------------------------------------------------------
 
@@ -165,6 +149,13 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
     _gm.SetActiveTargetFuncSecondPhase(ui->cbTargetFuncSecondPhase->currentText().toStdString());
 
     _gm.SetGradDescFileName(ui->EditGradDescFile->text());
+
+
+
+    _gm.SetGridSettings({ui->EditGrid_dx->text().toDouble(),
+                        ui->EditGrid_dy->text().toDouble(),
+                        ui->EditGrid_nDetails->text().toInt()});
+
 }
 //------------------------------------------------------------------
 

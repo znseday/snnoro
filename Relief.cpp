@@ -19,8 +19,24 @@ const QString ReliefsExtension = "*.relief";
 const QString ReliefsImagesExtension = "*.png *.jpg *.bmp";
 const QString ReliefsLegendsDefaultDir = "Reliefs/Legends";
 const QString ReliefsLegendsExtension = "*.rlgd";
+//----------------------------------------------------------
 
+QJsonObject GridSettingsStruct::RepresentAsJsonObject() const
+{
+    QJsonObject res;
+    res.insert("dx", dx);
+    res.insert("dy", dy);
+    res.insert("nDetails", nDetails);
+    return res;
+}
+//----------------------------------------------------------
 
+void GridSettingsStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
+{
+    dx = _jsonObject["dx"].toDouble(100);
+    dy = _jsonObject["dy"].toDouble(100);
+    nDetails = _jsonObject["nDetails"].toDouble(50);
+}
 //----------------------------------------------------------
 //----------------------------------------------------------
 
@@ -396,7 +412,7 @@ void Relief3D::ReBuildGridToGL(bool _is2d, const double dx, const double dy,
         dxInside *= aspect;
 
 
-    constexpr float zOffset = 0.004f;
+    constexpr float zOffset = 0.0001f;
 
     glColor3f(0.5f, 0.5f, 0.5f);
 
@@ -460,17 +476,39 @@ void Relief3D::Draw(bool _is2d)
     if (_is2d && !IsRelief2dBuilt)
         throw runtime_error("IsRelief2dBuilt == false in Relief3D::Draw");
 
+//    glEnable(GL_POLYGON_OFFSET_FILL);
+//    /* glColorMask(0,0,0,0); */
+//    glCallList(1);
+//    /* glColorMask(1,1,1,1); */
+//    glDisable(GL_POLYGON_OFFSET_FILL);
+
     if (!_is2d)
     {
         glCallList(ReliefCompileList);
         if (IsGridBuilt)
+        {
+//            glEnable(GL_POLYGON_OFFSET_LINE);
+//            glPolygonOffset(1.0, 1.0);
+
+//            glDisable(GL_DEPTH_TEST);
+
+            glDepthFunc(GL_ALWAYS);
             glCallList(GridCompileList);
+//            glDisable(GL_POLYGON_OFFSET_LINE);
+            glDepthFunc(GL_LESS);
+//            glEnable(GL_DEPTH_TEST);
+        }
     }
     else
     {
         glCallList(Relief2dCompileList);
         if (IsGrid2dBuilt)
+        {
+            //glEnable(GL_POLYGON_OFFSET_LINE);
+            //glPolygonOffset(1.0, 1.0);
             glCallList(Grid2dCompileList);
+            //glDisable(GL_POLYGON_OFFSET_LINE);
+        }
     }
 }
 //----------------------------------------------------------
@@ -671,5 +709,6 @@ bool Relief3D::LoadFromFile(const QString &_fileName)
     return true;
 }
 //----------------------------------------------------------
+
 
 

@@ -21,6 +21,16 @@ extern const QString ReliefsLegendsDefaultDir;
 extern const QString ReliefsLegendsExtension;
 
 
+struct GridSettingsStruct
+{
+    double dx = 100;  // in meters
+    double dy = 100;  // in meters
+    int nDetails = 50;
+    QJsonObject RepresentAsJsonObject() const;
+    void LoadFromJsonObject(const QJsonObject &_jsonObject);
+};
+
+
 class Relief3D
 {
 protected:

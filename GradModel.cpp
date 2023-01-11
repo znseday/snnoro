@@ -30,14 +30,14 @@ constexpr float RotSpeed = 0.12f;
 constexpr float TransSpeed = 0.004f;
 
 
-static const QString SettingsDefaultDir = "Settings";
+const QString SettingsDefaultDir = "Settings";
 const QString SettingsGDExtension = "*.gds";
 const QString SettingsTFExtension = "*.tfs";
 
 MyGradModel::MyGradModel()
 {
     ProtoGradDesc.SetIsUseUserTargetFunction(true);
-//                               AdditiveSphereFirstPhase
+
     TargetFunctions.try_emplace("AdditiveSphereFirstPhase",
                                 new TargetFuncAdditiveSphereFirstPhase());
 
@@ -713,24 +713,6 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 //    Configs.reserve(ConfigCount);
     qDebug() << "ConfigCount = " << ConfigCount;
 
-//    if ( !configObject["Area"].isObject() )
-//    {
-//        qDebug() << _parseError.errorString(); return 0;
-//    }
-
-    // Здесь должна быть загрузка параметров рельефа
-//    const QJsonObject &reliefInfoObject = configObject["ReliefInfo"].toObject();
-
-//    ReliefMatInfo.IsUseReliefRandomSeed = reliefInfoObject["IsUseReliefRandomSeed"].toBool(false);
-//    ReliefMatInfo.ReliefRandomSeed = reliefInfoObject["ReliefRandomSeed"].toInt(200);
-
-//    const QJsonObject &reliefCoeffsObject = reliefInfoObject["ReliefCoeffs"].toObject();
-
-//    ReliefMatInfo.A_r1 = reliefCoeffsObject["A_r1"].toDouble(-1);
-//    ReliefMatInfo.A_r2 = reliefCoeffsObject["A_r2"].toDouble(-1);
-
-//    cout << "ReliefInfo:" << endl << ReliefMatInfo << endl;
-
     IsRandomRelief = configObject["IsRandomRelief"].toBool(true);
     if (!IsRandomRelief)
     {
@@ -853,6 +835,10 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
         cout << "node.R = " << node << endl;
     }
 
+
+     GridSettings.LoadFromJsonObject(configObject["GridSettings"].toObject());
+
+
     const QJsonObject &gradDescObject = _jsonObject["GradDesc"].toObject();
 
     GradDescFileName = gradDescObject["GradDescFileName"].toString();
@@ -864,7 +850,6 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
         qDebug() << "GradDesc file not open or currupted!";
         QMessageBox::warning(nullptr, "Warning", "GradDesc file not found or currupted!");
     }
-
 
 
     const QJsonObject &targetFuncObject = _jsonObject["TargetFunctionSettings"].toObject();
@@ -1319,34 +1304,11 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
     QJsonObject GradDescObject;
 
-//    GradDescObject.insert("Alpha", ProtoGradDesc.GetAlpha());
-//    GradDescObject.insert("CallBackFreq", (int)ProtoGradDesc.GetCallBackFreq());
-//    GradDescObject.insert("Eps", ProtoGradDesc.GetEps());
-//    GradDescObject.insert("Eta_FirstJump", ProtoGradDesc.GetEta_FirstJump());
-//    GradDescObject.insert("Eta_k_dec", ProtoGradDesc.GetEta_k_dec());
-//    GradDescObject.insert("Eta_k_inc", ProtoGradDesc.GetEta_k_inc());
-//    GradDescObject.insert("FinDifMethod", ProtoGradDesc.GetFinDifMethod());
-//    GradDescObject.insert("MaxIters", (int)ProtoGradDesc.GetMaxIters());
-//    GradDescObject.insert("MaxTime", ProtoGradDesc.GetMaxTime());
-//    GradDescObject.insert("Min_Eta", ProtoGradDesc.GetMin_Eta());
-
     GradDescObject.insert("GradDescFileName", GradDescFileName);
 
     mainObject.insert("GradDesc", GradDescObject);
 
     QJsonObject TargetFunctionSettingsObject;
-
-//    TargetFunctionSettingsObject.insert("A2", TargetFuncSettingsGlobal.A2);
-//    TargetFunctionSettingsObject.insert("Aarf", TargetFuncSettingsGlobal.Aarf);
-//    TargetFunctionSettingsObject.insert("IsUseCoveredFlag", TargetFuncSettingsGlobal.IsUseCoveredFlag);
-//    TargetFunctionSettingsObject.insert("R_nodeOverlap", TargetFuncSettingsGlobal.R_nodeOverlap);
-//    TargetFunctionSettingsObject.insert("k_step_ot", TargetFuncSettingsGlobal.k_step_ot);
-//    TargetFunctionSettingsObject.insert("offX", TargetFuncSettingsGlobal.offX);
-//    TargetFunctionSettingsObject.insert("p", TargetFuncSettingsGlobal.p);
-//    TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
-
-//    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettingsGlobal.TargetFuncType);
-//    TargetFunctionSettingsObject.insert("TargetFuncType", TargetFuncTypeStr);
 
     TargetFunctionSettingsObject.insert("TargetFuncFirstPhase", QString().fromStdString(ActiveTargetFuncFirstPhase));
     TargetFunctionSettingsObject.insert("TargetFuncSecondPhase", QString().fromStdString(ActiveTargetFuncSecondPhase));
@@ -1355,10 +1317,6 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
     mainObject.insert("TargetFunctionSettings", TargetFunctionSettingsObject);
 
     QJsonObject ConfigurationObject;
-
-//    ConfigurationObject.insert("TargetFuncFirstPhase", QString().fromStdString(ActiveTargetFuncFirstPhase));
-//    ConfigurationObject.insert("TargetFuncSecondPhase", QString().fromStdString(ActiveTargetFuncSecondPhase));
-
 
     ConfigurationObject.insert("RouteCount", (int)Routes.size());
     ConfigurationObject.insert("Routes", RepresentRoutesAsJsonArray());
@@ -1370,22 +1328,14 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
     ConfigurationObject.insert("Nodes", RepresentNodesAsJsonArray());
 
-//    ConfigurationObject.insert("TargetCostFunction", "MyFunction"); // Not used
-
-//    QJsonObject AreaObject; // Для математичесокго рельефа
-//    AreaObject.insert("bottom", 0);
-//    AreaObject.insert("left", 0);
-//    AreaObject.insert("right", 10000);
-//    AreaObject.insert("top", 8000);
-//    ConfigurationObject.insert("Area", AreaObject); // Для математичесокго рельефа
-
     ConfigurationObject.insert("Count", (int)Configs.size());
     ConfigurationObject.insert("IsRandomNodeCoords", IsRandomNodeCoords);
     ConfigurationObject.insert("IsRandomRelief", IsRandomRelief);
     ConfigurationObject.insert("IsRandomRoutes", IsRandomRoutes);
 
-//    ConfigurationObject.insert("ReliefInfo", RepresentReliefInfoAsJsonObject());
     ConfigurationObject.insert("ReliefFileName", Relief.GetFileName() );
+
+    ConfigurationObject.insert("GridSettings", GridSettings.RepresentAsJsonObject());
 
     mainObject.insert("Configuration", ConfigurationObject);
 
@@ -1517,8 +1467,11 @@ void MyGradModel::SetShowGridOnRelief(bool _isShow)
 //        Relief.ReBuildGridToGL(true, 5000, 3000, 201);
 //        Relief.ReBuildGridToGL(false, 5000, 3000, 201);
 
-        Relief.ReBuildGridToGL(true, 100, 100, 201);
-        Relief.ReBuildGridToGL(false, 100, 100, 201);
+//        Relief.ReBuildGridToGL(true, 100, 100, 201);
+//        Relief.ReBuildGridToGL(false, 100, 100, 201);
+
+        Relief.ReBuildGridToGL(false, GridSettings.dx, GridSettings.dy, GridSettings.nDetails);
+        Relief.ReBuildGridToGL(true, GridSettings.dx, GridSettings.dy, 2);
     }
     else
     {
