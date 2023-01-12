@@ -877,6 +877,17 @@ void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) co
 }
 //----------------------------------------------------------
 
+void MyConfig::SetAbonentsPosForRoutes(const std::vector<Route> &_routes)
+{
+    assert(_routes.size() == Routes.size());
+
+    for (size_t i = 0; i < _routes.size(); ++i)
+    {
+        Routes.at(i).AbonentDirectAccess().Pos = _routes.at(i).GetAbonent().Pos;
+    }
+}
+//----------------------------------------------------------
+
 bool MyConfig::CheckIsAllCovered() const
 {
     bool res = true;

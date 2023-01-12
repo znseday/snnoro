@@ -537,6 +537,15 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
 }
 //----------------------------------------------------------
 
+void MyGradModel::ApplyAbonentsPosInRoutesToAllConfigs()
+{
+    for (auto & cnf : Configs)
+    {
+        cnf.SetAbonentsPosForRoutes(Routes);
+    }
+}
+//----------------------------------------------------------
+
 void MyGradModel::ApplyRoutesToAllConfigs(NeedToSave _NeedToSave)
 {
     for (auto & cnf : Configs)

@@ -132,6 +132,8 @@ public:
     bool StartGradDescent_Phase_2_for_Current(IGradDrawable *pGLWidget);
     void CancelGradDescent();
 
+    bool GetIsGradCalculating() const {return IsGradCalculating;}
+
     void DeleteConfigsWithUncoveredPoints();
 
     void CalcBonds();
@@ -161,6 +163,8 @@ public:
 
     void ApplySignalNodesToAllConfigs();
     void ApplyRoutesToAllConfigs(NeedToSave _NeedToSave);
+
+    void ApplyAbonentsPosInRoutesToAllConfigs();
 
     void ApplyCurNodeFromCurConfigToAllConfigs();
 
