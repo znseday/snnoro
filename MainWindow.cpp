@@ -263,6 +263,9 @@ void MainWindow::on_actionGradSetDraw9_triggered()
 
 void MainWindow::on_actionGradStart_Phase_1_triggered()
 {   
+    if (GradModel.GetIsGradCalculating())
+        return;
+
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1... ");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_1(mainGLWidget);
@@ -306,6 +309,9 @@ void MainWindow::on_actionGradSettings_triggered()
 
 void MainWindow::on_actionGradStart_Phase_2_triggered()
 {
+    if (GradModel.GetIsGradCalculating())
+        return;
+
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 2...");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_2(mainGLWidget);
@@ -675,6 +681,9 @@ void MainWindow::on_actionTwoLines_triggered()
 
 void MainWindow::on_actionGradStart_Phase_1_for_Current_Config_triggered()
 {
+    if (GradModel.GetIsGradCalculating())
+        return;
+
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1 for Current Config... ");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_1_for_Current(mainGLWidget);
@@ -687,6 +696,9 @@ void MainWindow::on_actionGradStart_Phase_1_for_Current_Config_triggered()
 
 void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
 {
+    if (GradModel.GetIsGradCalculating())
+        return;
+
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1 for Current Config... ");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_2_for_Current(mainGLWidget);
@@ -720,7 +732,6 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
     if (WorkMode != WorkModeType::GradWork)
         return;
 
-
     GradModel.SetIsDrawAbonents(true);
     formAboCalc.show();
 //    SlotReceiveAboTime(0);
@@ -731,12 +742,13 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
 
 void MainWindow::SlotReceiveAboTime(int t) // in sec
 {
-    qDebug() << "t =" << t << " - " << t/3600.0;
+//    qDebug() << "t =" << t << " - " << t/3600.0;
 
     if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.CalcAbonentsPos(t);
-        GradModel.ApplyRoutesToAllConfigs(NeedToSave::DoNotNeed);
+//        GradModel.ApplyRoutesToAllConfigs(NeedToSave::DoNotNeed);
+        GradModel.ApplyAbonentsPosInRoutesToAllConfigs();
         GradModel.ReCalcAboAccessRate();
         mainGLWidget->repaint();
     }

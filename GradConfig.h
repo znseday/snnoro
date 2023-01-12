@@ -86,6 +86,8 @@ public:
     void SetRoutes(const std::vector<Route> &_routes) {Routes = _routes;}
     void SetRelief(Relief3D *_relief3D) {Relief = _relief3D;}
 
+    void SetAbonentsPosForRoutes(const std::vector<Route> &_routes);
+
     const Relief3D * GetRelief() const {return Relief;}
 
 //    void SetRandomNodeCoords(const QRectF &_area);
