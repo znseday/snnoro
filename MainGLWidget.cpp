@@ -10,7 +10,13 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include <QPainter>
+#include <QGraphicsScene>
+#include <QOpenGLTexture>
+
 #include <iostream>
+
+
 
 using namespace std;
 
@@ -141,6 +147,12 @@ void MainGLWidget::resizeGL(int w, int h)
 
 void MainGLWidget::paintGL()
 {
+//    QPainter painter(this); // Наличие QPainter вырубает работу мультисэмплинга(((
+//    //painter.draw();
+//    painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing); // Этот антиалайзинг работает, но мультисэмплинг нет
+//    painter.beginNativePainting();
+
+
     if (WorkMode == WorkModeType::Nothing)
         return;
 
@@ -157,6 +169,16 @@ void MainGLWidget::paintGL()
 
 //        cout << __PRETTY_FUNCTION__ << endl;
     }
+
+
+//    QPainter painter(this);
+
+//    painter.endNativePainting();
+
+//    painter.drawLine(100, 100, 300, 300);
+//    painter.drawText(10, 30, "Hellow");
+
+//    painter.end();
 }
 //----------------------------------------------------------
 
@@ -201,11 +223,14 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
             emit Signal_iCurConfigChanged(GradModel.Get_iCurConfig());
         }
 
+        double wx, wy, wz;
+        bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
+
         if (WorldMode == WorldModeType::AddingRoutePoints &&
             pe->buttons() & Qt::RightButton)
         {
-            double wx, wy, wz;
-            bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
+//            double wx, wy, wz;
+//            bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
             if (wExists)
             {
                 GradModel.AddNewPointToLastRoute(wx, wy);
@@ -215,17 +240,50 @@ void MainGLWidget::mousePressEvent(QMouseEvent *pe)
         if (WorldMode == WorldModeType::DeletingRoute &&
             pe->buttons() & Qt::RightButton) // было middle
         {
-            double wx, wy, wz;
-            bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
+//            double wx, wy, wz;
+//            bool wExists = MouseToWorld(pe->pos().x(), pe->pos().y(), wx, wy, wz);
             if (wExists)
             {
-//                if ( GradModel.DeleteRoute(wx, wy) )
-//                    emit SignalRouteDeleted();
-//                else
-//                    throw std::runtime_error("GradModel.DeleteRoute(wx, wy) == false");
-
                 emit SignalRouteDeleted( GradModel.DeleteRoute(wx, wy) );
             }
+        }
+
+        if (WorldMode == WorldModeType::SelectingSignalNode &&
+            pe->buttons() & Qt::LeftButton)
+        {
+            if (wExists)
+            {
+                GradModel.SelectCurNodeByPos(wx, wy);
+
+                WorldMode = WorldModeType::Nothing;
+            }
+        }
+
+        if (WorldMode == WorldModeType::EditingPosSignalNode &&
+            pe->buttons() & Qt::LeftButton)
+        {
+            if (wExists)
+            {
+                GradModel.PutCurNodeByPos(wx, wy);
+//                WorldMode = WorldModeType::Nothing;
+            }
+        }
+
+        if (WorldMode == WorldModeType::EditingAngleSignalNode &&
+            pe->buttons() & Qt::LeftButton)
+        {
+            if (wExists)
+            {
+                GradModel.SetDirectCurNodeByPos(wx, wy);
+//                WorldMode = WorldModeType::Nothing;
+            }
+        }
+
+        if (pe->type() == QMouseEvent::MouseButtonDblClick &&
+                GradModel.Get_iCurConfig() >= 0 &&
+                WorldMode == WorldModeType::Nothing)
+        {
+            GradModel.SwitchDrawOnlyOne();
         }
 
         this->repaint();

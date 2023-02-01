@@ -109,7 +109,6 @@ void DialogEditSignalNodes::InitDialog_ForAll(SignalNodeType _snt, const std::ve
 void DialogEditSignalNodes::InitDialog_ForCurrent(SignalNodeType _snt, const std::vector<SignalNode> &_signalNodes,
                                                   const Relief3D & _relief)
 {
-
     const auto &_area = _relief.GetArea();
 
     ui->lblAreaInfo->setText("Area: l = " + QString().setNum(_area.left()) +
@@ -154,6 +153,7 @@ void DialogEditSignalNodes::InitDialog_ForCurrent(SignalNodeType _snt, const std
         ui->Table->setItem(1 + i, 3 + offCol, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Pos.y() )));
 
         ui->Table->setItem(1 + i, 4 + offCol, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Pos.z() )));
+        ui->Table->item(1 + i, 4 + offCol)->setFlags( ui->Table->item(1, 4 + offCol)->flags() & ~Qt::ItemIsEditable );
 
         if (_snt == SignalNodeType::Cone)
             ui->Table->setItem(1 + i, 3+2, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Alpha) )));
@@ -199,7 +199,7 @@ void DialogEditSignalNodes::ChangeSignalNodesParameters_ForCurrent(SignalNodeTyp
         {
             if ( !_signalNodes.at(i).SetCoordForPos(_relief, {(float)x, (float)y, 0.0}) )
             {
-                qDebug() << "x and y were correct according the Area for " << i << " signal Node";
+                qDebug() << "x and y were incorrect according the Area for " << i << " signal Node";
             }
         }
         else
@@ -233,7 +233,7 @@ void DialogEditSignalNodes::SlotLoadButtonClicked()
     }
 
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Signal Node file", ".", "Open Signal Node file (*.json)");
+        "Open Signal Node file", ".", "Open Signal Node file (" + SignalNodesExtension + ")");
 
     if (fileName == "")
     {
@@ -321,7 +321,7 @@ void DialogEditSignalNodes::SlotSaveButtonClicked()
     }
 
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Signal Node file", ".", "Save Signal Node file (*.json)");
+        "Save Signal Node file", ".", "Save Signal Node file (" + SignalNodesExtension + ")");
 
     if (fileName == "")
     {

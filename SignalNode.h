@@ -4,15 +4,14 @@
 #include <iostream>
 #include <set>
 
-#include "Types.h"
-//#include <QVector2D>
-//#include <QVector3D>
-class QVector3D;
-#include <QRectF>
+#include "TypesAndUtils.h"
 
+class QVector3D;
+
+#include <QRectF>
 #include <QJsonObject>
 
-//#include "Relief.h"
+extern const QString SignalNodesExtension;
 
 #include <GL/glu.h>
 
@@ -24,6 +23,12 @@ enum class SignalNodeType
     Sphere,
     Cone,
     Unknown
+};
+
+enum class SignalNodeStatus
+{
+    NotSelected,
+    Selected
 };
 
 
@@ -89,7 +94,7 @@ public:
     static GLUquadric * Quadric();
 
     void DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
-                  const Settings3dType & _settings3d) const;
+                  const Settings3dType & _settings3d, SignalNodeStatus _sns) const;
 
     int CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_result) const;
 };

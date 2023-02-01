@@ -1,0 +1,132 @@
+{
+    "Configuration": {
+        "Area": {
+            "bottom": 0,
+            "left": 0,
+            "right": 10000,
+            "top": 8000
+        },
+        "Count": 20,
+        "IsRandomNodeCoords": true,
+        "IsRandomRelief": false,
+        "IsRandomRoutes": false,
+        "Nodes": [
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            },
+            {
+                "Beta": 29.999999999999996,
+                "R": 50
+            }
+        ],
+        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_02_Small.json",
+        "ReliefInfo": {
+            "IsUseReliefRandomSeed": true,
+            "ReliefCoeffs": {
+                "A_r1": 0.01,
+                "A_r2": 0.02
+            },
+            "ReliefRandomSeed": 100
+        },
+        "RouteCount": 2,
+        "Routes": [
+            {
+                "Abonent": {
+                    "v": 0
+                },
+                "Name": "Unnamed",
+                "PointCount": 4,
+                "Points": [
+                    {
+                        "w": 0.1,
+                        "x": 176.41680908203125,
+                        "y": 356.46435546875,
+                        "z": 1006.734619140625
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 209.87933349609375,
+                        "y": 350.3802490234375,
+                        "z": 800
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 238.77879333496094,
+                        "y": 315.3966979980469,
+                        "z": 926.7216796875
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 259.3126220703125,
+                        "y": 266.72393798828125,
+                        "z": 1082.4544677734375
+                    }
+                ],
+                "Weight": 1
+            },
+            {
+                "Abonent": {
+                    "v": 0
+                },
+                "Name": "Unnamed",
+                "PointCount": 5,
+                "Points": [
+                    {
+                        "w": 0.1,
+                        "x": 256.27056884765625,
+                        "y": 452.2888488769531,
+                        "z": 600
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 307.9853820800781,
+                        "y": 439.3601379394531,
+                        "z": 0
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 380.9945068359375,
+                        "y": 418.8263244628906,
+                        "z": 702.8945922851562
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 413.696533203125,
+                        "y": 408.1791687011719,
+                        "z": 700
+                    },
+                    {
+                        "w": 0.1,
+                        "x": 430.42779541015625,
+                        "y": 368.6325378417969,
+                        "z": 700
+                    }
+                ],
+                "Weight": 1
+            }
+        ],
+        "SignalNodeCount": 5,
+        "SignalNodeType": "Sphere"
+    },
+    "GradDesc": {
+        "GradDescFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/GD_02_Small.json"
+    },
+    "TargetFunctionSettings": {
+        "TargetFuncFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/TF_02_H.json",
+        "TargetFuncFirstPhase": "AdditiveSphereFirstPhase",
+        "TargetFuncSecondPhase": "AdditiveSphereSecondPhase"
+    }
+}

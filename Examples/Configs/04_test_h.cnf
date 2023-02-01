@@ -28,7 +28,7 @@
                 "R": 200
             }
         ],
-        "ReliefFileName": "../snnoro/Examples/Reliefs/Relief_04.json",
+        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_04.json",
         "ReliefInfo": {
             "IsUseReliefRandomSeed": true,
             "ReliefCoeffs": {
@@ -40,33 +40,42 @@
         "RouteCount": 1,
         "Routes": [
             {
+                "Abonent": {
+                    "v": 0
+                },
+                "Name": "No name",
                 "PointCount": 4,
                 "Points": [
                     {
+                        "w": 0.25,
                         "x": 998.5377807617188,
                         "y": 1246.3651123046875,
                         "z": 800
                     },
                     {
+                        "w": 0.25,
                         "x": 1485.29248046875,
                         "y": 1111.9361572265625,
-                        "z": 1215.198486328125
+                        "z": 1215.1983642578125
                     },
                     {
+                        "w": 0.25,
                         "x": 1947.7020263671875,
                         "y": 923.808349609375,
-                        "z": 1221.207763671875
+                        "z": 1221.2078857421875
                     },
                     {
+                        "w": 0.25,
                         "x": 2124.03955078125,
                         "y": 805.760498046875,
-                        "z": 454.73028564453125
+                        "z": 454.7303771972656
                     }
-                ]
+                ],
+                "Weight": 1
             }
         ],
         "SignalNodeCount": 4,
-        "SignalNodeType": "Sphere",
+        "SignalNodeType": "Cone",
         "TargetCostFunction": "MyFunction"
     },
     "GradDesc": {
@@ -87,6 +96,7 @@
         "IsUseCoveredFlag": true,
         "IsUseLineBetweenTwoPoints": false,
         "R_nodeOverlap": 50,
+        "TargetFuncType": "Additive",
         "k_step_ot": 0.03,
         "offX": 0.01,
         "p": 1e-05

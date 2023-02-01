@@ -3,10 +3,9 @@
 
 #include <QMainWindow>
 
-//#include "MainGLWidget.h"
 class MainGLWidget;
 
-#include "Types.h"
+#include "TypesAndUtils.h"
 
 #include "GradModel.h"
 
@@ -73,7 +72,7 @@ private slots:
 
     void on_actionFileSave_Grad_Config_triggered();
 
-    void on_actionWorld_Show_Coords_toggled(bool arg1);
+//    void on_actionWorld_Show_Coords_toggled(bool arg1);
 
     void on_actionEdit_Add_New_Route_triggered();
 
@@ -106,6 +105,18 @@ private slots:
     void on_actionGrad_SetDrawCount_Custom_triggered();
 
     void on_actionDebug_Calc_Access_Rate_for_current_triggered();
+
+    void on_actionEdit_Select_Cur_Node_triggered();
+
+    void on_actionEdit_Editing_Pos_Cur_Node_triggered();
+
+    void on_actionEdit_Editing_Angle_Cur_Node_triggered();
+
+//    void on_actionWorld_Show_Coords_triggered();
+
+    void on_actionEdit_Apply_Cur_Node_to_All_Configs_triggered();
+
+    void on_actionWorld_Show_Grid_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -141,9 +152,13 @@ private:
 
     QLabel *lbl_iCurConfig;
 
+    QLabel *lblCoord;
+
     bool IsGradDescFileSavedSuccessfully = false;
     void TryToSaveGradDescToFile();
     bool CheckIsSavedAndSaveIfNecessary();
+
+    void UpdateCurNodeCoordsOnLabel();
 
 public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);
@@ -156,6 +171,8 @@ public slots:
     void SlotReceiveShowAboReport();
 
     void SlotReceive_iCurConfigChanged(int i);
+
+    void SlotReceiveNodeCoords(int n, double x, double y, double z);
 
     // QPaintDevice interface
 public:

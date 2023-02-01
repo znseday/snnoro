@@ -1,7 +1,7 @@
 #ifndef DIALOGGRADCONFIG_H
 #define DIALOGGRADCONFIG_H
 
-#include "Types.h"
+#include "TypesAndUtils.h"
 #include <QDialog>
 
 //#include "GradModel.h"

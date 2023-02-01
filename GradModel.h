@@ -7,7 +7,7 @@
 
 #include "Route.h"
 #include "GradConfig.h"
-#include "Types.h"
+#include "TypesAndUtils.h"
 #include "TargetFunctions/TargetFunctionBase.h"
 
 #include "Relief.h"
@@ -17,46 +17,52 @@ class QKeyEvent;
 class QMouseEvent;
 class QWheelEvent;
 
+extern const QString SettingsGDExtension;
+extern const QString SettingsTFExtension;
 
-class MyGradModel
+class MyGradModel : public QObject
 {
+    Q_OBJECT
 protected:
 
-    int OldX = 0, CurrentX = 0;
-    int OldY = 0, CurrentY = 0;
-
-    bool IsRandomNodeCoords = true;
+    size_t nDraws = 1;
     std::vector<SignalNode> Nodes;
-    SignalNodeType NodesType = SignalNodeType::Sphere;
-    bool IsDrawAbonents = false;
-
     std::vector<Route> Routes;
-    bool IsRandomRoutes = false;
-
-    ReliefMatInfoStruct ReliefMatInfo; // ?
-    Relief3D Relief;
-    bool IsRandomRelief = true;
-
     std::vector<MyConfig> Configs;
-
-    int Width = 200, Height = 200;
-    int iCurConfig = -1;
-    bool DrawOnlyOne = false;
     std::vector<QRect> ViewPorts;
-    bool IsPerspectiveForAll = false;
+
+    QRect BigViewPort;
 
     QString Name = "Unknown";
     QString FileName;
     bool IsSaved = true;
 
-    size_t nDraws = 1;
+    int OldX = 0, CurrentX = 0;
+    int OldY = 0, CurrentY = 0;
+
+    bool IsRandomNodeCoords = true;
+
+    SignalNodeType NodesType = SignalNodeType::Sphere;
+    bool IsDrawAbonents = false;
+
+    bool IsRandomRoutes = false;
+
+    GridSettingsStruct GridSettings;
+    Relief3D Relief;
+    bool IsRandomRelief = true;
+
+    int Width = 200, Height = 200;
+    int iCurConfig = -1;
+    bool DrawOnlyOne = false;
+
+    bool IsPerspectiveForAll = false;
+
     bool IsGradCalculating = false;
 
     size_t ParseJson(const QJsonObject &_jsonObject, const QJsonParseError &_parseError);
 
     QJsonArray RepresentRoutesAsJsonArray() const;
     QJsonArray RepresentNodesAsJsonArray() const;
-    QJsonObject RepresentReliefInfoAsJsonObject() const;
 
     std::map<std::string, TargetFunctionBase*> TargetFunctions;
 
@@ -126,6 +132,8 @@ public:
     bool StartGradDescent_Phase_2_for_Current(IGradDrawable *pGLWidget);
     void CancelGradDescent();
 
+    bool GetIsGradCalculating() const {return IsGradCalculating;}
+
     void DeleteConfigsWithUncoveredPoints();
 
     void CalcBonds();
@@ -156,6 +164,10 @@ public:
     void ApplySignalNodesToAllConfigs();
     void ApplyRoutesToAllConfigs(NeedToSave _NeedToSave);
 
+    void ApplyAbonentsPosInRoutesToAllConfigs();
+
+    void ApplyCurNodeFromCurConfigToAllConfigs();
+
     const std::vector<SignalNode> & GetSignalNodes() const {return Nodes;}
     std::vector<SignalNode> & SignalNodesDirectAccess() {return Nodes;}
 
@@ -181,6 +193,19 @@ public:
 //    static QString ConvertTargetFuncTypeToString(TargetFuncEnum snt);
 
     void CalcAccessRateForCurrent();
+
+    void SelectCurNodeByPos(double wx, double wy);
+    void PutCurNodeByPos(double wx, double wy);
+    void SetDirectCurNodeByPos(double wx, double wy);
+
+    void SetShowGridOnRelief(bool _isShow);
+
+    void SetGridSettings(const GridSettingsStruct &_gs) {GridSettings = _gs;}
+    const GridSettingsStruct & GetGridSettings() const {return GridSettings;}
+
+signals:
+
+    void SignalSendNodeCoords(int, double, double, double);
 
 };
 

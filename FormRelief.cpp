@@ -13,6 +13,7 @@
 #include <QJsonArray>
 #include <QMouseEvent>
 
+
 void MyPicSrcWidget::mousePressEvent(QMouseEvent *pe)
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -55,8 +56,6 @@ void MyPicSrcWidget::paintEvent([[maybe_unused]] QPaintEvent *pe)
 
         if (IsMouseDown)
             painter.drawRect(FrameRect);
-
-        //painter.drawLine(100,100,200,200);
     }
 }
 //-------------------------------------------------------------
@@ -69,10 +68,6 @@ void MyPicDstWidget::mousePressEvent(QMouseEvent *pe)
     OldX = pe->pos().x();
     OldY = pe->pos().y();
 
-//    if (pe->button() == Qt::LeftButton) // Убрать?
-//    {
-//        IsMouseDown = true;
-//    }
     if (pe->button() == Qt::RightButton)
     {
         emit SignalSendChangePoint(OldX, OldY);
@@ -128,36 +123,82 @@ FormRelief::~FormRelief()
 }
 //-------------------------------------------------------------
 
+bool FormRelief::CheckIsLegendSavedAndSaveIfNecessary()
+{
+    if ( !IsLegendSaved )
+    {
+        auto res = QMessageBox::question(this, "Question",
+                                         "Legend is not saved. Would you like to save it?",
+                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+        if (res == QMessageBox::Yes)
+        {
+            on_actionFile_Save_Legend_As_triggered();  // try save
+            return IsLegendSaved;
+        }
+        else if (res == QMessageBox::No)
+            return true;
+        else if (res == QMessageBox::Cancel)
+            return false;
+        else
+        {
+            QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
+            return false;
+        }
+    }
+    else
+        return true;
+}
+//-------------------------------------------------------------
+
+bool FormRelief::CheckIsReliefSavedAndSaveIfNecessary()
+{
+    if ( !IsReliefSaved )
+    {
+        auto res = QMessageBox::question(this, "Question",
+                                         "Relief is not saved. Would you like to save it?",
+                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+        if (res == QMessageBox::Yes)
+        {
+            on_actionRelief_Calc_Relief_And_Save_As_triggered(); // try save
+            return IsLegendSaved;
+        }
+        else if (res == QMessageBox::No)
+            return true;
+        else if (res == QMessageBox::Cancel)
+            return false;
+        else
+        {
+            QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
+            return false;
+        }
+    }
+    else
+        return true;
+}
+//-------------------------------------------------------------
+
 void FormRelief::on_actionFile_Open_Image_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Image file", ".", "Image Files (*.png *jpg *bmp)");
+        "Open Image file", ".", "Image Files (" + ReliefsImagesExtension + ")");
 
     if (fileName.isEmpty())
         return;
 
-    ImgReliefSrc.load(fileName);
-    ImgReliefSrc = ImgReliefSrc.convertToFormat(QImage::Format_ARGB32);
+    if (!LoadSrcImage(fileName))
+        QMessageBox::critical(this, "Error", "Image's been not loaded");
 
-    ImgReliefDst = ImgReliefSrc;
 
-    //ImgReliefDst = ImgReliefDst.convertToFormat(QImage::Format_ARGB32); // ????????
-
-//    ImgRelief = ImgRelief.convertToFormat(QImage::Format_RGB888);  // 24bit
-
-    //ui->horizontalLayout_2->sets
-
-//    ui->lblImage->setFixedSize(ImgRelief.width(), ImgRelief.height());
-//    ui->lblImage->setPixmap(QPixmap::fromImage(ImgRelief));
-
-    wgtForScrollArea->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height()*2);
-
-    lblPicSrc->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
-    lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
-
-    //lblPic->setPixmap(QPixmap::fromImage(ImgRelief));
-
-    ui->actionRelief_Calc_Discrete_Img->setEnabled(true);
+//    ImgReliefSrc.load(fileName);
+//    ImageSrcFileName = fileName;
+//    ImgReliefSrc = ImgReliefSrc.convertToFormat(QImage::Format_ARGB32);
+//    ImgReliefDst = ImgReliefSrc;
+//    wgtForScrollArea->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height()*2);
+//    lblPicSrc->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
+//    lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
+//    ui->actionRelief_Calc_Discrete_Img->setEnabled(true);
 }
 //-------------------------------------------------------------
 
@@ -181,6 +222,8 @@ void FormRelief::on_btnApply_clicked()
         QTableWidgetItem *pItem2 = new QTableWidgetItem(QString().setNum(i*100));
         ui->tableColors->setItem(i, 1, pItem2);
     }
+
+    IsLegendSaved = false;
 }
 //-------------------------------------------------------------
 
@@ -211,23 +254,8 @@ void FormRelief::on_actionRelief_Calc_Discrete_Img_triggered()
     double dxPic = w/double(cols); // в пикселах
     double dyPic = h/double(rows); // в пикселах
 
-//    Relief.Clear();
-//    double l = ui->EditXStart->text().toDouble();
-//    double b = ui->EditYStart->text().toDouble();
-//    double r = l + ui->EditWidth->text().toDouble();
-//    double t = b + ui->EditHeight->text().toDouble();
-//    Relief.SetArea(l, b, r, t);
-
-//    if (!Relief.GetArea().isValid())
-//        throw std::runtime_error("!Relief.GetArea().isValid()");
-
-    //double dxReal = Relief.GetArea().width()/double(cols);
-    //double dyReal = Relief.GetArea().height()/double(rows);
-
     for (int i = 0; i < rows; ++i)
     {
-        //std::vector<std::pair<int, int>> row;
-        //double yReal = b + (rows - i - 1)*dyReal;
         TempGrid.push_back({});
 
         for (int j = 0; j < cols; ++j)
@@ -236,37 +264,19 @@ void FormRelief::on_actionRelief_Calc_Discrete_Img_triggered()
             int yStart = i*dyPic;
             int xEnd = (j+1)*dxPic;
             int yEnd = (i+1)*dyPic;
-//            int Z = AnalyseImageAreaForZ(j*dxPic, i*dyPic, (j+1)*dxPic, (i+1)*dyPic);
+
             auto res = AnalyseImageAreaForZ(xStart, yStart, xEnd, yEnd);
-            //double xReal = l + dxReal/2 + j*dxReal;
 
             TempGrid.back().emplace_back(res);
-
-//            for (int y = yStart; y < yEnd; ++y)
-//            {
-//        //        QRgb *tempLine = reinterpret_cast<QRgb*>(ImgRelief.scanLine(y));
-//                rgbaType *tempLine = reinterpret_cast<rgbaType*>(ImgReliefDst.scanLine(y));
-//                tempLine += xStart;
-//                for (int x = xStart; x < xEnd; ++x)
-//                {
-//                        tempLine->r = color.r;
-//                        tempLine->g = color.g;
-//                        tempLine->b = color.b;
-
-//                    tempLine++;
-//                }
-//            }
-
-            //row.emplace_back(xReal, Z);
-            //Relief.AddPoint(xReal, yReal, Z);
         }
-        //Relief.AddRow(yReal + dyReal/2, row);
+
     }
 
-//    lblPicDst->repaint();
     PrintImgReliefDstFromTempGrid();
 
     ui->actionRelief_Calc_Relief_And_Save_As->setEnabled(true);
+
+    IsReliefSaved = false;
 }
 //-------------------------------------------------------------
 
@@ -318,6 +328,8 @@ void FormRelief::PrintImgReliefDstFromTempGrid()
 
 void FormRelief::on_actionFile_Close_triggered()
 {
+    // Добавить проверку на сохранение
+
     this->close();
 }
 //-------------------------------------------------------------
@@ -546,15 +558,154 @@ rgbaType FormRelief::AnalyseImageAreaForColor(int xStart, int yStart, int xEnd, 
 }
 //-------------------------------------------------------------
 
+bool FormRelief::LoadSrcImage(const QString &_fn)
+{
+    if (!ImgReliefSrc.load(_fn))
+        return false;
+
+    ImageSrcFileName = _fn;
+
+    ImgReliefSrc = ImgReliefSrc.convertToFormat(QImage::Format_ARGB32);
+
+    ImgReliefDst = ImgReliefSrc;
+
+    wgtForScrollArea->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height()*2);
+
+    lblPicSrc->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
+    lblPicDst->setFixedSize(ImgReliefSrc.width(), ImgReliefSrc.height());
+
+    ui->actionRelief_Calc_Discrete_Img->setEnabled(true);
+
+    return true;
+}
+//-------------------------------------------------------------
+
+bool FormRelief::LoadLegend(const QString &_fn)
+{
+    QFile json(_fn);
+    if (json.open(QIODevice::ReadOnly))
+    {
+        QJsonParseError parseError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(json.readAll(), &parseError);
+        if (parseError.error == QJsonParseError::NoError)
+        {
+            LegendFileName = _fn;
+
+            if (jsonDoc.isObject())
+            {
+                QJsonObject mainObject = jsonDoc.object();
+
+                int Count = mainObject["Count"].toInt(0);
+                ui->EditColorCount->setText(QString().setNum(Count));
+                on_btnApply_clicked();
+
+                int i = 0;
+                const QJsonArray &layersArray = mainObject["Colors"].toArray();
+                for (auto it = layersArray.begin(); it != layersArray.end(); ++it, ++i)
+                {
+                    const QJsonObject &colorInfoObject = it->toObject();
+                    QColor c;
+                    c.setNamedColor(colorInfoObject["Color"].toString("red"));
+                    ui->tableColors->item(i, 0)->setBackground(QBrush(c));
+                    double h = colorInfoObject["Height"].toDouble();
+                    ui->tableColors->item(i, 1)->setText(QString().setNum(h));
+                }
+                if (Count != i)
+                    throw std::runtime_error("Count != i in FormRelief::on_actionFile_Load_Legend_triggered()");
+            }
+        }
+        else
+        {
+            qDebug() << parseError.errorString();
+            return false;
+        }
+    }
+    else
+    {
+        qDebug() << "json file not open";
+        return false;
+    }
+
+    IsLegendSaved = true;
+    return true;
+}
+//-------------------------------------------------------------
+
+void FormRelief::CalcDiscreteImgByExistentRelief()
+{
+    if (ImgReliefSrc.isNull())
+    {
+        qDebug() << "ImgReliefSrc.isNull()";
+        return;
+    }
+//    int colorCount = ui->tableColors->rowCount();
+//    if (colorCount < 2)
+//    {
+//        QMessageBox::critical(this, "Error", "There must be at least 2 colors in the legend");
+//        return;
+//    }
+
+    TempGrid.clear();
+
+    CalcLegendColor();
+
+    int rows = ui->EditRowCount->text().toInt(); // Размер сетки
+    int cols = ui->EditColCount->text().toInt(); // Размер сетки
+
+    if (rows != (int)Relief.GetReliefMap().size())
+    {
+        throw std::runtime_error("rows != (int)Relief.GetReliefMap().size() in FormRelief::CalcDiscreteImgByExistentRelief()");
+    }
+
+    if (cols != (int)Relief.GetReliefMap().cbegin()->second.size())
+    {
+        throw std::runtime_error("cols != (int)Relief.GetReliefMap().cbegin()->second.size() in FormRelief::CalcDiscreteImgByExistentRelief()");
+    }
+
+//    for (const auto & rs : Relief.GetReliefMap())  // rows
+    for (auto r_it = Relief.GetReliefMap().crbegin(); r_it != Relief.GetReliefMap().crend(); ++r_it)
+    {
+        TempGrid.push_back({});
+
+        for (const auto & cs : r_it->second)  // cols
+        {
+//            int xStart = j*dxPic;
+//            int yStart = i*dyPic;
+//            int xEnd = (j+1)*dxPic;
+//            int yEnd = (i+1)*dyPic;
+//            auto res = AnalyseImageAreaForZ(xStart, yStart, xEnd, yEnd);
+
+            int z = cs.second;
+
+            auto it = std::find_if(LegendColor.Colors.cbegin(), LegendColor.Colors.cend(), [z](const auto & colorPair)
+                {
+                    return colorPair.second == z;
+                });
+
+            if (it == LegendColor.Colors.cend())
+            {
+                throw std::runtime_error("Z in Relief not found in Legend");
+            }
+
+            CorolAndZ_pair res = *it;
+
+            TempGrid.back().emplace_back(res);
+        }
+
+    }
+
+    PrintImgReliefDstFromTempGrid();
+
+    ui->actionRelief_Calc_Relief_And_Save_As->setEnabled(true);
+}
+//-------------------------------------------------------------
+
 void FormRelief::SlotReceiveRectFrame(QRect _rect)
 {
 //    QModelIndexList list =  ui->tableColors->selectionModel()->selectedIndexes();
-
 //    if (list.isEmpty())
 //        return;
-
 //    int firstRow = list.first().row();
-
 //    int firstRow = LastSelectedColorRow;
     if (LastSelectedColorRow < 0 || LastSelectedColorRow >= ui->tableColors->rowCount())
     {
@@ -568,6 +719,8 @@ void FormRelief::SlotReceiveRectFrame(QRect _rect)
 //    ui->tableColors->item(firstRow, 0)->background().setColor(QColor(color.r, color.g, color.b));
 
     ui->tableColors->item(LastSelectedColorRow, 0)->setBackground(QBrush(QColor(color.r, color.g, color.b)));
+
+    IsLegendSaved = false;
 }
 //-------------------------------------------------------------
 
@@ -604,13 +757,24 @@ void FormRelief::SlotReceiveChangePoint(int x, int y)
     TempGrid.at(row).at(col) = LegendColor.Colors.at(LastSelectedColorRow);
 
     PrintImgReliefDstFromTempGrid();
+
+    IsReliefSaved = false;
+}
+//-------------------------------------------------------------
+
+void FormRelief::closeEvent(QCloseEvent *event)
+{
+    if (CheckIsLegendSavedAndSaveIfNecessary() && CheckIsReliefSavedAndSaveIfNecessary())
+        event->accept();
+    else
+        event->ignore();
 }
 //-------------------------------------------------------------
 
 void FormRelief::on_actionFile_Save_Legend_As_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Legend file", ".", "Legend Files (*.json)");
+        "Save Legend file", ".", "Legend Files (" + ReliefsLegendsExtension + ")");
 
     if (fileName == "")
     {
@@ -639,14 +803,22 @@ void FormRelief::on_actionFile_Save_Legend_As_triggered()
     if (jsonFile.open(QFile::WriteOnly))
         jsonFile.write(jsonDoc.toJson());
     else
+    {
         qDebug() << "json file not open to write";
+        return;
+    }
+
+    IsLegendSaved = true;
 }
 //-------------------------------------------------------------
 
 void FormRelief::on_actionFile_Load_Legend_triggered()
 {
+    if (!CheckIsLegendSavedAndSaveIfNecessary())
+        return;
+
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Legend file", ".", "Legend Files (*.json)");
+        "Open Legend file", ".", "Legend Files (" + ReliefsLegendsExtension + ")");
 
     if (fileName == "")
     {
@@ -654,70 +826,31 @@ void FormRelief::on_actionFile_Load_Legend_triggered()
         return;
     }
 
-    QFile json(fileName);
-    if (json.open(QIODevice::ReadOnly))
-    {
-        QJsonParseError parseError;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(json.readAll(), &parseError);
-        if (parseError.error == QJsonParseError::NoError)
-        {
-            if (jsonDoc.isObject())
-            {
-                QJsonObject mainObject = jsonDoc.object();
+    if (!LoadLegend(fileName))
+        QMessageBox::critical(this, "Error", "Legend's been not loaded");
 
-                int Count = mainObject["Count"].toInt(0);
-                ui->EditColorCount->setText(QString().setNum(Count));
-                on_btnApply_clicked();
-
-                int i = 0;
-                const QJsonArray &layersArray = mainObject["Colors"].toArray();
-                for (auto it = layersArray.begin(); it != layersArray.end(); ++it, ++i)
-                {
-                    const QJsonObject &colorInfoObject = it->toObject();
-                    QColor c;
-                    c.setNamedColor(colorInfoObject["Color"].toString("red"));
-                    ui->tableColors->item(i, 0)->setBackground(QBrush(c));
-                    double h = colorInfoObject["Height"].toDouble();
-                    ui->tableColors->item(i, 1)->setText(QString().setNum(h));
-                }
-                if (Count != i)
-                    throw std::runtime_error("Count != i in FormRelief::on_actionFile_Load_Legend_triggered()");
-            }
-        }
-        else
-        {
-            qDebug() << parseError.errorString();
-            return;
-        }
-    }
-    else
-    {
-        qDebug() << "json file not open";
-        return;
-    }
+    IsLegendSaved = true;
 }
 //-------------------------------------------------------------
 
 void FormRelief::on_chbColorToLegend_stateChanged([[maybe_unused]] int arg1)
 {
-//    if (ui->chbColorToLegend->isChecked())
-//        lblPicSrc->setEnabled(true);
-//    else
-//        lblPicSrc->setEnabled(false);
-
     lblPicSrc->setEnabled(ui->chbColorToLegend->isChecked());
 }
 //-------------------------------------------------------------
 
 void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
 {
+//    if (!CheckIsReliefSavedAndSaveIfNecessary())
+//        return;
+
     if (TempGrid.empty())
     {
         throw std::logic_error("TempGrid is empty in PrintImgReliefDstFromTempGrid()");
     }
 
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Relief file", ".", "Relief Files (*.json)");
+        "Save Relief file", ".", "Relief Files (" + ReliefsExtension + ")");
 
     if (fileName == "")
     {
@@ -725,11 +858,14 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
         return;
     }
 
-
     int rows = TempGrid.size();         // Размер сетки
     int cols = TempGrid.front().size(); // Размер сетки
 
     Relief.Clear();
+
+    Relief.SetImageFileName(ImageSrcFileName);
+    Relief.SetLegendFileName(LegendFileName);
+
     double l = ui->EditXStart->text().toDouble();
     double b = ui->EditYStart->text().toDouble();
     double r = l + ui->EditWidth->text().toDouble();
@@ -758,8 +894,56 @@ void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
     }
 
     Relief.SaveToFile(fileName);
+
+    IsReliefSaved = true;
 }
 //-------------------------------------------------------------
 
+void FormRelief::on_actionFile_Open_Relief_triggered()
+{
+    if (!CheckIsReliefSavedAndSaveIfNecessary())
+        return;
 
+    QString fileName = QFileDialog::getOpenFileName(this,
+        "Open Relief file", ".", "Relief Files (" + ReliefsExtension + ")");
 
+    if (fileName.isEmpty())
+        return;
+
+    if (!Relief.LoadFromFile(fileName))
+        throw std::runtime_error("Relief File Not Found or Couldn't be read");
+
+    ImageSrcFileName = Relief.GetImageFileName();
+    CorrectFileNameIfDoesntExist(ImageSrcFileName, ReliefsImagesDefaultDir, "Image for Relief", ReliefsImagesExtension);
+    Relief.SetImageFileName(ImageSrcFileName);
+    qDebug() << "Relief.GetImageFileName(); =" << Relief.GetImageFileName();
+    if (!LoadSrcImage(Relief.GetImageFileName()))
+        QMessageBox::critical(this, "Error", "Image's been not loaded");
+
+    LegendFileName = Relief.GetLegendFileName();
+    CorrectFileNameIfDoesntExist(LegendFileName, ReliefsLegendsDefaultDir, "Legend for Relief", ReliefsLegendsExtension);
+    Relief.SetLegendFileName(LegendFileName);
+    qDebug() << "Relief.GetLegendFileName(); =" << Relief.GetLegendFileName();
+    if (!LoadLegend(Relief.GetLegendFileName()))
+        QMessageBox::critical(this, "Error", "Legend's been not loaded");
+
+    ui->EditXStart->setText(QString().setNum(Relief.GetArea().left()));
+    ui->EditYStart->setText(QString().setNum(Relief.GetArea().top()));
+    ui->EditWidth->setText(QString().setNum(Relief.GetArea().width()));
+    ui->EditHeight->setText(QString().setNum(Relief.GetArea().height()));
+
+    ui->EditRowCount->setText(QString().setNum(Relief.GetReliefMap().size()));
+    ui->EditColCount->setText(QString().setNum(Relief.GetReliefMap().cbegin()->second.size()));
+
+    CalcDiscreteImgByExistentRelief();
+
+    IsReliefSaved = true;
+}
+//-------------------------------------------------------------
+
+void FormRelief::on_tableColors_itemChanged(QTableWidgetItem *item)
+{
+    (void)item;
+    IsLegendSaved = false;
+}
+//-------------------------------------------------------------

@@ -39,6 +39,7 @@ SOURCES += \
         GradModel.cpp \
         MainGLWidget.cpp \
         MainWindow.cpp \
+        MathRelief.cpp \
         MathUtils.cpp \
         Relief.cpp \
         Route.cpp \
@@ -47,6 +48,7 @@ SOURCES += \
         TargetFunctions/TargetFunctionsFirstPhase.cpp \
         TargetFunctions/TargetFunctionsSecondPhase.cpp \
         Test_tf_gd_lib.cpp \
+        TypesAndUtils.cpp \
         main.cpp
 
 # Default rules for deployment.
@@ -71,6 +73,7 @@ HEADERS += \
     GradModel.h \
     MainGLWidget.h \
     MainWindow.h \
+    MathRelief.h \
     MathUtils.h \
     Relief.h \
     Route.h \
@@ -79,7 +82,7 @@ HEADERS += \
     TargetFunctions/TargetFunctionsFirstPhase.h \
     TargetFunctions/TargetFunctionsSecondPhase.h \
     Test_tf_gd_lib.h \
-    Types.h
+    TypesAndUtils.h
 
 FORMS += \
     DialogAboReport.ui \

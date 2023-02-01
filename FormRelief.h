@@ -35,7 +35,7 @@ class MyPicSrcWidget : public QLabel
 {
     Q_OBJECT
 private:
-    int /*CurX, CurY, */OldX, OldY;
+    int OldX, OldY;
     QRect FrameRect;
     const QImage &ImgSrc;
     bool IsMouseDown = false;
@@ -76,6 +76,7 @@ public:
     MyPicDstWidget(const QString &text, const QImage &_imgDst, QWidget *parent = nullptr) : QLabel(text, parent), ImgDst(_imgDst) {};
 };
 //-------------------------------------------------------------
+//-------------------------------------------------------------
 
 namespace Ui {
 class FormRelief;
@@ -108,12 +109,19 @@ private slots:
     void on_actionRelief_Calc_Discrete_Img_triggered();
     void on_actionRelief_Calc_Relief_And_Save_As_triggered();
 
+    void on_actionFile_Open_Relief_triggered();
+
+    void on_tableColors_itemChanged(QTableWidgetItem *item);
+
 private:
     Ui::FormRelief *ui;
 
     QWidget *wgtForScrollArea;
     QImage ImgReliefSrc;
     QImage ImgReliefDst;
+
+    QString ImageSrcFileName;
+    QString LegendFileName;
 
     MyPicSrcWidget *lblPicSrc;
     MyPicDstWidget *lblPicDst;
@@ -133,12 +141,27 @@ private:
 
     std::vector<std::vector<CorolAndZ_pair>> TempGrid;
 
+    bool IsLegendSaved = true;
+    bool IsReliefSaved = true;
+
+    bool LoadSrcImage(const QString &_fn);
+    bool LoadLegend(const QString &_fn);
+
+    void CalcDiscreteImgByExistentRelief();
+
     void PrintImgReliefDstFromTempGrid();
+
+    bool CheckIsLegendSavedAndSaveIfNecessary();
+    bool CheckIsReliefSavedAndSaveIfNecessary();
 
 public slots:
 
     void SlotReceiveRectFrame(QRect _rect);
     void SlotReceiveChangePoint(int x, int y);
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // FORMRELIEF_H

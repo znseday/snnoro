@@ -27,44 +27,17 @@
 using namespace std;
 
 constexpr float RotSpeed = 0.12f;
-constexpr float TransSpeed = 0.006f;
+constexpr float TransSpeed = 0.004f;
 
-static const QString ReliefsDefaultDir = "Reliefs";
-static const QString SettingsDefaultDir = "Settings";
 
-static void CorrectFileNameIfDoesntExist(QString &_fileName, const QString &_defDir, const QString &_what)
-{
-    if ( !QFile::exists(_fileName) )
-    {
-        QFileInfo fileInfo(_fileName);
-        _fileName = _defDir + "/" + fileInfo.fileName();
-    }
-
-    if ( !QFile::exists(_fileName) )
-    {
-        auto res = QMessageBox::question(nullptr, "Question", _what + " File not Found. Would you like to choose " + _what + " file?");
-        if (res == QMessageBox::Yes)
-        {
-            _fileName = QFileDialog::getOpenFileName(nullptr,
-                                      "Choose " + _what + " file", ".", _what + " Files (*.json)");
-
-            if (_fileName.isEmpty())
-            {
-                QMessageBox::critical(nullptr, "Error", _what + " file not set and won't be loaded");
-            }
-
-        }
-        else
-        {
-            QMessageBox::critical(nullptr, "Error", _what + " file not set and won't be loaded");
-        }
-    }
-}
+const QString SettingsDefaultDir = "Settings";
+const QString SettingsGDExtension = "*.gds";
+const QString SettingsTFExtension = "*.tfs";
 
 MyGradModel::MyGradModel()
 {
     ProtoGradDesc.SetIsUseUserTargetFunction(true);
-//                               AdditiveSphereFirstPhase
+
     TargetFunctions.try_emplace("AdditiveSphereFirstPhase",
                                 new TargetFuncAdditiveSphereFirstPhase());
 
@@ -130,9 +103,13 @@ void MyGradModel::DrawOneConfig(size_t ind, bool OnlyOne)
         //iCurConfig = ind;
         //DrawOnlyOne = true;
 
-        double minSize = min(Width, Height);
+        int minSize = min(Width, Height);
+        BigViewPort = {5, 5, minSize-5*2, minSize-5*2};
 
-        glViewport(5, 5, minSize-5*2, minSize-5*2);
+//        qDebug() << "BigViewPort.top() =" << BigViewPort.top();
+
+        glViewport(BigViewPort.left(), BigViewPort.top(), BigViewPort.width(), BigViewPort.height());
+//        glViewport(5, 5, minSize-5*2, minSize-5*2);
 //        glViewport(50, 50, minSize-100, minSize-100);
 
         glClearColor(0, 0, 0, 1);
@@ -496,7 +473,7 @@ void MyGradModel::NewGradModelBulk()
     Routes.clear();
     IsRandomRoutes = false;
 
-    ReliefMatInfo = ReliefMatInfoStruct();
+//    ReliefMatInfo = ReliefMatInfoStruct();
     Relief.Clear();
 
     IsRandomRelief = false;
@@ -560,6 +537,15 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
 }
 //----------------------------------------------------------
 
+void MyGradModel::ApplyAbonentsPosInRoutesToAllConfigs()
+{
+    for (auto & cnf : Configs)
+    {
+        cnf.SetAbonentsPosForRoutes(Routes);
+    }
+}
+//----------------------------------------------------------
+
 void MyGradModel::ApplyRoutesToAllConfigs(NeedToSave _NeedToSave)
 {
     for (auto & cnf : Configs)
@@ -571,10 +557,31 @@ void MyGradModel::ApplyRoutesToAllConfigs(NeedToSave _NeedToSave)
 }
 //----------------------------------------------------------
 
-const MyConfig &MyGradModel::GetCurrentConfig() const
+void MyGradModel::ApplyCurNodeFromCurConfigToAllConfigs()
+{
+    if (iCurConfig >= 0 && Configs.at(iCurConfig).Get_iCurNode() >= 0)
+    {
+        const auto & curConfig = GetCurrentConfig();
+        int ind = curConfig.Get_iCurNode();
+        const auto & curNode = curConfig.GetNodes().at(ind);
+
+        for (auto & cnf : Configs)
+        {
+            cnf.SetNode(ind, curNode);
+        }
+
+        Nodes.at(ind) = curNode;
+
+    }
+    else
+        qDebug() << "CurNode is not selected in MyGradModel::ApplyCurNodeFromCurConfigToAllConfigs. Abort.";
+}
+//----------------------------------------------------------
+
+const MyConfig & MyGradModel::GetCurrentConfig() const
 {
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
-        throw std::exception();
+        throw std::runtime_error("iCurConfig < 0 || iCurConfig >= (int)Configs.size() in MyGradModel::GetCurrentConfig()");
 
     return Configs.at(iCurConfig);
 }
@@ -583,7 +590,7 @@ const MyConfig &MyGradModel::GetCurrentConfig() const
 MyConfig & MyGradModel::CurrentConfigAccess()
 {
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
-        throw std::exception();
+        throw std::runtime_error("iCurConfig < 0 || iCurConfig >= (int)Configs.size() in MyGradModel::CurrentConfigAccess()");
 
     return Configs.at(iCurConfig);
 }
@@ -594,33 +601,9 @@ void MyGradModel::OnMousePress(QMouseEvent *pe)
     OldX = pe->pos().x();
     OldY = pe->pos().y();
 
-    //qDebug() << "x =" << OldX;
-    //qDebug() << "y =" << OldY;
-
     if (!DrawOnlyOne)
     {
         iCurConfig = CalcCurViewPortNumber(pe->pos().x(), pe->pos().y());
-
-        // emit signal about iCurConfig ?
-
-//        size_t i = 0;
-//        for (const auto & v : ViewPorts)
-//        {
-//            //qDebug() << v;
-
-//            if ( !v.isValid() )
-//                throw std::runtime_error("!v.isValid() ");
-
-//            if ( v.contains(pe->x(), pe->y()) )
-//                iCurConfig = i;
-
-//            i++;
-//        }
-    }
-
-    if (pe->type() == QMouseEvent::MouseButtonDblClick && iCurConfig >= 0)
-    {
-        SwitchDrawOnlyOne();
     }
 }
 //----------------------------------------------------------
@@ -637,6 +620,8 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
     int dy = CurrentY - OldY;
 
 
+
+
     if (QApplication::keyboardModifiers() == Qt::ControlModifier) // Отследить состояние клавиши Ctrl
     {
         if (Configs.at(iCurConfig).Settings3d.IsPerspective)
@@ -644,8 +629,26 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
     }
     else if (QApplication::keyboardModifiers() == Qt::AltModifier)
     {
-        Configs.at(iCurConfig).Settings3d.TrX += TransSpeed*dx;
-        Configs.at(iCurConfig).Settings3d.TrY -= TransSpeed*dy;
+        double k1 = Configs.at(iCurConfig).Settings3d.IsPerspective ? -Configs.at(iCurConfig).Settings3d.TrZ / 2.5  : 1;
+
+        const auto & vPort = DrawOnlyOne ? BigViewPort : ViewPorts.at(iCurConfig);
+
+//        double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
+//                    (vPort.width() + vPort.height()) / 2.0 / 300.0 :
+//                    550 / ((vPort.width() + vPort.height()) / 2.0);
+
+
+        double k2 = Configs.at(iCurConfig).Settings3d.IsPerspective ?
+                    550.0 / ((vPort.width() + vPort.height()) / 2.0) :
+                    550.0 / ((vPort.width() + vPort.height()) / 2.0);
+
+
+//        qDebug() << "k1 =" << k1;
+//        qDebug() << "k2 =" << k2;
+//        qDebug() << "Height =" << Height;
+
+        Configs.at(iCurConfig).Settings3d.TrX += k1*k2*TransSpeed*dx;
+        Configs.at(iCurConfig).Settings3d.TrY -= k1*k2*TransSpeed*dy;
     }
     else
     {
@@ -668,7 +671,7 @@ void MyGradModel::OnMouseWheel(QWheelEvent *pe)
         return;
 
     //if (Configs.at(iCurConfig).Settings3d.IsPerpective)
-    Configs.at(iCurConfig).Settings3d.TrZ += pe->angleDelta().y() / 600.0f;
+    Configs.at(iCurConfig).Settings3d.TrZ += pe->angleDelta().y() / 600.0f / 2.0f;
 }
 //----------------------------------------------------------
 
@@ -708,6 +711,8 @@ void MyGradModel::DrawSeveralConfigs()
 
 size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseError &_parseError)
 {
+    (void)_parseError; // Возможно, использовать в дальнейшем
+
     qDebug() << "MyGradModel:";
     qDebug() << "Name = " << Name;
 
@@ -717,56 +722,12 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 //    Configs.reserve(ConfigCount);
     qDebug() << "ConfigCount = " << ConfigCount;
 
-    if ( !configObject["Area"].isObject() )
-    {
-        qDebug() << _parseError.errorString(); return 0;
-    }
-
-    // Здесь должна быть загрузка параметров рельефа
-    const QJsonObject &reliefInfoObject = configObject["ReliefInfo"].toObject();
-
-    ReliefMatInfo.IsUseReliefRandomSeed = reliefInfoObject["IsUseReliefRandomSeed"].toBool(false);
-    ReliefMatInfo.ReliefRandomSeed = reliefInfoObject["ReliefRandomSeed"].toInt(200);
-
-    const QJsonObject &reliefCoeffsObject = reliefInfoObject["ReliefCoeffs"].toObject();
-
-    ReliefMatInfo.A_r1 = reliefCoeffsObject["A_r1"].toDouble(-1);
-    ReliefMatInfo.A_r2 = reliefCoeffsObject["A_r2"].toDouble(-1);
-
-    cout << "ReliefInfo:" << endl << ReliefMatInfo << endl;
-
     IsRandomRelief = configObject["IsRandomRelief"].toBool(true);
     if (!IsRandomRelief)
     {
         QString ReliefFileName = configObject["ReliefFileName"].toString();
 
-        CorrectFileNameIfDoesntExist(ReliefFileName, ReliefsDefaultDir, "Relief");
-
-//        if ( !QFile::exists(ReliefFileName) )
-//        {
-//            QFileInfo fileInfo(ReliefFileName);
-//            ReliefFileName = ReliefsDefaultDir + "/" + fileInfo.fileName();
-//        }
-
-//        if ( !QFile::exists(ReliefFileName) )
-//        {
-//            auto res = QMessageBox::question(nullptr, "Question", "Relief File not Found. Would you like to choose Relif file?");
-//            if (res == QMessageBox::Yes)
-//            {
-//                ReliefFileName = QFileDialog::getOpenFileName(nullptr,
-//                                          "Choose Relief file", ".", "Relif Files (*.json)");
-
-//                if (ReliefFileName.isEmpty())
-//                {
-//                    QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
-//                }
-
-//            }
-//            else
-//            {
-//                QMessageBox::critical(nullptr, "Error", "Relief file not set and won't be loaded");
-//            }
-//        }
+        CorrectFileNameIfDoesntExist(ReliefFileName, ReliefsDefaultDir, "Relief", ReliefsExtension);
 
         if (!Relief.LoadFromFile(ReliefFileName))
             throw std::runtime_error("Relief File Not Found or Couldn't be read");
@@ -883,18 +844,21 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
         cout << "node.R = " << node << endl;
     }
 
+
+     GridSettings.LoadFromJsonObject(configObject["GridSettings"].toObject());
+
+
     const QJsonObject &gradDescObject = _jsonObject["GradDesc"].toObject();
 
     GradDescFileName = gradDescObject["GradDescFileName"].toString();
 
-    CorrectFileNameIfDoesntExist(GradDescFileName, SettingsDefaultDir, "GradDesc");
+    CorrectFileNameIfDoesntExist(GradDescFileName, SettingsDefaultDir, "GradDesc", SettingsGDExtension);
 
     if (!GradDescLoadFromFile(ProtoGradDesc, GradDescFileName))
     {
         qDebug() << "GradDesc file not open or currupted!";
         QMessageBox::warning(nullptr, "Warning", "GradDesc file not found or currupted!");
     }
-
 
 
     const QJsonObject &targetFuncObject = _jsonObject["TargetFunctionSettings"].toObject();
@@ -914,7 +878,7 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     QString TargetFuncFileName = targetFuncObject["TargetFuncFileName"].toString();
 
-    CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc");
+    CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc", SettingsTFExtension);
 
     if (!TargetFuncSettingsGlobal.LoadFromFile(TargetFuncFileName))
     {
@@ -984,21 +948,21 @@ QJsonArray MyGradModel::RepresentNodesAsJsonArray() const
 }
 //----------------------------------------------------------
 
-QJsonObject MyGradModel::RepresentReliefInfoAsJsonObject() const
-{
-    QJsonObject ReliefInfoObject;
+//QJsonObject MyGradModel::RepresentReliefInfoAsJsonObject() const
+//{
+//    QJsonObject ReliefInfoObject;
 
-    ReliefInfoObject.insert("IsUseReliefRandomSeed", ReliefMatInfo.IsUseReliefRandomSeed);
-    ReliefInfoObject.insert("ReliefRandomSeed", (int64_t)ReliefMatInfo.ReliefRandomSeed); // int64_t ?
+//    ReliefInfoObject.insert("IsUseReliefRandomSeed", ReliefMatInfo.IsUseReliefRandomSeed);
+//    ReliefInfoObject.insert("ReliefRandomSeed", (int64_t)ReliefMatInfo.ReliefRandomSeed); // int64_t ?
 
-    QJsonObject ReliefCoeffsObject;
-    ReliefCoeffsObject.insert("A_r1", ReliefMatInfo.A_r1);
-    ReliefCoeffsObject.insert("A_r2", ReliefMatInfo.A_r2);
+//    QJsonObject ReliefCoeffsObject;
+//    ReliefCoeffsObject.insert("A_r1", ReliefMatInfo.A_r1);
+//    ReliefCoeffsObject.insert("A_r2", ReliefMatInfo.A_r2);
 
-    ReliefInfoObject.insert("ReliefCoeffs", ReliefCoeffsObject);
+//    ReliefInfoObject.insert("ReliefCoeffs", ReliefCoeffsObject);
 
-    return ReliefInfoObject;
-}
+//    return ReliefInfoObject;
+//}
 //----------------------------------------------------------
 
 const MyConfig & MyGradModel::GetActiveConfig() const
@@ -1054,10 +1018,7 @@ bool MyGradModel::LoadFromFile(const QString &_fileName)
 
     CreatePopulation(configCount);
 
-    if (Relief.GetIsMathRelief())
-        Relief.CreateMathRelief(ReliefMatInfo);
-
-    Relief.ReCreateListsGL();
+    Relief.ReCreateReliefListsGL();
     Relief.BuildReliefToGL(false);
     Relief.BuildReliefToGL(true);
 
@@ -1352,34 +1313,11 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
     QJsonObject GradDescObject;
 
-//    GradDescObject.insert("Alpha", ProtoGradDesc.GetAlpha());
-//    GradDescObject.insert("CallBackFreq", (int)ProtoGradDesc.GetCallBackFreq());
-//    GradDescObject.insert("Eps", ProtoGradDesc.GetEps());
-//    GradDescObject.insert("Eta_FirstJump", ProtoGradDesc.GetEta_FirstJump());
-//    GradDescObject.insert("Eta_k_dec", ProtoGradDesc.GetEta_k_dec());
-//    GradDescObject.insert("Eta_k_inc", ProtoGradDesc.GetEta_k_inc());
-//    GradDescObject.insert("FinDifMethod", ProtoGradDesc.GetFinDifMethod());
-//    GradDescObject.insert("MaxIters", (int)ProtoGradDesc.GetMaxIters());
-//    GradDescObject.insert("MaxTime", ProtoGradDesc.GetMaxTime());
-//    GradDescObject.insert("Min_Eta", ProtoGradDesc.GetMin_Eta());
-
     GradDescObject.insert("GradDescFileName", GradDescFileName);
 
     mainObject.insert("GradDesc", GradDescObject);
 
     QJsonObject TargetFunctionSettingsObject;
-
-//    TargetFunctionSettingsObject.insert("A2", TargetFuncSettingsGlobal.A2);
-//    TargetFunctionSettingsObject.insert("Aarf", TargetFuncSettingsGlobal.Aarf);
-//    TargetFunctionSettingsObject.insert("IsUseCoveredFlag", TargetFuncSettingsGlobal.IsUseCoveredFlag);
-//    TargetFunctionSettingsObject.insert("R_nodeOverlap", TargetFuncSettingsGlobal.R_nodeOverlap);
-//    TargetFunctionSettingsObject.insert("k_step_ot", TargetFuncSettingsGlobal.k_step_ot);
-//    TargetFunctionSettingsObject.insert("offX", TargetFuncSettingsGlobal.offX);
-//    TargetFunctionSettingsObject.insert("p", TargetFuncSettingsGlobal.p);
-//    TargetFunctionSettingsObject.insert("IsUseLineBetweenTwoPoints", TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints);
-
-//    QString TargetFuncTypeStr = ConvertTargetFuncTypeToString(TargetFuncSettingsGlobal.TargetFuncType);
-//    TargetFunctionSettingsObject.insert("TargetFuncType", TargetFuncTypeStr);
 
     TargetFunctionSettingsObject.insert("TargetFuncFirstPhase", QString().fromStdString(ActiveTargetFuncFirstPhase));
     TargetFunctionSettingsObject.insert("TargetFuncSecondPhase", QString().fromStdString(ActiveTargetFuncSecondPhase));
@@ -1388,10 +1326,6 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
     mainObject.insert("TargetFunctionSettings", TargetFunctionSettingsObject);
 
     QJsonObject ConfigurationObject;
-
-//    ConfigurationObject.insert("TargetFuncFirstPhase", QString().fromStdString(ActiveTargetFuncFirstPhase));
-//    ConfigurationObject.insert("TargetFuncSecondPhase", QString().fromStdString(ActiveTargetFuncSecondPhase));
-
 
     ConfigurationObject.insert("RouteCount", (int)Routes.size());
     ConfigurationObject.insert("Routes", RepresentRoutesAsJsonArray());
@@ -1403,22 +1337,14 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
     ConfigurationObject.insert("Nodes", RepresentNodesAsJsonArray());
 
-//    ConfigurationObject.insert("TargetCostFunction", "MyFunction"); // Not used
-
-    QJsonObject AreaObject; // Для математичесокго рельефа
-    AreaObject.insert("bottom", 0);
-    AreaObject.insert("left", 0);
-    AreaObject.insert("right", 10000);
-    AreaObject.insert("top", 8000);
-    ConfigurationObject.insert("Area", AreaObject); // Для математичесокго рельефа
-
     ConfigurationObject.insert("Count", (int)Configs.size());
     ConfigurationObject.insert("IsRandomNodeCoords", IsRandomNodeCoords);
     ConfigurationObject.insert("IsRandomRelief", IsRandomRelief);
     ConfigurationObject.insert("IsRandomRoutes", IsRandomRoutes);
 
-    ConfigurationObject.insert("ReliefInfo", RepresentReliefInfoAsJsonObject());
     ConfigurationObject.insert("ReliefFileName", Relief.GetFileName() );
+
+    ConfigurationObject.insert("GridSettings", GridSettings.RepresentAsJsonObject());
 
     mainObject.insert("Configuration", ConfigurationObject);
 
@@ -1474,6 +1400,92 @@ void MyGradModel::ReCalcAboAccessRate()
 void MyGradModel::CalcAccessRateForCurrent()
 {
     Configs.at(iCurConfig).CalcAccessRateForCurrent();
+}
+//----------------------------------------------------------
+
+void MyGradModel::SelectCurNodeByPos(double wx, double wy)
+{
+//    if (wx < -1 || wx > 1 ||    // потом убрать????
+//        wy < -1 || wy > 1 )
+//    {
+//        qDebug() << "wx < -1 || wx > 1 ||"
+//                    "wy < -1 || wy > 1";
+//        return;
+//    }
+
+    double realX, realY; //, realZ;
+    /*realZ =*/ Relief.CalcRealXYZbyNormXY(wx, wy, realX, realY);
+
+    if (iCurConfig >= 0)
+    {
+        auto & cnf = Configs.at(iCurConfig);
+
+        cnf.SelectCurNodeByRealXY(realX, realY);
+
+        const auto & sn = cnf.GetNodes().at(cnf.Get_iCurNode());
+
+        emit SignalSendNodeCoords(cnf.Get_iCurNode(),
+                                  sn.Pos.x(),
+                                  sn.Pos.y(),
+                                  sn.Pos.z());
+    }
+    else
+    {
+        qDebug() << "iCurConfig == -1. MyGradModel::SelectCurNodeByPos aborted";
+    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::PutCurNodeByPos(double wx, double wy)
+{
+    double realX, realY, realZ;
+    realZ = Relief.CalcRealXYZbyNormXY(wx, wy, realX, realY);
+
+    if (iCurConfig >= 0)
+    {
+        Configs.at(iCurConfig).PutCurNodeByRealXYZ(realX, realY, realZ);
+    }
+    else
+    {
+        qDebug() << "iCurConfig == -1. MyGradModel::PutCurNodeByPos aborted";
+    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::SetDirectCurNodeByPos(double wx, double wy)
+{
+    double realX, realY, realZ;
+    realZ = Relief.CalcRealXYZbyNormXY(wx, wy, realX, realY);
+
+    if (iCurConfig >= 0)
+    {
+        Configs.at(iCurConfig).SetDirectCurNodeByRealXYZ(realX, realY, realZ);
+    }
+    else
+    {
+        qDebug() << "iCurConfig == -1. MyGradModel::SetDirectCurNodeByPos aborted";
+    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::SetShowGridOnRelief(bool _isShow)
+{
+    if (_isShow)
+    {
+        Relief.ReCreateGridListsGL();
+//        Relief.ReBuildGridToGL(true, 5000, 3000, 201);
+//        Relief.ReBuildGridToGL(false, 5000, 3000, 201);
+
+//        Relief.ReBuildGridToGL(true, 100, 100, 201);
+//        Relief.ReBuildGridToGL(false, 100, 100, 201);
+
+        Relief.ReBuildGridToGL(false, GridSettings.dx, GridSettings.dy, GridSettings.nDetails);
+        Relief.ReBuildGridToGL(true, GridSettings.dx, GridSettings.dy, 2);
+    }
+    else
+    {
+        Relief.ClearGrid();
+    }
 }
 //----------------------------------------------------------
 

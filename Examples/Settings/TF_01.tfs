@@ -1,11 +1,11 @@
 {
     "GeneralSettings": {
-        "A2": 40000000,
+        "A2": 10000,
         "Aarf": 100000000,
-        "IsUseCoveredFlag": true,
+        "IsUseCoveredFlag": false,
         "IsUseLineBetweenTwoPoints": false,
-        "R_nodeOverlap": 50,
-        "k_step_ot": 0.035,
+        "R_nodeOverlap": 200,
+        "k_step_ot": 0.35,
         "offX": 0.0123,
         "p": 1e-05
     }

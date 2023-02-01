@@ -338,6 +338,7 @@
      <string>File</string>
     </property>
     <addaction name="actionFile_Open_Image"/>
+    <addaction name="actionFile_Open_Relief"/>
     <addaction name="separator"/>
     <addaction name="actionFile_Save_Legend_As"/>
     <addaction name="actionFile_Load_Legend"/>
@@ -399,6 +400,14 @@
    </property>
    <property name="toolTip">
     <string>Calc Relief And Save As...</string>
+   </property>
+  </action>
+  <action name="actionFile_Open_Relief">
+   <property name="text">
+    <string>Open Relief...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
    </property>
   </action>
  </widget>

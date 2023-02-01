@@ -15,7 +15,7 @@ class QWheelEvent;
 class QOpenGLFramebufferObject;
 //#include <QOpenGLFunctions>
 
-#include "Types.h"
+#include "TypesAndUtils.h"
 #include "GradModel.h"
 
 class MainGLWidget : public QOpenGLWidget, public IGradDrawable
@@ -36,7 +36,7 @@ private:
 
     MyGradModel &GradModel;
 
-    bool IsShowCoordsAlways = false;
+    bool IsShowCoordsAlways = true;
 
     QOpenGLFramebufferObject *MyFBO = nullptr;
 
@@ -48,6 +48,7 @@ private:
 
     bool MouseToWorld(int clientX, int clientY,
                       GLdouble &_worldX, GLdouble &_worldY, GLdouble &_worldZ);
+
 
 protected:
 

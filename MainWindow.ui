@@ -117,9 +117,10 @@
     <property name="title">
      <string>World</string>
     </property>
-    <addaction name="actionWorld_Show_Coords"/>
     <addaction name="separator"/>
     <addaction name="actionWorld_Show_Abonents"/>
+    <addaction name="separator"/>
+    <addaction name="actionWorld_Show_Grid"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -130,12 +131,16 @@
     <addaction name="separator"/>
     <addaction name="actionEdit_Delete_Route"/>
     <addaction name="separator"/>
+    <addaction name="actionEdit_Select_Cur_Node"/>
+    <addaction name="actionEdit_Editing_Pos_Cur_Node"/>
+    <addaction name="actionEdit_Editing_Angle_Cur_Node"/>
     <addaction name="actionEdit_Edit_Signal_Nodes_for_All"/>
     <addaction name="actionEdit_Edit_Signal_Nodes_for_Current"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Edit_Routes"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Change_Count_of_Nodes"/>
+    <addaction name="actionEdit_Apply_Cur_Node_to_All_Configs"/>
    </widget>
    <widget class="QMenu" name="menuDebug">
     <property name="title">
@@ -315,17 +320,6 @@
     <string>Save Grad Config</string>
    </property>
   </action>
-  <action name="actionWorld_Show_Coords">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show Coords</string>
-   </property>
-  </action>
   <action name="actionEdit_Add_New_Route">
    <property name="text">
     <string>Add New Route</string>
@@ -431,6 +425,70 @@
   <action name="actionDebug_Calc_Access_Rate_for_current">
    <property name="text">
     <string>Calc Access Rate for current</string>
+   </property>
+  </action>
+  <action name="actionEdit_Select_Cur_Node">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Select Cur Node</string>
+   </property>
+   <property name="shortcut">
+    <string>J</string>
+   </property>
+  </action>
+  <action name="actionEdit_Editing_Pos_Cur_Node">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Editing Pos of Cur Node</string>
+   </property>
+   <property name="toolTip">
+    <string>Editing Pos of Cur Node</string>
+   </property>
+   <property name="shortcut">
+    <string>M</string>
+   </property>
+  </action>
+  <action name="actionEdit_Editing_Angle_Cur_Node">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Editing Angle of Cur Node</string>
+   </property>
+   <property name="toolTip">
+    <string>Editing Angle of Cur Node</string>
+   </property>
+   <property name="shortcut">
+    <string>A</string>
+   </property>
+  </action>
+  <action name="actionEdit_Apply_Cur_Node_to_All_Configs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Apply Cur Node to All Configs</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Grid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Grid</string>
    </property>
   </action>
  </widget>

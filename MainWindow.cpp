@@ -29,14 +29,16 @@ MainWindow::MainWindow(QWidget *parent) :
     lblWorldY = new QLabel("n/a");
     lblWorldZ = new QLabel("n/a");
     lbl_iCurConfig = new QLabel("n/a");
+    lblCoord = new QLabel("n/a");
 
-    lblGlX->setFixedWidth(120);
-    lblGlY->setFixedWidth(120);
-    lblGlZ->setFixedWidth(120);
-    lblWorldX->setFixedWidth(150);
-    lblWorldY->setFixedWidth(150);
-    lblWorldZ->setFixedWidth(150);
-    lbl_iCurConfig->setFixedWidth(120);
+    lblGlX->setFixedWidth(100);
+    lblGlY->setFixedWidth(100);
+    lblGlZ->setFixedWidth(100);
+    lblWorldX->setFixedWidth(120);
+    lblWorldY->setFixedWidth(120);
+    lblWorldZ->setFixedWidth(120);
+    lbl_iCurConfig->setFixedWidth(100);
+    lblCoord->setFixedWidth(220);
 
     ui->statusbar->addWidget(lblGlX);
     ui->statusbar->addWidget(lblGlY);
@@ -45,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addWidget(lblWorldY);
     ui->statusbar->addWidget(lblWorldZ);
     ui->statusbar->addWidget(lbl_iCurConfig);
+    ui->statusbar->addWidget(lblCoord);
 
     mainGLWidget = new MainGLWidget(WorkMode, GradModel, WorldMode);
 
@@ -90,21 +93,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&formAboCalc, SIGNAL(SignalShowAboReport()),
             this, SLOT(SlotReceiveShowAboReport()));
 
+    connect(&GradModel, SIGNAL(SignalSendNodeCoords(int, double, double, double)),
+            this, SLOT(SlotReceiveNodeCoords(int, double, double, double)));
+
     mainGLWidget->setMouseTracking(true);
 
     dlgAboReport.InitDialog();
-
-//    on_actionFileStart_Grad_Descent_triggered();
-
-//    on_actionFileOpen_Grad_Descent_triggered();
 }
 //-------------------------------------------------------------
 
 void MainWindow::AfterShow()
 {
-    //on_actionFileOpen_Grad_Descent_triggered();
-    on_actionWorld_Show_Coords_toggled(true);
-
     on_actionFileOpen_Grad_Descent_triggered();
 }
 //-------------------------------------------------------------
@@ -113,6 +112,7 @@ int MainWindow::GetGLWidth() const
 {
     return mainGLWidget->width();
 }
+//-------------------------------------------------------------
 
 int MainWindow::GetGLHeight() const
 {
@@ -139,7 +139,7 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
         return;
 
     QString fileName = QFileDialog::getOpenFileName(this,
-        "Open Config file", ".", "Config Files (*.json)");
+        "Open Config file", ".", "Config Files (" + ConfigsExtension + ")");
 
 
     if (fileName.isEmpty())
@@ -160,12 +160,17 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     ui->actionFileSave_Grad_Config_As->setEnabled(true);
 
     ui->actionEdit_Delete_Route->setEnabled(true);
+    ui->actionEdit_Select_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Angle_Cur_Node->setEnabled(true);
+    ui->actionEdit_Apply_Cur_Node_to_All_Configs->setEnabled(true);
+    ui->actionEdit_Editing_Pos_Cur_Node->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
     ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
     ui->actionWorld_Show_Abonents->setEnabled(true);
+    ui->actionWorld_Show_Grid->setEnabled(true);
 
     GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
@@ -258,11 +263,15 @@ void MainWindow::on_actionGradSetDraw9_triggered()
 
 void MainWindow::on_actionGradStart_Phase_1_triggered()
 {   
+    if (GradModel.GetIsGradCalculating())
+        return;
+
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1... ");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_1(mainGLWidget);
 
     mainGLWidget->repaint();
+    UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 }
 //-------------------------------------------------------------
@@ -286,6 +295,8 @@ void MainWindow::on_actionGradSettings_triggered()
         DialogGradSettings.ReInitGradModel(GradModel);
 
         GradModel.MarkAsNotSaved();
+//        GradModel.SetGridSettings(ui->actionWorld_Show_Grid->ac)
+        on_actionWorld_Show_Grid_triggered();
 
         mainGLWidget->repaint();
     }
@@ -298,11 +309,15 @@ void MainWindow::on_actionGradSettings_triggered()
 
 void MainWindow::on_actionGradStart_Phase_2_triggered()
 {
+    if (GradModel.GetIsGradCalculating())
+        return;
+
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 2...");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_2(mainGLWidget);
 
     mainGLWidget->repaint();
+    UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 }
 //-------------------------------------------------------------
@@ -354,7 +369,7 @@ void MainWindow::on_actionFileSave_Grad_Config_triggered()
     if ( GradModel.GetFileName() == "" )
     {
         QString fileName = QFileDialog::getSaveFileName(this,
-            "Save Config file", ".", "Config Files (*.json)");
+            "Save Config file", ".", "Config Files (" + ConfigsExtension + ")");
 
         if (fileName == "")
         {
@@ -368,31 +383,31 @@ void MainWindow::on_actionFileSave_Grad_Config_triggered()
 }
 //-------------------------------------------------------------
 
-void MainWindow::on_actionWorld_Show_Coords_toggled(bool _toggled)
-{
-    mainGLWidget->SetIsShowCoordsAlways(_toggled);
-}
+//void MainWindow::on_actionWorld_Show_Coords_toggled(bool _toggled)
+//{
+//    mainGLWidget->SetIsShowCoordsAlways(_toggled);
+//}
 //-------------------------------------------------------------
 
 void MainWindow::SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists)
 {
-    if (wExists) // Пытаемся отловить ошибку, когда в интерполяцию рельефа залетает nan
-    {
-//        if (wx == std::numeric_limits<double>::quiet_NaN() ||
-//            wx == std::numeric_limits<double>::signaling_NaN() )
-        if (std::isnan(wx))
-        {
-            throw std::logic_error("wx == nan in SlotReceiveWorldCoords");
-        }
-        if (std::isnan(wy))
-        {
-            throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
-        }
-        if (std::isnan(wz))
-        {
-            throw std::logic_error("wz == nan in SlotReceiveWorldCoords");
-        }
-    }
+//    if (wExists) // Пытаемся отловить ошибку, когда в интерполяцию рельефа залетает nan
+//    {
+////        if (wx == std::numeric_limits<double>::quiet_NaN() ||
+////            wx == std::numeric_limits<double>::signaling_NaN() )
+//        if (std::isnan(wx))
+//        {
+//            throw std::logic_error("wx == nan in SlotReceiveWorldCoords");
+//        }
+//        if (std::isnan(wy))
+//        {
+//            throw std::logic_error("wy == nan in SlotReceiveWorldCoords");
+//        }
+//        if (std::isnan(wz))
+//        {
+//            throw std::logic_error("wz == nan in SlotReceiveWorldCoords");
+//        }
+//    }
 
     lblGlX->setText("Gl X = " + (wExists?QString().setNum(wx):"n/a"));
     lblGlY->setText("Gl Y = " + (wExists?QString().setNum(wy):"n/a"));
@@ -425,10 +440,11 @@ void MainWindow::SlotReceiveRouteDeleted(bool isDeleted)
     else
         qDebug() << "Warning: SlotReceiveRouteDeleted: isDeleted == false";
 
-    if (ui->actionWorld_Show_Coords->isChecked())
-        WorldMode = WorldModeType::ShowCoords;
-    else
-        WorldMode = WorldModeType::Nothing;
+//    if (ui->actionWorld_Show_Coords->isChecked())
+//        WorldMode = WorldModeType::ShowCoords;
+//    else
+
+    WorldMode = WorldModeType::Nothing;
 }
 //-------------------------------------------------------------
 
@@ -441,47 +457,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     formAboCalc.close();
 
-    if ( !GradModel.GetIsSaved() )
-    {
-        auto res = QMessageBox::question(this, "Question",
-                                         "Grad Config file is not saved. Would you like to save it?",
-                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-
-        if (res == QMessageBox::Yes)
-        {
-            // try save
-            on_actionFileSave_Grad_Config_triggered();
-            if (IsGradDescFileSavedSuccessfully)
-            {
-                event->accept();
-                return;
-            }
-            else
-            {
-                event->ignore();
-                return;
-            }
-        }
-        else if (res == QMessageBox::No)
-        {
-            event->accept();
-            return;
-        }
-        else if (res == QMessageBox::Cancel)
-        {
-            event->ignore();
-            return;
-        }
-        else
-        {
-            QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
-            event->accept();
-        }
-    }
-    else
-    {
+    if (CheckIsSavedAndSaveIfNecessary())
         event->accept();
-    }
+    else
+        event->ignore();
 }
 //-------------------------------------------------------------
 
@@ -506,17 +485,19 @@ void MainWindow::on_actionEdit_Finish_Route_triggered()
     ui->actionEdit_Finish_Route->setEnabled(false);
     ui->actionEdit_Add_New_Route->setEnabled(true);
 
-    if (ui->actionWorld_Show_Coords->isChecked())
-        WorldMode = WorldModeType::ShowCoords;
-    else
-        WorldMode = WorldModeType::Nothing;
+//    if (ui->actionWorld_Show_Coords->isChecked())
+//        WorldMode = WorldModeType::ShowCoords;
+//    else
+
+
+    WorldMode = WorldModeType::Nothing;
 }
 //-------------------------------------------------------------
 
 void MainWindow::on_actionFileSave_Grad_Config_As_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save Config file", ".", "Config Files (*.json)");
+        "Save Config file", ".", "Config Files (" + ConfigsExtension + ")");
 
     if (fileName == "")
     {
@@ -539,25 +520,14 @@ bool MainWindow::CheckIsSavedAndSaveIfNecessary()
 
         if (res == QMessageBox::Yes)
         {
-            // try save
-            on_actionFileSave_Grad_Config_triggered();
-            if (IsGradDescFileSavedSuccessfully)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            on_actionFileSave_Grad_Config_triggered(); // try save
+            return IsGradDescFileSavedSuccessfully;
+
         }
         else if (res == QMessageBox::No)
-        {
             return true;
-        }
         else if (res == QMessageBox::Cancel)
-        {
             return false;
-        }
         else
         {
             QMessageBox::critical(this, "Error", "Something wrong with QMessageBox::question result");
@@ -565,8 +535,23 @@ bool MainWindow::CheckIsSavedAndSaveIfNecessary()
         }
     }
     else
-    {
         return true;
+}
+//-------------------------------------------------------------
+
+void MainWindow::UpdateCurNodeCoordsOnLabel()
+{
+    try
+    {
+        int n = GradModel.GetCurrentConfig().Get_iCurNode();
+        const auto & sn = GradModel.GetCurrentConfig().GetCurNode();
+        SlotReceiveNodeCoords(n, sn.Pos.x(), sn.Pos.y(), sn.Pos.z());
+    }
+    catch (std::exception & e)
+    {
+//        qDebug() << "catch (std::exception & e) in MainWindow::on_actionEdit_Edit_Signal_Nodes_for_Current_triggered()";
+//        qDebug() << "e.what() =" << e.what();
+        lblCoord->setText("n/a");
     }
 }
 //-------------------------------------------------------------
@@ -577,7 +562,7 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
         return;
 
     // Здесь сделать что-нибудь еще: новая конфигурация
-    //DialogGradConfigNew.InitDialog(GradModel);
+    // DialogGradConfigNew.InitDialog(GradModel);
 
     if (DialogGradConfigNew.exec() == QDialog::Accepted)
     {
@@ -602,12 +587,17 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
     ui->actionFileSave_Grad_Config_As->setEnabled(true);
 
     ui->actionEdit_Delete_Route->setEnabled(true);
+    ui->actionEdit_Select_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Pos_Cur_Node->setEnabled(true);
+    ui->actionEdit_Editing_Angle_Cur_Node->setEnabled(true);
+    ui->actionEdit_Apply_Cur_Node_to_All_Configs->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_All->setEnabled(true);
     ui->actionEdit_Edit_Signal_Nodes_for_Current->setEnabled(true);
     ui->actionEdit_Change_Count_of_Nodes->setEnabled(true);
 
     ui->actionEdit_Edit_Routes->setEnabled(true);
     ui->actionWorld_Show_Abonents->setEnabled(true);
+    ui->actionWorld_Show_Grid->setEnabled(true);
 
     GradModel.Set_nDraws(35);
     mainGLWidget->repaint();
@@ -665,10 +655,13 @@ void MainWindow::on_actionEdit_Edit_Signal_Nodes_for_Current_triggered()
         return;
     }
 
-
     if (DialogSignalNodesEdit.exec() == QDialog::Accepted)
     {
-        DialogSignalNodesEdit.ChangeSignalNodesParameters_ForCurrent(GradModel.GetNodesType(), GradModel.CurrentConfigAccess().NodesAccess(), GradModel.GetRelief());
+        DialogSignalNodesEdit.ChangeSignalNodesParameters_ForCurrent(GradModel.GetNodesType(),
+                                                                     GradModel.CurrentConfigAccess().NodesAccess(),
+                                                                    GradModel.GetRelief());
+
+        UpdateCurNodeCoordsOnLabel();
 
         //GradModel.ApplySignalNodesToAllConfigs();
         mainGLWidget->repaint();
@@ -688,22 +681,30 @@ void MainWindow::on_actionTwoLines_triggered()
 
 void MainWindow::on_actionGradStart_Phase_1_for_Current_Config_triggered()
 {
+    if (GradModel.GetIsGradCalculating())
+        return;
+
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1 for Current Config... ");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_1_for_Current(mainGLWidget);
 
     mainGLWidget->repaint();
+    UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 }
 //-------------------------------------------------------------
 
 void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
 {
+    if (GradModel.GetIsGradCalculating())
+        return;
+
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1 for Current Config... ");
     ui->actionGradStop->setEnabled(true);
     GradModel.StartGradDescent_Phase_2_for_Current(mainGLWidget);
 
     mainGLWidget->repaint();
+    UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 }
 //-------------------------------------------------------------
@@ -731,7 +732,6 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
     if (WorkMode != WorkModeType::GradWork)
         return;
 
-
     GradModel.SetIsDrawAbonents(true);
     formAboCalc.show();
 //    SlotReceiveAboTime(0);
@@ -742,12 +742,13 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
 
 void MainWindow::SlotReceiveAboTime(int t) // in sec
 {
-    qDebug() << "t =" << t << " - " << t/3600.0;
+//    qDebug() << "t =" << t << " - " << t/3600.0;
 
     if (WorkMode == WorkModeType::GradWork)
     {
         GradModel.CalcAbonentsPos(t);
-        GradModel.ApplyRoutesToAllConfigs(NeedToSave::DoNotNeed);
+//        GradModel.ApplyRoutesToAllConfigs(NeedToSave::DoNotNeed);
+        GradModel.ApplyAbonentsPosInRoutesToAllConfigs();
         GradModel.ReCalcAboAccessRate();
         mainGLWidget->repaint();
     }
@@ -791,7 +792,18 @@ void MainWindow::SlotReceiveShowAboReport()
 
 void MainWindow::SlotReceive_iCurConfigChanged(int i)
 {
+    UpdateCurNodeCoordsOnLabel();
+
     lbl_iCurConfig->setText("iCurConfig: " + QString().setNum(i));
+}
+//-------------------------------------------------------------
+
+void MainWindow::SlotReceiveNodeCoords(int n, double x, double y, double z)
+{
+    lblCoord->setText("Node " + QString().setNum(n) + ": {" +
+                        QString().setNum(x) + "; " +
+                        QString().setNum(y) + "; " +
+                        QString().setNum(z) + "}");
 }
 //-------------------------------------------------------------
 
@@ -863,4 +875,75 @@ void MainWindow::on_actionDebug_Calc_Access_Rate_for_current_triggered()
 {
     GradModel.CalcAccessRateForCurrent();
 }
+//-------------------------------------------------------------
 
+void MainWindow::on_actionEdit_Select_Cur_Node_triggered()
+{
+    WorldMode = WorldModeType::SelectingSignalNode;
+//    ui->actionEdit_Editing_Cur_Node->setEnabled(true); // ?
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Editing_Pos_Cur_Node_triggered()
+{
+    if (ui->actionEdit_Editing_Pos_Cur_Node->isChecked())
+    {
+        if (GradModel.Get_iCurConfig() < 0 || GradModel.GetActiveConfig().Get_iCurNode() < 0)
+        {
+            ui->actionEdit_Editing_Pos_Cur_Node->setChecked(false);
+            qDebug() << "Cur Node is not selected";
+            return;
+        }
+
+        WorldMode = WorldModeType::EditingPosSignalNode;
+        ui->actionEdit_Editing_Angle_Cur_Node->setChecked(false);
+    }
+    else
+    {
+        WorldMode = WorldModeType::Nothing;
+    }
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Editing_Angle_Cur_Node_triggered()
+{
+    if (ui->actionEdit_Editing_Angle_Cur_Node->isChecked())
+    {
+        if (GradModel.Get_iCurConfig() < 0 || GradModel.GetActiveConfig().Get_iCurNode() < 0)
+        {
+            ui->actionEdit_Editing_Angle_Cur_Node->setChecked(false);
+            qDebug() << "Cur Node is not selected";
+            return;
+        }
+
+        WorldMode = WorldModeType::EditingAngleSignalNode;
+        ui->actionEdit_Editing_Pos_Cur_Node->setChecked(false);
+    }
+    else
+    {
+        WorldMode = WorldModeType::Nothing;
+    }
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Apply_Cur_Node_to_All_Configs_triggered()
+{
+    GradModel.ApplyCurNodeFromCurConfigToAllConfigs();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Grid_triggered()
+{
+    GradModel.SetShowGridOnRelief(ui->actionWorld_Show_Grid->isChecked());
+    mainGLWidget->repaint();
+
+//    if (ui->actionWorld_Show_Grid->isChecked())
+//    {
+//        GradModel.SetShowGridOnRelief();
+//    }
+//    else
+//    {
+
+//    }
+}
+//-------------------------------------------------------------

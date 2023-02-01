@@ -11,6 +11,8 @@
 
 using namespace std;
 
+const QString SignalNodesExtension = "*.snf";
+
 bool operator<(const BondType &lhs, const BondType &rhs)
 {
 //    return std::tie(lhs.iRoute, lhs.iPoint, lhs.arf, lhs.relDist) < std::tie(rhs.iRoute, rhs.iPoint, rhs.arf, rhs.relDist);
@@ -81,7 +83,7 @@ double SignalNode::accessRateSphere(const Pos3d &p) const
                 (p.y()-Pos.y())*(p.y()-Pos.y()) +
                 (p.z()-Pos.z())*(p.z()-Pos.z());
 
-    double q = 10;
+    double q = 3; // Сделать настроиваемым параметром???
     double k;
 
     if (d2 >= (q*q))
@@ -154,6 +156,7 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //        fix_zero = 20; // ???
         c = 0;
     }
+
 
 
 
@@ -276,7 +279,7 @@ GLUquadric* SignalNode::Quadric()
 //----------------------------------------------------------
 
 void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
-                          const Settings3dType & _settings3d) const
+                          const Settings3dType & _settings3d, SignalNodeStatus _sns) const
 {
     constexpr float zOffset = 0.01f;
     const auto & area = relief->GetArea();
@@ -291,24 +294,40 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
     double offsetY = area.y()+hH; // in meters
     double offsetZ = 0;
 
-    glPushMatrix();
+
 
     double x = (Pos.x()-offsetX)*k;
     double y = (Pos.y()-offsetY)*k;
     double z;
 
-
-    if (relief->GetIsMathRelief())
-    {
-        glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-    }
+    if (_sns == SignalNodeStatus::NotSelected)
+        glColor3f(0.6, 0.1, 0.1);
     else
-    {
-        z = (Pos.z()-offsetZ)*relief->Get_kz();
+        glColor3f(0.95, 0.05, 0.05);
+
+    z = (Pos.z()-offsetZ)*relief->Get_kz();
+
+//    glPointSize(5.0f);
+//    glBegin(GL_POINTS);
+//        glVertex3d(x, y, z);
+//    glEnd();
+
+    glPushMatrix();
+
         glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
-    }
-    gluQuadricDrawStyle(Quadric(), GLU_FILL);
-    gluSphere(Quadric(), 0.02, 12, 12);
+
+        gluQuadricDrawStyle(Quadric(), GLU_FILL);
+
+        if (_sns == SignalNodeStatus::Selected)
+        {
+            qDebug() << "_settings3d.TrZ =" << _settings3d.TrZ;
+            qDebug() << "z =" << z;
+            qDebug() << "pow =" << pow(fabs(fabs(_settings3d.TrZ) - z), 0.25);
+        }
+
+//        gluSphere(Quadric(), 0.01 * pow(fabs(fabs(_settings3d.TrZ) - z), 0.25), 12, 12);
+        gluSphere(Quadric(), 0.015, 12, 12);
+
     glPopMatrix();
 
     const int nr = 32;
@@ -339,15 +358,8 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         double y = (Pos.y()-offsetY)*k;
         double z;
 
-        if (relief->GetIsMathRelief())
-        {
-            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-        }
-        else
-        {
-            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
-            glVertex3f(x, y, z);
-        }
+        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
+        glVertex3f(x, y, z);
     }
 
     for (int i = 0; i <= nr; i++)
@@ -358,17 +370,8 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         double y = (yt-offsetY)*k;
         double z;
 
-        if (relief->GetIsMathRelief())
-        {
-            // z = ???;
-            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-        }
-        else
-        {
-//                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(xt, yt) : 0));
-            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
-            glVertex3f(x, y, z);
-        }
+        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
+        glVertex3f(x, y, z);
     }
 
     if (_snt == SignalNodeType::Cone) // здесь копипаст
@@ -377,15 +380,8 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         double y = (Pos.y()-offsetY)*k;
         double z;
 
-        if (relief->GetIsMathRelief())
-        {
-            glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-        }
-        else
-        {
-            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
-            glVertex3f(x, y, z);
-        }
+        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
+        glVertex3f(x, y, z);
     }
 
     glEnd();
@@ -422,15 +418,8 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
             double y = (tp.y()-offsetY)*k;
             double z;
 
-            if (relief->GetIsMathRelief())
-            {
-                glVertex3f(x, y, zOffset + (_settings3d.IsPerspective ? relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-                z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
-                glVertex3f(x, y, z);
-            }
+            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
+            glVertex3f(x, y, z);
         }
 
         glEnd();

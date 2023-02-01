@@ -3,11 +3,9 @@
 
 #include <vector>
 #include <GL/gl.h>
-//#include <QVector2D>
-//#include <QVector3D>
 #include <QColor>
 
-#include "Types.h"
+#include "TypesAndUtils.h"
 #include <iostream>
 #include <map>
 #include <QRectF>
@@ -15,46 +13,47 @@
 class QJsonObject;
 class QJsonParseError;
 
-struct ReliefMatInfoStruct
+extern const QString ReliefsDefaultDir;
+extern const QString ReliefsExtension;
+extern const QString ReliefsImagesDefaultDir;
+extern const QString ReliefsImagesExtension;
+extern const QString ReliefsLegendsDefaultDir;
+extern const QString ReliefsLegendsExtension;
+
+
+struct GridSettingsStruct
 {
-
-    bool IsUseReliefRandomSeed = true;
-    unsigned ReliefRandomSeed = 100;
-
-    double A_r1 = 0.01;
-    double A_r2 = 0.02;
-
-    friend std::ostream & operator<<(std::ostream &s, const ReliefMatInfoStruct ob);
+    double dx = 100;  // in meters
+    double dy = 100;  // in meters
+    int nDetails = 50;
+    QJsonObject RepresentAsJsonObject() const;
+    void LoadFromJsonObject(const QJsonObject &_jsonObject);
 };
 
 
 class Relief3D
 {
 protected:
-//    std::vector<double> reliefA, reliefB, reliefH;
 
     double LinearInterpol(std::map<int, int> const & _row, double x) const;
 
     double MinX = std::numeric_limits<double>::max();
     double MinY = std::numeric_limits<double>::max();
 
-    bool IsMathRelief = true;
     QRectF Area;
     QString FileName;
 
-    std::vector<double> A, B, C, D, E, F;
-    std::vector<double> X0, Y0;
-
-    std::vector<double> S1, S2;
-//    std::vector<double> S12;
-    std::vector<double> ro;
-
-    GLuint ReliefCompileList = 0;
+    GLuint ReliefCompileList = 0;    
     bool IsReliefBuilt = false;
     GLuint Relief2dCompileList = 0;
     bool IsRelief2dBuilt = false;
 
-    bool IsReliefCreated = false; // ?
+    GLuint GridCompileList = 0;
+    bool IsGridBuilt = false;
+    GLuint Grid2dCompileList = 0;
+    bool IsGrid2dBuilt = false;
+
+//    bool IsReliefCreated = false; // ?
 
     double minZ = std::numeric_limits<double>::max();  // in meters
     double maxZ = -1; // in meters
@@ -71,6 +70,9 @@ protected:
 
     double Global_kz = 1.0;
     double AverZ = 0; // in Gl coords
+
+    QString ImageFileName;
+    QString LegendFileName;
 
 public:
     Relief3D() = default;
@@ -89,15 +91,16 @@ public:
     double CalcNormZbyRealXY(double x, double y) const;
     double CalcNormToRealZbyRealXY(double x, double y) const;
 
-    double CalcRealZbyNormXY(double x, double y) const;
-    double CalcNormZbyNormXY(double x, double y) const;
+//    double CalcRealZbyNormXY(double x, double y) const;
+//    double CalcNormZbyNormXY(double x, double y) const;
 
     QColor CalcColorByZ(double z) const;
 
-    void CreateMathRelief(const ReliefMatInfoStruct &_reliefCoeffs);
-
-    void ReCreateListsGL();
+    void ReCreateReliefListsGL();
     void BuildReliefToGL(bool _is2d);
+
+    void ReCreateGridListsGL();
+    void ReBuildGridToGL(bool _is2d, const double dx, const double dy, const int nDetail);
 
     void Draw(bool _is2d);
 
@@ -110,12 +113,21 @@ public:
 
     void Clear();
 
-    bool GetIsMathRelief() const {return IsMathRelief;}
     bool LoadFromFile(const QString &_fileName);
 
     const QString & GetFileName() const {return FileName;}
 
     double GetDeltaDiag() const {return DeltaDiag;}
+
+    void SetImageFileName(const QString &_fn) {ImageFileName = _fn;}
+    const QString & GetImageFileName() const {return ImageFileName;}
+
+    void SetLegendFileName(const QString &_fn) {LegendFileName = _fn;}
+    const QString & GetLegendFileName() const {return LegendFileName;}
+
+    const auto & GetReliefMap() const {return ReliefMap;}
+
+    void ClearGrid();
 };
 
 #endif // RELIEF_H

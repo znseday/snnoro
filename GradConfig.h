@@ -6,10 +6,12 @@
 #include "SignalNode.h"
 #include "UnitGradDescent.h"
 #include "Route.h"
-#include "Types.h"
+#include "TypesAndUtils.h"
 #include "Relief.h"
 
 #include <GL/glu.h>
+
+extern const QString ConfigsExtension;
 
 class TargetFunctionBase;
 
@@ -33,8 +35,8 @@ protected:
     mutable GLint vport[4];
     mutable GLdouble modl[16], proj[16];
 
-    //QRectF Area;
     std::vector<SignalNode> Nodes;
+    int iCurNode = -1;
 
     double CurCost = std::numeric_limits<double>::max();
 
@@ -84,6 +86,8 @@ public:
     void SetRoutes(const std::vector<Route> &_routes) {Routes = _routes;}
     void SetRelief(Relief3D *_relief3D) {Relief = _relief3D;}
 
+    void SetAbonentsPosForRoutes(const std::vector<Route> &_routes);
+
     const Relief3D * GetRelief() const {return Relief;}
 
 //    void SetRandomNodeCoords(const QRectF &_area);
@@ -125,6 +129,15 @@ public:
 
 
     void CalcAccessRateForCurrent(); // DEBUG
+
+    void SelectCurNodeByRealXY(double x, double y);
+    void PutCurNodeByRealXYZ(double x, double y, double z);
+    void SetDirectCurNodeByRealXYZ(double x, double y, double z);
+
+    int Get_iCurNode() const {return iCurNode;}
+    const SignalNode & GetCurNode() const;
+
+    void SetNode(int ind, const SignalNode &_node);
 };
 
 //bool operator<(const MyConfig &a, const MyConfig &b)

@@ -1,13 +1,11 @@
 #ifndef EXPORT_H
 #define EXPORT_H
 
-
 #include <vector>
 
 #include <QVector2D>
 #include <QString>
 
-//#include <QTableWidget>
 class QTableWidget;
 
 //struct ExportGeneralInfo

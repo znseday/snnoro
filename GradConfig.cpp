@@ -14,6 +14,8 @@
 
 constexpr double arfThreshold = 0.5;
 
+const QString ConfigsExtension = "*.cnf";
+
 using namespace std;
 
 void MyConfig::StatsStruct::Reset()
@@ -121,22 +123,10 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             double x = (p.Pos.x()-offsetX)*k;
             double y = (p.Pos.y()-offsetY)*k;
 
-            double z;
-
-            if (Relief->GetIsMathRelief())
-            {
-//                z = ???;
-                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-                //glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
-                z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
-                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
-            }
+            double z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
+            glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
         }
         glEnd();
-
 
         for (const auto & p : r.Points)
         {
@@ -145,53 +135,28 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
             else
                 glColor3f(0.1f, 0.1f, 0.8f);
 
-
             //glPointSize(3.0 + p.Weight*16.0);
             //glBegin(GL_POINTS);
             //glVertex3f((p.Pos.x()-offsetX)*k, (p.Pos.y()-offsetY)*k, 0);
             //glEnd();
 
-
-
             glPushMatrix();    
             double x = (p.Pos.x()-offsetX)*k;
             double y = (p.Pos.y()-offsetY)*k;
-            double z;
+            double z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
+            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
 
-            if (Relief->GetIsMathRelief())
-            {
-                // z = ???;
-                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-//                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
-
-                z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
-                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
-            }
             gluQuadricDrawStyle(Quadric(), GLU_FILL);
-            gluSphere(Quadric(), 0.02 + 0.05*sqrt(p.Weight), 12, 12);
+            gluSphere(Quadric(), (0.01 + 0.025*sqrt(p.Weight)) * pow(fabs(Settings3d.TrZ), 0.25), 12, 12);
             glPopMatrix();
         }
 
-        if (/*false && */isDrawAbonents)
+        if (/*false && */ isDrawAbonents)
         {
             const auto & abo = r.GetAbonent();
             double x = (abo.Pos.x()-offsetX)*k;
             double y = (abo.Pos.y()-offsetY)*k;
-            double z = 0;
-
-            if (Relief->GetIsMathRelief())
-            {
-                // z = ???;
-                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-            }
-            else
-            {
-//                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? Relief->CalcNormZbyRealXY(p.Pos.x(), p.Pos.y()) : 0));
-                z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
-            }
+            double z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
 
             constexpr float kTri = 0.02f;
 
@@ -267,13 +232,18 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
         }
     }
 
-    for (const auto &node : Nodes)
+//    for (const auto &node : Nodes)
+//    {
+    for (size_t i = 0; i < Nodes.size(); ++i)
     {
-        glColor3f(0.9, 0.1, 0.1);
+//        glColor3f(0.9, 0.1, 0.1);
         glPointSize(3.0f);
         glLineWidth(1.0f);
 
-        node.DrawIn3D(_snt, Relief, Settings3d);
+        if ((int)i == iCurNode)
+            Nodes[i].DrawIn3D(_snt, Relief, Settings3d, SignalNodeStatus::Selected);
+        else
+            Nodes[i].DrawIn3D(_snt, Relief, Settings3d, SignalNodeStatus::NotSelected);
     }
 
     if (_snt == SignalNodeType::Cone)
@@ -740,6 +710,93 @@ void MyConfig::CalcAccessRateForCurrent()
 }
 //----------------------------------------------------------
 
+void MyConfig::SelectCurNodeByRealXY(double x, double y)
+{
+    double minDist = std::numeric_limits<double>::max();
+    for (size_t i = 0; i < Nodes.size(); ++i)
+    {
+        double dist = QLineF(Nodes[i].Pos.toPointF(), {x, y}).length();
+
+//        qDebug() << "i =" << i << "   dist =" << dist << "    x =" << x << "    y = " << y;
+
+        if (dist < minDist)
+        {
+            minDist = dist;
+            iCurNode = i;
+        }
+    }
+}
+//----------------------------------------------------------
+
+void MyConfig::PutCurNodeByRealXYZ(double x, double y, double z)
+{
+    if (iCurNode < 0)
+    {
+        qDebug() << "iCurNode < 0 in MyConfig::PutCurNodeByRealXYZ";
+        return;
+    }
+
+    Nodes.at(iCurNode).Pos = {(float)x, (float)y, (float)z};
+}
+//----------------------------------------------------------
+
+void MyConfig::SetDirectCurNodeByRealXYZ(double x, double y, double z)
+{
+    (void)z;
+
+    if (iCurNode < 0)
+    {
+        qDebug() << "iCurNode < 0 in MyConfig::PutCurNodeByRealXYZ";
+        return;
+    }
+
+    double xLoc = x - Nodes.at(iCurNode).Pos.x();
+    double yLoc = y - Nodes.at(iCurNode).Pos.y();
+
+    double alpha = 0;
+
+    if (xLoc > 0)
+    {
+        alpha = atan(yLoc / xLoc);
+    }
+    else if (xLoc < 0)
+    {
+        if (yLoc >= 0)
+            alpha = atan(yLoc / xLoc) + M_PI;
+        else
+            alpha = atan(yLoc / xLoc) - M_PI;
+    }
+    else // xLoc == 0
+    {
+        if (yLoc > 0)
+            alpha = M_PI / 2.0;
+        else if (yLoc < 0)
+            alpha = -M_PI / 2.0;
+        else
+        {
+            alpha = Nodes.at(iCurNode).Alpha;   // xLoc = 0 and yLoc = 0
+        }
+    }
+
+    Nodes.at(iCurNode).Alpha = alpha;
+}
+//----------------------------------------------------------
+
+const SignalNode & MyConfig::GetCurNode() const
+{
+    if (iCurNode < 0 || iCurNode >= (int)Nodes.size())
+        throw std::runtime_error("iCurNode < 0 || iCurNode >= (int)Nodes.size() in MyConfig::GetCurNode()");
+
+    return Nodes.at(iCurNode);
+}
+//----------------------------------------------------------
+
+void MyConfig::SetNode(int ind, const SignalNode &_node)
+{
+    Nodes.at(ind) = _node;
+}
+//----------------------------------------------------------
+
 void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) const
 {
     constexpr float zOffset = 0.01f;
@@ -755,16 +812,16 @@ void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) co
 
     double offsetX = area.x()+hW; // in meters
     double offsetY = area.y()+hH; // in meters
-    double offsetZ = 0;
+//    double offsetZ = 0;
 
     glLineWidth(1.0f);
     gluQuadricDrawStyle(Quadric(), GLU_FILL);
 
     for (const auto &node : Nodes)
     {
-        double xNode = (node.Pos.x()-offsetX)*k;
-        double yNode = (node.Pos.y()-offsetY)*k;
-        double zNode;
+//        double xNode = (node.Pos.x()-offsetX)*k;
+//        double yNode = (node.Pos.y()-offsetY)*k;
+//        double zNode;
 
         for (const auto & r : Routes)
         {
@@ -807,26 +864,26 @@ void MyConfig::DrawIntersectsWithEllipses(const Settings3dType & _settings3d) co
 
                 double x = (Result.x()-offsetX)*k;
                 double y = (Result.y()-offsetY)*k;
-                double z;
+                double z = zOffset + (_settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(Result.x(), Result.y()) : 0);
 
-                if (Relief->GetIsMathRelief())
-                {
-                    glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? Relief->CalcNormZbyNormXY(x, y) : 0));
-                }
-                else
-                {
-//                    z = (Pos.z()-offsetZ)*relief->Get_kz();
-
-                    z = zOffset + (_settings3d.IsPerspective ? Relief->CalcNormToRealZbyRealXY(Result.x(), Result.y()) : 0);
-                    glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
-                }
+                glTranslatef(x, y, zOffset + (_settings3d.IsPerspective ? z : 0));
 
                 gluSphere(Quadric(), 0.015, 6, 6);
                 glPopMatrix();
-
             }
         }
 
+    }
+}
+//----------------------------------------------------------
+
+void MyConfig::SetAbonentsPosForRoutes(const std::vector<Route> &_routes)
+{
+    assert(_routes.size() == Routes.size());
+
+    for (size_t i = 0; i < _routes.size(); ++i)
+    {
+        Routes.at(i).AbonentDirectAccess().Pos = _routes.at(i).GetAbonent().Pos;
     }
 }
 //----------------------------------------------------------
