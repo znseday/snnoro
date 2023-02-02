@@ -164,11 +164,11 @@ public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);
     void SlotReceiveRouteDeleted(bool isDeleted);
 
-    void SlotReceiveAboTime(int t);
+    void SlotReceiveAboTime(int t, TargetFuncTypeEnum funcType);
     void SlotReceiveFormAboCalcClose();
 
     void SlotReceiveAddTimePointToReport(int t);
-    void SlotReceiveShowAboReport();
+    void SlotReceiveShowAboReport(TargetFuncTypeEnum funcType);
 
     void SlotReceive_iCurConfigChanged(int i);
 

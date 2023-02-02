@@ -94,7 +94,8 @@ void FormAboCalc::showEvent([[maybe_unused]] QShowEvent *event)
     ui->EditCurTime->setText("0");
     ui->SliderTime->setValue(0*3600);
 
-    emit SignalSendAboTime(0); // in sec
+    emit SignalSendAboTime(0,                       // in sec
+                           GetSelectedFuncType());  // TargetFuncTypeEnum
 }
 //----------------------------------------------------------
 
@@ -139,7 +140,8 @@ void FormAboCalc::on_EditCurTime_editingFinished()
 
 void FormAboCalc::on_SliderTime_valueChanged(int value)
 {
-    emit SignalSendAboTime(value); // in sec
+    emit SignalSendAboTime(value,                  // in sec
+                           GetSelectedFuncType()); // TargetFuncTypeEnum
 }
 //----------------------------------------------------------
 
@@ -161,7 +163,35 @@ void FormAboCalc::on_btnShowReport_clicked()
 //    dlgAboReport.InitDialog();
 //    dlgAboReport.CalcTable(???)
 
-    emit SignalShowAboReport();
+    emit SignalShowAboReport(GetSelectedFuncType());
 }
 //----------------------------------------------------------
 
+TargetFuncTypeEnum FormAboCalc::GetSelectedFuncType() const
+{
+    TargetFuncTypeEnum funcType;
+
+    if (ui->rbAdditive->isChecked())
+        funcType = TargetFuncTypeEnum::Additive;
+    else if (ui->rbProbabilistic->isChecked())
+        funcType = TargetFuncTypeEnum::Probabilistic;
+    else
+        funcType = TargetFuncTypeEnum::Unknown;
+
+    return funcType;
+}
+//----------------------------------------------------------
+
+void FormAboCalc::on_rbAdditive_clicked()
+{
+    emit SignalSendAboTime(ui->SliderTime->value(),  // in sec
+                           GetSelectedFuncType());   // TargetFuncTypeEnum
+}
+//----------------------------------------------------------
+
+void FormAboCalc::on_rbProbabilistic_clicked()
+{
+    emit SignalSendAboTime(ui->SliderTime->value(),  // in sec
+                           GetSelectedFuncType());   // TargetFuncTypeEnum
+}
+//----------------------------------------------------------

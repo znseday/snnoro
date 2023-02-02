@@ -28,12 +28,12 @@ enum class NeedToSave
     DoNotNeed
 };
 
-//enum class TargetFuncEnum
-//{
-//    Empty,
-//    Additive,
-//    Probabilistic
-//};
+enum class TargetFuncTypeEnum
+{
+    Unknown,
+    Additive,
+    Probabilistic
+};
 
 class IGradDrawable
 {

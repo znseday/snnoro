@@ -80,8 +80,8 @@ MainWindow::MainWindow(QWidget *parent) :
     formGradGeneral->setWindowTitle("Grad descent Results");
 
 
-    connect(&formAboCalc, SIGNAL(SignalSendAboTime(int)),
-            this, SLOT(SlotReceiveAboTime(int)));
+    connect(&formAboCalc, SIGNAL(SignalSendAboTime(int,TargetFuncTypeEnum)),
+            this, SLOT(SlotReceiveAboTime(int,TargetFuncTypeEnum)));
 
     connect(&formAboCalc, SIGNAL(SignalFormAboCalcClose()),
             this, SLOT(SlotReceiveFormAboCalcClose()));
@@ -90,8 +90,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&formAboCalc, SIGNAL(SignalAddTimePointToReport(int)),
             this, SLOT(SlotReceiveAddTimePointToReport(int)));
 
-    connect(&formAboCalc, SIGNAL(SignalShowAboReport()),
-            this, SLOT(SlotReceiveShowAboReport()));
+    connect(&formAboCalc, SIGNAL(SignalShowAboReport(TargetFuncTypeEnum)),
+            this, SLOT(SlotReceiveShowAboReport(TargetFuncTypeEnum)));
 
     connect(&GradModel, SIGNAL(SignalSendNodeCoords(int, double, double, double)),
             this, SLOT(SlotReceiveNodeCoords(int, double, double, double)));
@@ -740,7 +740,7 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
 }
 //-------------------------------------------------------------
 
-void MainWindow::SlotReceiveAboTime(int t) // in sec
+void MainWindow::SlotReceiveAboTime(int t, TargetFuncTypeEnum funcType) // in sec
 {
 //    qDebug() << "t =" << t << " - " << t/3600.0;
 
@@ -749,7 +749,7 @@ void MainWindow::SlotReceiveAboTime(int t) // in sec
         GradModel.CalcAbonentsPos(t);
 //        GradModel.ApplyRoutesToAllConfigs(NeedToSave::DoNotNeed);
         GradModel.ApplyAbonentsPosInRoutesToAllConfigs();
-        GradModel.ReCalcAboAccessRate();
+        GradModel.ReCalcAboAccessRate(funcType);
         mainGLWidget->repaint();
     }
 }
@@ -770,12 +770,14 @@ void MainWindow::SlotReceiveAddTimePointToReport(int t)
 }
 //-------------------------------------------------------------
 
-void MainWindow::SlotReceiveShowAboReport()
+void MainWindow::SlotReceiveShowAboReport(TargetFuncTypeEnum funcType)
 {
     try
     {
-        dlgAboReport.CalcTable(GradModel.GetActiveConfig(), GradModel.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
-                               GradModel.GetNodesType());
+        dlgAboReport.CalcTable(GradModel.GetActiveConfig(),
+                               GradModel.TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
+                               GradModel.GetNodesType(),
+                               funcType);
 
         dlgAboReport.setWindowTitle
                 (QString("iActiveConfig = %1").arg(GradModel.Get_iCurConfig()));

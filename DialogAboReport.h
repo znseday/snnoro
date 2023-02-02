@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <set>
+#include "TypesAndUtils.h"
 
 enum class SignalNodeType;
 
@@ -24,7 +25,7 @@ public:
     void AddTimePoint(int t);
 
     void CalcTable(const MyConfig &_cnfg, bool _isUseLineBetweenTwoPoints,
-                   const SignalNodeType &_snt);
+                   const SignalNodeType &_snt, TargetFuncTypeEnum funcType);
 
 private:
     Ui::DialogAboReport *ui;

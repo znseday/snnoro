@@ -1085,12 +1085,17 @@ void MyConfig::CalcPointStats()
 }
 //----------------------------------------------------------
 
-void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints, SignalNodeType _snt)
+void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints,
+                                     SignalNodeType _snt,
+                                     TargetFuncTypeEnum funcType)
 {
     for (auto & route : Routes)
     {
         auto & abo = route.AbonentDirectAccess();
         double y1 = 0;
+
+
+
         for (const auto & sn : Nodes)
         {
             double y;// = sn.accessRateSphere(abo.Pos);
@@ -1106,10 +1111,62 @@ void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints, SignalNode
                 y *= IsLineBetweenTwoPoints(sn.Pos, abo.Pos); // осторожно для Cone!
             }
 
-            y1 += y;
+
+            if (funcType == TargetFuncTypeEnum::Additive)
+            {
+                y1 += y;
+            }
+            else if (funcType == TargetFuncTypeEnum::Probabilistic)
+            {
+                if (y1 == 0)  // Для первой итерации - для первого сигнального узла
+                    y1 = y;
+                else
+                    y1 = y1 + y - y1*y;
+            }
+            else
+            {
+                throw std::runtime_error("funcType is TargetFuncTypeEnum::Unknown in MyConfig::CalcAccessRateForAbos");
+            }
         }
+
         abo.accessRate = y1;
     }
+
+
+
+    // Ниже в комментариях - просто образец пробабилистика
+//    for (auto & route : Routes) // все точки всех маршрутов
+//    {
+//        for (auto & p1 : route.Points) // цикл по точкаи одного маршрута
+//        {
+//            double s = 0;
+//            for (size_t k = 0; k < param_count; k += dk)
+//            {
+//                SignalNode sn(QVector3D(params[k],
+//                                            params[k+1],
+//                                            Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+//                                  Nodes[k/dk].R);
+//                double y;
+//                y = sn.accessRateSphere(p1.Pos);
+
+//                if (IsUseLineBetweenTwoPoints)
+//                {
+//                    y *= myConfig->IsLineBetweenTwoPoints(sn.Pos, p1.Pos);
+//                }
+
+//                if (k == 0)
+//                    s = y;
+//                else
+//                {
+//                    s = s + y - s*y;
+//                }
+
+//            }
+
+//            y1 += s;
+//        }
+//    }
+
 }
 //----------------------------------------------------------
 

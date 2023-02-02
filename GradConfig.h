@@ -123,7 +123,9 @@ public:
 
     void TestTwoLines() const;
 
-    void CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints, SignalNodeType _snt);
+    void CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints,
+                               SignalNodeType _snt,
+                               TargetFuncTypeEnum funcType);
 
     void FindCoveredPointsUsingParams(const std::vector<double>& params, SignalNodeType _snt);
 

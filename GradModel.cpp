@@ -1387,12 +1387,13 @@ void MyGradModel::TestGetLastCostForCurrent()
 }
 //----------------------------------------------------------
 
-void MyGradModel::ReCalcAboAccessRate()
+void MyGradModel::ReCalcAboAccessRate(TargetFuncTypeEnum funcType)
 {
     for (auto & c : Configs)
     {
         c.CalcAccessRateForAbos(TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
-                                NodesType); // Заменить на мембер или типа того ?
+                                NodesType,
+                                funcType);
     }
 }
 //----------------------------------------------------------

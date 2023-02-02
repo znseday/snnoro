@@ -185,7 +185,7 @@ public:
 
     void SetIsDrawAbonents(bool _isDrawAbo) {IsDrawAbonents = _isDrawAbo;}
 
-    void ReCalcAboAccessRate();
+    void ReCalcAboAccessRate(TargetFuncTypeEnum funcType);
 
     const auto & GetTargetFunctions() const {return TargetFunctions;}
 

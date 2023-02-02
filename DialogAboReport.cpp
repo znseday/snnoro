@@ -57,8 +57,10 @@ void DialogAboReport::AddTimePoint(int t /*const MyConfig &_cnfg*/)
 // Подумать: может, скопировать только одну нужную конфигурацию,
 // чтобы ее было не жалко портить при расчете accessrate
 // void DialogAboReport::CalcTable(MyGradModel &_gradModel)
-void DialogAboReport::CalcTable(const MyConfig &_cnfg, bool _isUseLineBetweenTwoPoints,
-                                const SignalNodeType &_snt)
+void DialogAboReport::CalcTable(const MyConfig &_cnfg,
+                                bool _isUseLineBetweenTwoPoints,
+                                const SignalNodeType &_snt,
+                                TargetFuncTypeEnum funcType)
 {
     MyConfig tempConfig(_cnfg);
 
@@ -72,7 +74,7 @@ void DialogAboReport::CalcTable(const MyConfig &_cnfg, bool _isUseLineBetweenTwo
             r.CalcAbonentPos(t);
         }
 
-        tempConfig.CalcAccessRateForAbos(_isUseLineBetweenTwoPoints, _snt);
+        tempConfig.CalcAccessRateForAbos(_isUseLineBetweenTwoPoints, _snt, funcType);
 
         ui->Table->setItem(1 + i, 0, new QTableWidgetItem(QString().setNum(t/3600.0, 'f', 3)));
         ui->Table->item(1 + i, 0)->setFlags( ui->Table->item(1 + i, 0)->flags() & ~Qt::ItemIsEditable );

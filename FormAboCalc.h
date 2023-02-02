@@ -2,6 +2,7 @@
 #define FORMABOCALC_H
 
 #include <QDialog>
+#include "TypesAndUtils.h"
 
 
 namespace Ui {
@@ -35,10 +36,16 @@ private slots:
 
     void on_btnShowReport_clicked();
 
+    void on_rbAdditive_clicked();
+
+    void on_rbProbabilistic_clicked();
+
 private:
     Ui::FormAboCalc *ui;
 
 //    DialogAboReport dlgAboReport;
+
+    TargetFuncTypeEnum GetSelectedFuncType() const;
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -47,11 +54,10 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 signals:
-    void SignalSendAboTime(int);
+    void SignalSendAboTime(int, TargetFuncTypeEnum);
     void SignalFormAboCalcClose();
-
     void SignalAddTimePointToReport(int);
-    void SignalShowAboReport();
+    void SignalShowAboReport(TargetFuncTypeEnum);
 };
 
 #endif // FORMABOCALC_H

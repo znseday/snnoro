@@ -30,11 +30,10 @@ double TargetFuncAdditiveSphereFirstPhase::operator()(const std::vector<double> 
 
     for (size_t k = 0; k < param_count; k += dk)
     {
-            SignalNode sn(QVector3D(params[k],
-                                    params[k+1],
-                                    Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                          Nodes[k/2].R);
-
+        SignalNode sn(QVector3D(params[k],
+                                params[k+1],
+                                Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                Nodes[k/2].R);
 
 //            qDebug() << "params[k] =" << params[k];
 //            qDebug() << "params[k+1] =" <<  params[k+1];
@@ -51,7 +50,6 @@ double TargetFuncAdditiveSphereFirstPhase::operator()(const std::vector<double> 
                 {
                     y *= myConfig->IsLineBetweenTwoPoints(sn.Pos, p1.Pos);
                 }
-
 
                 double w = p1.Weight;  // !!!!!!!!!!!!!!
                 y *= w;                   //*(1-tanh(k_step*(x-sn.R)));
