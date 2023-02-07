@@ -68,6 +68,8 @@ bool DialogNewGradConfig::CreateNewGradModel(MyGradModel &_gradModel)
 
     _gradModel.CreatePopulation(configCount);
 
+    _gradModel.ReCreateReliefListsAndBuildRelief();
+
     _gradModel.MarkAsNotSaved();
 
     return true;

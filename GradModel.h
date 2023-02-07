@@ -159,6 +159,7 @@ public:
     const QString &GetFileName() const {return FileName;}
 
     void NewGradModelBulk();
+    void ReCreateReliefListsAndBuildRelief();
     void ReCreateSignalNodes(size_t _count, double _R, double _betha);  // ???
 
     void ApplySignalNodesToAllConfigs();

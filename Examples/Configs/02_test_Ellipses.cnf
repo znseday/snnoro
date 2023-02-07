@@ -24,7 +24,7 @@
                 "R": 2000
             }
         ],
-        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_02.json",
+        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_02.relief",
         "ReliefInfo": {
             "IsUseReliefRandomSeed": true,
             "ReliefCoeffs": {
@@ -90,10 +90,10 @@
         "SignalNodeType": "Cone"
     },
     "GradDesc": {
-        "GradDescFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/GD_04.json"
+        "GradDescFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/GD_04.gds"
     },
     "TargetFunctionSettings": {
-        "TargetFuncFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/TF_02.json",
+        "TargetFuncFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Settings/TF_02.tfs",
         "TargetFuncFirstPhase": "AdditiveConeFirstPhase",
         "TargetFuncSecondPhase": "AdditiveConeSecondPhase"
     }

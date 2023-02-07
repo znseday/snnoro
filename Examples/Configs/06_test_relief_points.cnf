@@ -32,7 +32,7 @@
                 "R": 200
             }
         ],
-        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_06_test_points_2.json",
+        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_06_test_points_2.relief",
         "ReliefInfo": {
             "IsUseReliefRandomSeed": true,
             "ReliefCoeffs": {
@@ -47,27 +47,5 @@
         "SignalNodeCount": 5,
         "SignalNodeType": "Sphere",
         "TargetCostFunction": "MyFunction"
-    },
-    "GradDesc": {
-        "Alpha": 0.35,
-        "CallBackFreq": 20,
-        "Eps": 0.01,
-        "Eta_FirstJump": 10,
-        "Eta_k_dec": 2.01,
-        "Eta_k_inc": 1.08,
-        "FinDifMethod": false,
-        "MaxIters": 500,
-        "MaxTime": 5,
-        "Min_Eta": 1e-07
-    },
-    "TargetFunctionSettings": {
-        "A2": 40000000,
-        "Aarf": 100000000,
-        "IsUseCoveredFlag": true,
-        "IsUseLineBetweenTwoPoints": false,
-        "R_nodeOverlap": 50,
-        "k_step_ot": 0.03,
-        "offX": 0.01,
-        "p": 1e-05
     }
 }

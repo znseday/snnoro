@@ -36,7 +36,7 @@
                 "R": 1200
             }
         ],
-        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_02.json",
+        "ReliefFileName": "C:/Users/User7SZ/Documents/Qt_Projects/build-snnoro-Desktop_Qt_6_2_2_MinGW_64_bit-Debug/Reliefs/Relief_02.relief",
         "ReliefInfo": {
             "IsUseReliefRandomSeed": true,
             "ReliefCoeffs": {
@@ -132,10 +132,10 @@
         "SignalNodeType": "Sphere"
     },
     "GradDesc": {
-        "GradDescFileName": "Settings/GD_03.json"
+        "GradDescFileName": "Settings/GD_03.gds"
     },
     "TargetFunctionSettings": {
-        "TargetFuncFileName": "Settings/TF_01.json",
+        "TargetFuncFileName": "Settings/TF_01.tfs",
         "TargetFuncFirstPhase": "AdditiveSphereFirstPhase",
         "TargetFuncSecondPhase": "AdditiveSphereSecondPhase"
     }

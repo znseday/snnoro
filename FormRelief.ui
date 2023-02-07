@@ -356,6 +356,7 @@
     <addaction name="actionRelief_Calc_Discrete_Img"/>
     <addaction name="separator"/>
     <addaction name="actionRelief_Calc_Relief_And_Save_As"/>
+    <addaction name="separator"/>
     <addaction name="actionRelief_Undo"/>
     <addaction name="actionRelief_Redo"/>
    </widget>
@@ -441,6 +442,9 @@
    </property>
   </action>
   <action name="actionRelief_Undo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -452,8 +456,14 @@
    <property name="text">
     <string>Redo</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionLegend_Undo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -464,6 +474,9 @@
    </property>
    <property name="text">
     <string>Redo</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

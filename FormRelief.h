@@ -125,6 +125,10 @@ private slots:
     void on_tableColors_cellChanged(int row, int column);
 
 private:
+
+    static constexpr int MaxLegendsForUndo = 4;
+    static constexpr int MaxReliefsForUndo = 4;
+
     Ui::FormRelief *ui;
 
     QWidget *wgtForScrollArea;
@@ -158,7 +162,13 @@ private:
 
     Relief3D Relief;
 
-    std::vector<std::vector<CorolAndZ_pair>> TempGrid;
+    using GridType = std::vector<std::vector<CorolAndZ_pair>>;
+
+    GridType TempGrid;
+    std::list<GridType> TempGridList; // for Undo/Redo  // Подумать - возможно сделать массив
+
+    void SaveCurrentTempGridToTempGridList();
+    void UndoTempGridChanges();
 
     bool IsLegendSaved = true;
     bool IsReliefSaved = true;

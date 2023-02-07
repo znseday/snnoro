@@ -222,6 +222,9 @@ void FormRelief::on_btnApply_clicked()
 //    SaveCurrentLegendToTemp();
 
 //    IsLegendReadyToBeSavedToTemp = true;
+
+    CalcLegendColor();
+
     IsLegendSaved = false;
 }
 //-------------------------------------------------------------
@@ -283,7 +286,8 @@ void FormRelief::PrintImgReliefDstFromTempGrid()
 {
     if (TempGrid.empty())
     {
-        throw std::logic_error("TempGrid is empty in PrintImgReliefDstFromTempGrid()");
+        qDebug() << "TempGrid is empty in PrintImgReliefDstFromTempGrid()";
+        return;
     }
 
     int rows = TempGrid.size();         // Размер сетки
@@ -556,6 +560,45 @@ rgbaType FormRelief::AnalyseImageAreaForColor(int xStart, int yStart, int xEnd, 
 }
 //-------------------------------------------------------------
 
+void FormRelief::SaveCurrentTempGridToTempGridList()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+
+    if (TempGrid.empty())
+        return;
+
+    TempGridList.push_back(TempGrid);
+
+    if (TempGridList.size() > MaxReliefsForUndo)
+    {
+        TempGridList.pop_front();
+    }
+
+    ui->actionRelief_Undo->setEnabled(true);
+}
+//-------------------------------------------------------------
+
+void FormRelief::UndoTempGridChanges()
+{
+    if (TempGridList.empty())
+    {
+        qDebug() << "TempGridList is empty()";
+        return;
+    }
+
+    TempGrid = std::move(TempGridList.back());
+    TempGridList.pop_back();
+
+    PrintImgReliefDstFromTempGrid();
+    IsReliefSaved = false;
+
+    if (TempGridList.empty())
+    {
+        ui->actionRelief_Undo->setEnabled(false);
+    }
+}
+//-------------------------------------------------------------
+
 bool FormRelief::LoadSrcImage(const QString &_fn)
 {
     if (!ImgReliefSrc.load(_fn))
@@ -645,6 +688,8 @@ void FormRelief::CalcDiscreteImgByExistentRelief()
 //        QMessageBox::critical(this, "Error", "There must be at least 2 colors in the legend");
 //        return;
 //    }
+
+    SaveCurrentTempGridToTempGridList();
 
     TempGrid.clear();
 
@@ -741,6 +786,8 @@ void FormRelief::SlotReceiveChangePoint(int x, int y)
         qDebug() << "TempGrid is empty in SlotReceiveChangePoint()";
         return;
     }
+
+    SaveCurrentTempGridToTempGridList();
 
     QColor c = ui->tableColors->item(LastSelectedColorRow, 0)->background().color();
     if (!c.isValid())
@@ -844,9 +891,6 @@ void FormRelief::on_chbColorToLegend_stateChanged([[maybe_unused]] int arg1)
 
 void FormRelief::on_actionRelief_Calc_Relief_And_Save_As_triggered()
 {
-//    if (!CheckIsReliefSavedAndSaveIfNecessary())
-//        return;
-
     if (TempGrid.empty())
     {
         throw std::logic_error("TempGrid is empty in PrintImgReliefDstFromTempGrid()");
@@ -917,14 +961,15 @@ void FormRelief::on_actionFile_Open_Relief_triggered()
         throw std::runtime_error("Relief File Not Found or Couldn't be read");
 
     ImageSrcFileName = Relief.GetImageFileName();
-    CorrectFileNameIfDoesntExist(ImageSrcFileName, ReliefsImagesDefaultDir, "Image for Relief", ReliefsImagesExtension);
+    bool isImageSrcFileNameCorrected = CorrectFileNameIfDoesntExist(ImageSrcFileName, ReliefsImagesDefaultDir, "Image for Relief", ReliefsImagesExtension);
+
     Relief.SetImageFileName(ImageSrcFileName);
     qDebug() << "Relief.GetImageFileName(); =" << Relief.GetImageFileName();
     if (!LoadSrcImage(Relief.GetImageFileName()))
         QMessageBox::critical(this, "Error", "Image's been not loaded");
 
     LegendFileName = Relief.GetLegendFileName();
-    CorrectFileNameIfDoesntExist(LegendFileName, ReliefsLegendsDefaultDir, "Legend for Relief", ReliefsLegendsExtension);
+    bool isLegendFileNameCorrected = CorrectFileNameIfDoesntExist(LegendFileName, ReliefsLegendsDefaultDir, "Legend for Relief", ReliefsLegendsExtension);
     Relief.SetLegendFileName(LegendFileName);
     qDebug() << "Relief.GetLegendFileName(); =" << Relief.GetLegendFileName();
     if (!LoadLegend(Relief.GetLegendFileName()))
@@ -940,7 +985,11 @@ void FormRelief::on_actionFile_Open_Relief_triggered()
 
     CalcDiscreteImgByExistentRelief();
 
-    IsReliefSaved = true;
+    if (isImageSrcFileNameCorrected || isLegendFileNameCorrected)
+        IsReliefSaved = false;
+    else
+        IsReliefSaved = true;
+
 }
 //-------------------------------------------------------------
 
@@ -958,7 +1007,7 @@ void FormRelief::on_tableColors_itemChanged(QTableWidgetItem *item) // сраб�
 
 void FormRelief::on_actionRelief_Undo_triggered()
 {
-
+    UndoTempGridChanges();
 //    ui->actionRelief_Redo->setEnabled(true);
 //    ui->actionRelief_Undo->setEnabled(false);
 }
@@ -1013,6 +1062,13 @@ void FormRelief::SaveCurrentLegendToTemp()
     }
 
     LegendColorList.push_back(std::move(TempLegendColor));
+
+    if (LegendColorList.size() > MaxLegendsForUndo)
+    {
+        LegendColorList.pop_front();
+    }
+
+    ui->actionLegend_Undo->setEnabled(true);
 }
 //-------------------------------------------------------------
 
@@ -1029,33 +1085,57 @@ void FormRelief::UndoLegendChanges()
     auto TempLegendColor = std::move(LegendColorList.back());
     LegendColorList.pop_back();
 
-
 //    assert((int)TempLegendColor.Colors.size() == ui->tableColors->rowCount());
 
+    OldRowCount = ui->tableColors->rowCount();
     ui->tableColors->setRowCount(TempLegendColor.Colors.size());
 
 
     for (int i = 0; i < (int)TempLegendColor.Colors.size(); ++i)
     {
-        QTableWidgetItem *pItem = ui->tableColors->item(i, 0);
+        QTableWidgetItem *pItem;
+        if (i >= OldRowCount)
+        {
+            pItem = new QTableWidgetItem;
+            pItem->setFlags(Qt::ItemIsEnabled /*| Qt::ItemIsSelectable*/);
+            ui->tableColors->setItem(i, 0, pItem);
+        }
+        else
+            pItem = ui->tableColors->item(i, 0);
+
         auto c = TempLegendColor.Colors[i].first;
 
         pItem->setBackground(QBrush({c.b, c.g, c.r, c.a}));
 //        ui->tableColors->setItem(i, 0, pItem);
 
-        QTableWidgetItem *pItem2 = ui->tableColors->item(i, 1);
+        QTableWidgetItem *pItem2;
+
+        if (i >= OldRowCount)
+        {
+            pItem2 = new QTableWidgetItem;
+            ui->tableColors->setItem(i, 1, pItem2);
+        }
+        else
+            pItem2 = ui->tableColors->item(i, 1);
+
         pItem2->setText(QString().setNum(TempLegendColor.Colors[i].second));
 //        QTableWidgetItem *pItem2 = new QTableWidgetItem(QString().setNum(i*100));
 //        ui->tableColors->setItem(i, 1, pItem2);
     }
 
     IsLegendReadyToBeSavedToTemp = true;
+
+    if (LegendColorList.empty())
+    {
+        ui->actionLegend_Undo->setEnabled(false);
+    }
 }
 //-------------------------------------------------------------
 
-
 void FormRelief::on_tableColors_cellChanged(int row, int column)
 {
+    (void)row;  (void)column;
+
     IsLegendSaved = false;
 
 //    if (row == 0)

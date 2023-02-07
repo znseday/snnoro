@@ -42,7 +42,7 @@ public:
     virtual ~IGradDrawable() = default;
 };
 
-void CorrectFileNameIfDoesntExist(QString &_fileName,
+[[nodiscard]] bool CorrectFileNameIfDoesntExist(QString &_fileName,
                                   const QString &_defDir,
                                   const QString &_what,
                                   const QString &_extension);

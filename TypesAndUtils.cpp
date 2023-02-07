@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-void CorrectFileNameIfDoesntExist(QString &_fileName,
+bool CorrectFileNameIfDoesntExist(QString &_fileName,
                                   const QString &_defDir,
                                   const QString &_what,
                                   const QString &_extension)
@@ -13,7 +13,7 @@ void CorrectFileNameIfDoesntExist(QString &_fileName,
     if ( !QFile::exists(_fileName) )
     {
         QFileInfo fileInfo(_fileName);
-        _fileName = _defDir + "/" + fileInfo.fileName();
+        _fileName = _defDir + "/" + fileInfo.fileName(); // автоматическая корректировка
     }
 
     if ( !QFile::exists(_fileName) )
@@ -26,6 +26,8 @@ void CorrectFileNameIfDoesntExist(QString &_fileName,
                                       "Choose " + _what + " file", ".",
                                       _what + " Files (" + _extension + ")");
 
+            return true; // выполнили корректировку вручную
+
             if (_fileName.isEmpty())
             {
                 QMessageBox::critical(nullptr, "Error", _what + " file not set and won't be loaded");
@@ -37,4 +39,11 @@ void CorrectFileNameIfDoesntExist(QString &_fileName,
             QMessageBox::critical(nullptr, "Error", _what + " file not set and won't be loaded");
         }
     }
+    else
+    {
+        return true; // было достаточно автоматической корректировки
+    }
+
+
+    return false; // Корректировка не потребовалась
 }

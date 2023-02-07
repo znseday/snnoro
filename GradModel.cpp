@@ -511,6 +511,14 @@ void MyGradModel::NewGradModelBulk()
 }
 //----------------------------------------------------------
 
+void MyGradModel::ReCreateReliefListsAndBuildRelief()
+{
+    Relief.ReCreateReliefListsGL();
+    Relief.BuildReliefToGL(false);
+    Relief.BuildReliefToGL(true);
+}
+//----------------------------------------------------------
+
 void MyGradModel::ReCreateSignalNodes(size_t _count, double _R, double _betha)
 {
     Nodes.clear();
@@ -727,7 +735,9 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     {
         QString ReliefFileName = configObject["ReliefFileName"].toString();
 
-        CorrectFileNameIfDoesntExist(ReliefFileName, ReliefsDefaultDir, "Relief", ReliefsExtension);
+        bool isCorrected = CorrectFileNameIfDoesntExist(ReliefFileName, ReliefsDefaultDir, "Relief", ReliefsExtension);
+        if (isCorrected)
+            qDebug() << "ReliefFileName has been corrected";
 
         if (!Relief.LoadFromFile(ReliefFileName))
             throw std::runtime_error("Relief File Not Found or Couldn't be read");
@@ -852,7 +862,12 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     GradDescFileName = gradDescObject["GradDescFileName"].toString();
 
-    CorrectFileNameIfDoesntExist(GradDescFileName, SettingsDefaultDir, "GradDesc", SettingsGDExtension);
+    bool isGradDescFileNameCorrected = CorrectFileNameIfDoesntExist(GradDescFileName,
+                                                                    SettingsDefaultDir,
+                                                                    "GradDesc",
+                                                                    SettingsGDExtension);
+    if (isGradDescFileNameCorrected)
+        qDebug() << "GradDescFileName has been corrected";
 
     if (!GradDescLoadFromFile(ProtoGradDesc, GradDescFileName))
     {
@@ -878,7 +893,9 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
     QString TargetFuncFileName = targetFuncObject["TargetFuncFileName"].toString();
 
-    CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc", SettingsTFExtension);
+    bool isTargetFuncFileNameCorrected = CorrectFileNameIfDoesntExist(TargetFuncFileName, SettingsDefaultDir, "TargetFunc", SettingsTFExtension);
+    if (isTargetFuncFileNameCorrected)
+        qDebug() << "TargetFuncFileName has been corrected";
 
     if (!TargetFuncSettingsGlobal.LoadFromFile(TargetFuncFileName))
     {

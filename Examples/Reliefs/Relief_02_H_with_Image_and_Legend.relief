@@ -6,7 +6,7 @@
         "top": 200
     },
     "ImageFileName": "Reliefs/SrcImages/01.jpg",
-    "LegendFileName": "Reliefs/Legends/Legend_01.json",
+    "LegendFileName": "Reliefs/Legends/Legend_01.rlgd",
     "Rows": [
         {
             "row": [
