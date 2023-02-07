@@ -104,7 +104,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::AfterShow()
 {
-    on_actionFileOpen_Grad_Descent_triggered();
+//    on_actionFileOpen_Grad_Descent_triggered();  // for debug
+    on_actionRelief_Relief_Creator_triggered();    // for debug
 }
 //-------------------------------------------------------------
 

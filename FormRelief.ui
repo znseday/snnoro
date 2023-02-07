@@ -271,6 +271,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnApply">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
@@ -349,11 +352,22 @@
     <property name="title">
      <string>Relief</string>
     </property>
+    <addaction name="separator"/>
     <addaction name="actionRelief_Calc_Discrete_Img"/>
     <addaction name="separator"/>
     <addaction name="actionRelief_Calc_Relief_And_Save_As"/>
+    <addaction name="actionRelief_Undo"/>
+    <addaction name="actionRelief_Redo"/>
+   </widget>
+   <widget class="QMenu" name="menuLegend">
+    <property name="title">
+     <string>Legend</string>
+    </property>
+    <addaction name="actionLegend_Undo"/>
+    <addaction name="actionLegend_Redo"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuLegend"/>
    <addaction name="menuRelief"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -408,6 +422,48 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionEdit_Undo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionEdit_Redo">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionRelief_Undo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRelief_Redo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionLegend_Undo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionLegend_Redo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Redo</string>
    </property>
   </action>
  </widget>

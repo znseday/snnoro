@@ -14,6 +14,7 @@ class QMouseEvent;
 
 #include "Relief.h"
 //#include <vector>
+//#include <stack>
 
 struct rgbaType
 {
@@ -113,6 +114,16 @@ private slots:
 
     void on_tableColors_itemChanged(QTableWidgetItem *item);
 
+    void on_actionRelief_Undo_triggered();
+
+    void on_actionRelief_Redo_triggered();
+
+    void on_actionLegend_Undo_triggered();
+
+    void on_actionLegend_Redo_triggered();
+
+    void on_tableColors_cellChanged(int row, int column);
+
 private:
     Ui::FormRelief *ui;
 
@@ -130,7 +141,15 @@ private:
 
     int LastSelectedColorRow = -1;
 
+    int OldRowCount = 0;
     LegendColorType LegendColor;
+
+    bool IsLegendReadyToBeSavedToTemp = false;
+    std::list<LegendColorType> LegendColorList; // for Undo/Redo  // Подумать - возможно сделать массив
+
+    void SaveCurrentLegendToTemp();
+    void UndoLegendChanges();
+
     void CalcLegendColor();
     int FindNearestColorIndex(int r, int g, int b);
 
