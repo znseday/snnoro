@@ -126,8 +126,8 @@ private slots:
 
 private:
 
-    static constexpr int MaxLegendsForUndo = 4;
-    static constexpr int MaxReliefsForUndo = 4;
+    static constexpr int MaxLegendsForUndo = 16;
+    static constexpr int MaxReliefsForUndo = 16;
 
     Ui::FormRelief *ui;
 
