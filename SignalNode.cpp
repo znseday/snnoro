@@ -318,12 +318,12 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
 
         gluQuadricDrawStyle(Quadric(), GLU_FILL);
 
-        if (_sns == SignalNodeStatus::Selected)
-        {
-            qDebug() << "_settings3d.TrZ =" << _settings3d.TrZ;
-            qDebug() << "z =" << z;
-            qDebug() << "pow =" << pow(fabs(fabs(_settings3d.TrZ) - z), 0.25);
-        }
+//        if (_sns == SignalNodeStatus::Selected)
+//        {
+//            qDebug() << "_settings3d.TrZ =" << _settings3d.TrZ;
+//            qDebug() << "z =" << z;
+//            qDebug() << "pow =" << pow(fabs(fabs(_settings3d.TrZ) - z), 0.25);
+//        }
 
 //        gluSphere(Quadric(), 0.01 * pow(fabs(fabs(_settings3d.TrZ) - z), 0.25), 12, 12);
         gluSphere(Quadric(), 0.015, 12, 12);

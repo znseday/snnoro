@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QStateMachine>
 #include <QMainWindow>
 
 class MainGLWidget;
@@ -159,6 +160,14 @@ private:
     bool CheckIsSavedAndSaveIfNecessary();
 
     void UpdateCurNodeCoordsOnLabel();
+
+    QStateMachine StateMachine;
+    QState StateNothing;
+    QState StateNormal;
+    QState StateGradDesc;
+
+    void InitStateMachine();
+
 
 public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);

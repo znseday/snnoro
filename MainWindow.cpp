@@ -96,6 +96,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&GradModel, SIGNAL(SignalSendNodeCoords(int, double, double, double)),
             this, SLOT(SlotReceiveNodeCoords(int, double, double, double)));
 
+
+
+
+
+
     mainGLWidget->setMouseTracking(true);
 
     dlgAboReport.InitDialog();
@@ -554,6 +559,47 @@ void MainWindow::UpdateCurNodeCoordsOnLabel()
 //        qDebug() << "e.what() =" << e.what();
         lblCoord->setText("n/a");
     }
+}
+//-------------------------------------------------------------
+
+void MainWindow::InitStateMachine()
+{
+//    QStateMachine* psm = new QStateMachine;
+//    QState* pStateOff = new QState(psm);
+//    QRect recti(0, 0, nButtonWidth, wgt.height());
+//    pStateOff->assignProperty(pcmd, "geometry", recti);
+//    pStateOff->assignProperty(plblOff, "visible", true);
+//    pStateOff->assignProperty(plblOn, "visible", false);
+
+//    psm->setInitialState(pStateOff);
+
+//    QState* pStateOn = new QState(psm);
+//    QRect rect2(nButtonWidth, 0, nButtonWidth, wgt.height());
+//    pStateOn->assignProperty(pcmd, "geometry", rect2);
+//    pStateOn->assignProperty(plblOff, "visible", false);
+//    pStateOn->assignProperty(plblOn, "visible", true);
+//    QSignalTransition* ptransl =
+//    pStateOff->addTransition(pcmd, SIGNAL(clicked()), pStateOn);
+//    QSignalTransition* ptrans2 =
+//    pStateOn->addTransition(pcmd, SIGNAL(clicked()), pStateOff);
+//    QPropertyAnimation* paniml =
+//    new QPropertyAnimation(pcmd, "geometry");
+//    ptransl->addAnimation(paniml);
+//    QPropertyAnimation* panim2 =
+//    new QPropertyAnimation(pcmd, "geometry");
+//    ptrans2->addAnimation(panim2);
+//    psm->start();
+
+//    ui->actionFileSave_Grad_Config->setEnabled()
+    StateNothing.assignProperty(ui->actionFileSave_Grad_Config, "enabled", false);
+
+    StateMachine.setInitialState(&StateNothing);
+
+    StateNormal.assignProperty(ui->actionFileSave_Grad_Config, "enabled", true);
+
+    StateNothing.addTransition(ui->actionFileOpen_Grad_Descent, SIGNAL(triggered()), &StateNormal);
+
+    StateMachine.start();
 }
 //-------------------------------------------------------------
 

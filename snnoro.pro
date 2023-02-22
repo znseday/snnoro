@@ -2,7 +2,7 @@ TEMPLATE = app
 
 #QT += gui
 
-QT += widgets openglwidgets
+QT += widgets openglwidgets statemachine
 
 CONFIG += c++17 console
 CONFIG -= app_bundle
