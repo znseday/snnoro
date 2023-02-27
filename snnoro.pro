@@ -41,6 +41,7 @@ SOURCES += \
         MainWindow.cpp \
         MathRelief.cpp \
         MathUtils.cpp \
+        MyStateMachine.cpp \
         Relief.cpp \
         Route.cpp \
         SignalNode.cpp \
@@ -75,6 +76,7 @@ HEADERS += \
     MainWindow.h \
     MathRelief.h \
     MathUtils.h \
+    MyStateMachine.h \
     Relief.h \
     Route.h \
     SignalNode.h \

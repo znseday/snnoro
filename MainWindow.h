@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QStateMachine>
+//#include <QStateMachine>
 #include <QMainWindow>
 
 class MainGLWidget;
@@ -23,6 +23,8 @@ class FormGradGeneral;
 
 #include "FormAboCalc.h"
 #include "DialogAboReport.h"
+
+#include "MyStateMachine.h"
 
 class QCloseEvent;
 
@@ -161,16 +163,17 @@ private:
 
     void UpdateCurNodeCoordsOnLabel();
 
-    QStateMachine StateMachine;
-    QState *StateNothing;
-    QState *StateNormal;
-    QState *StateGradDesc;
-    QState *StateShowAbonents;
-    QState *StateNewRoute;
-    QState *StateCurPosOrAngleEditting;
+//    QStateMachine StateMachine;
+//    QState *StateNothing;
+//    QState *StateNormal;
+//    QState *StateGradDesc;
+//    QState *StateShowAbonents;
+//    QState *StateNewRoute;
+//    QState *StateCurPosOrAngleEditting;
 
-    void InitStateMachine();
+//    void InitStateMachine();
 
+    MyStateMachine StateMachine;
 
 public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);
@@ -194,13 +197,13 @@ public:
 protected:
     void closeEvent(QCloseEvent *event) override;
 
-signals:
+//signals:
 
-    void SignalStateToNormal();
-    void SignalStateToGradDesc();
-    void SignalStateToShowAbonents();
-    void SignalStateToAddNewRoute();
-    void SignalStateToCurPosOrAngleEditing();
+//    void SignalStateToNormal();
+//    void SignalStateToGradDesc();
+//    void SignalStateToShowAbonents();
+//    void SignalStateToAddNewRoute();
+//    void SignalStateToCurPosOrAngleEditing();
 };
 
 #endif // MAINWINDOW_H

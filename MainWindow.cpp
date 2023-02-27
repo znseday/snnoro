@@ -98,7 +98,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    InitStateMachine();
+//    InitStateMachine();
+    StateMachine.InitStateMachine(ui);
 
 
     mainGLWidget->setMouseTracking(true);
@@ -168,7 +169,9 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
     GradModel.Set_nDraws(35);
     mainGLWidget->repaint();
 
-    emit SignalStateToNormal();
+//    emit SignalStateToNormal();
+    StateMachine.ToNormal();
+
 }
 //-------------------------------------------------------------
 
@@ -261,7 +264,8 @@ void MainWindow::on_actionGradStart_Phase_1_triggered()
 
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1... ");
 
-    emit SignalStateToGradDesc();
+//    emit SignalStateToGradDesc();
+    StateMachine.ToGradDesc();
 
     GradModel.StartGradDescent_Phase_1(mainGLWidget);
 
@@ -269,7 +273,8 @@ void MainWindow::on_actionGradStart_Phase_1_triggered()
     UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 
-    emit SignalStateToNormal();
+//    emit SignalStateToNormal();
+    StateMachine.ToNormal();
 }
 //-------------------------------------------------------------
 
@@ -277,7 +282,8 @@ void MainWindow::on_actionGradStop_triggered()
 {
     GradModel.CancelGradDescent();
 
-    emit SignalStateToNormal();
+//    emit SignalStateToNormal();
+    StateMachine.ToNormal();
 }
 //-------------------------------------------------------------
 
@@ -312,7 +318,8 @@ void MainWindow::on_actionGradStart_Phase_2_triggered()
 
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 2...");
 
-    emit SignalStateToGradDesc();
+//    emit SignalStateToGradDesc();
+    StateMachine.ToGradDesc();
 
     GradModel.StartGradDescent_Phase_2(mainGLWidget);
 
@@ -320,7 +327,8 @@ void MainWindow::on_actionGradStart_Phase_2_triggered()
     UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 
-    emit SignalStateToNormal();
+//    emit SignalStateToNormal();
+    StateMachine.ToNormal();
 }
 //-------------------------------------------------------------
 
@@ -472,7 +480,8 @@ void MainWindow::on_actionEdit_Add_New_Route_triggered()
         return;
 
     WorldMode = WorldModeType::AddingRoutePoints;
-    emit SignalStateToAddNewRoute();
+//    emit SignalStateToAddNewRoute();
+    StateMachine.ToAddNewRoute();
 }
 //-------------------------------------------------------------
 
@@ -483,7 +492,8 @@ void MainWindow::on_actionEdit_Finish_Route_triggered()
     GradModel.MarkAsNotSaved();
 
     WorldMode = WorldModeType::Nothing;
-    emit SignalStateToNormal();
+//    emit SignalStateToNormal();
+    StateMachine.ToNormal();
 }
 //-------------------------------------------------------------
 
@@ -548,7 +558,7 @@ void MainWindow::UpdateCurNodeCoordsOnLabel()
     }
 }
 //-------------------------------------------------------------
-
+/*
 void MainWindow::InitStateMachine()
 {
     if (StateMachine.isRunning())
@@ -818,12 +828,13 @@ void MainWindow::InitStateMachine()
     StateCurPosOrAngleEditting->addTransition(this, SIGNAL(SignalStateToNormal()), StateNormal);
 
     StateMachine.start();
-}
+}*/
 //-------------------------------------------------------------
 
 void MainWindow::on_actionFileNew_Grad_Config_triggered()
 {
-    if (StateMachine.isRunning())
+//    if (StateMachine.isRunning())
+    if (StateMachine.IsRunning())
     {
         qDebug() << "StateMachine is already running";
     }
@@ -940,7 +951,8 @@ void MainWindow::on_actionGradStart_Phase_1_for_Current_Config_triggered()
 
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1 for Current Config... ");
 
-    emit SignalStateToGradDesc();
+//    emit SignalStateToGradDesc();
+    StateMachine.ToGradDesc();
 
     GradModel.StartGradDescent_Phase_1_for_Current(mainGLWidget);
 
@@ -948,7 +960,8 @@ void MainWindow::on_actionGradStart_Phase_1_for_Current_Config_triggered()
     UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 
-    emit SignalStateToNormal();
+//    emit SignalStateToNormal();
+    StateMachine.ToNormal();
 }
 //-------------------------------------------------------------
 
@@ -959,7 +972,8 @@ void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
 
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1 for Current Config... ");
 
-    emit SignalStateToGradDesc();
+//    emit SignalStateToGradDesc();
+    StateMachine.ToGradDesc();
 
     GradModel.StartGradDescent_Phase_2_for_Current(mainGLWidget);
 
@@ -967,7 +981,8 @@ void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
     UpdateCurNodeCoordsOnLabel();
     this->setWindowTitle(QApplication::applicationName());
 
-    emit SignalStateToNormal();
+//    emit SignalStateToNormal();
+    StateMachine.ToNormal();
 }
 //-------------------------------------------------------------
 
@@ -1000,7 +1015,8 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
 
     mainGLWidget->repaint();
 
-    emit SignalStateToShowAbonents();
+//    emit SignalStateToShowAbonents();
+    StateMachine.ToShowAbonents();
 }
 //-------------------------------------------------------------
 
@@ -1026,7 +1042,8 @@ void MainWindow::SlotReceiveFormAboCalcClose()
     GradModel.SetIsDrawAbonents(false);
     mainGLWidget->repaint();
 
-    emit SignalStateToNormal();
+//    emit SignalStateToNormal();
+    StateMachine.ToNormal();
 }
 //-------------------------------------------------------------
 
@@ -1164,12 +1181,14 @@ void MainWindow::on_actionEdit_Editing_Pos_Cur_Node_triggered()
 
         WorldMode = WorldModeType::EditingPosSignalNode;
         ui->actionEdit_Editing_Angle_Cur_Node->setChecked(false);
-        emit SignalStateToCurPosOrAngleEditing();
+//        emit SignalStateToCurPosOrAngleEditing();
+        StateMachine.ToCurPosOrAngleEditing();
     }
     else
     {
         WorldMode = WorldModeType::Nothing;
-        emit SignalStateToNormal();
+//        emit SignalStateToNormal();
+        StateMachine.ToNormal();
     }
 }
 //-------------------------------------------------------------
@@ -1187,12 +1206,14 @@ void MainWindow::on_actionEdit_Editing_Angle_Cur_Node_triggered()
 
         WorldMode = WorldModeType::EditingAngleSignalNode;
         ui->actionEdit_Editing_Pos_Cur_Node->setChecked(false);
-        emit SignalStateToCurPosOrAngleEditing();
+//        emit SignalStateToCurPosOrAngleEditing();
+        StateMachine.ToCurPosOrAngleEditing();
     }
     else
     {
         WorldMode = WorldModeType::Nothing;
-        emit SignalStateToNormal();
+//        emit SignalStateToNormal();
+        StateMachine.ToNormal();
     }
 }
 //-------------------------------------------------------------
