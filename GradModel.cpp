@@ -398,6 +398,13 @@ void MyGradModel::AddNewPointToLastRoute(double wx, double wy)
 
 void MyGradModel::FinishRoute()
 {
+    if (Routes.back().Points.empty())
+    {
+        qDebug() << "Routes.back().Points.empty() --- there is no new route? -- back route will be deleted now";
+        Routes.pop_back();
+        return;
+    }
+
     Routes.back().CalcOtherWeights();
     Routes.back().CalcRouteLength();
 }

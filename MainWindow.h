@@ -65,7 +65,7 @@ private slots:
 
     void on_actionGradChange_Population_size_triggered();
 
-    void on_actionShow_Tables_triggered();
+    void on_actionGradShow_Tables_triggered();
 
     void on_actionGradCalc_Bonds_triggered();
 
@@ -87,7 +87,7 @@ private slots:
 
     void on_actionEdit_Edit_Signal_Nodes_for_All_triggered();
 
-    void on_actionTwoLines_triggered();
+    void on_actionDebug_TwoLines_triggered();
 
     void on_actionGradStart_Phase_1_for_Current_Config_triggered();
 
@@ -162,9 +162,12 @@ private:
     void UpdateCurNodeCoordsOnLabel();
 
     QStateMachine StateMachine;
-    QState StateNothing;
-    QState StateNormal;
-    QState StateGradDesc;
+    QState *StateNothing;
+    QState *StateNormal;
+    QState *StateGradDesc;
+    QState *StateShowAbonents;
+    QState *StateNewRoute;
+    QState *StateCurPosOrAngleEditting;
 
     void InitStateMachine();
 
@@ -190,6 +193,14 @@ public:
     // QWidget interface
 protected:
     void closeEvent(QCloseEvent *event) override;
+
+signals:
+
+    void SignalStateToNormal();
+    void SignalStateToGradDesc();
+    void SignalStateToShowAbonents();
+    void SignalStateToAddNewRoute();
+    void SignalStateToCurPosOrAngleEditing();
 };
 
 #endif // MAINWINDOW_H

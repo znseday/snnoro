@@ -74,7 +74,7 @@
     <property name="title">
      <string>Grad</string>
     </property>
-    <widget class="QMenu" name="menuCount_of_Viewports">
+    <widget class="QMenu" name="menuGrad_Count_of_Viewports">
      <property name="title">
       <string>Count of Viewports</string>
      </property>
@@ -86,7 +86,7 @@
      <addaction name="actionGrad_SetDrawCount_Custom"/>
     </widget>
     <addaction name="actionGradSwitch_Show_One_All"/>
-    <addaction name="menuCount_of_Viewports"/>
+    <addaction name="menuGrad_Count_of_Viewports"/>
     <addaction name="separator"/>
     <addaction name="actionGradSwitch_Pespective_for_Current"/>
     <addaction name="actionGradSwitch_Pespective_for_All"/>
@@ -104,7 +104,7 @@
     <addaction name="actionGradStart_Phase_2_for_Current_Config"/>
     <addaction name="actionGradStop"/>
     <addaction name="separator"/>
-    <addaction name="actionShow_Tables"/>
+    <addaction name="actionGradShow_Tables"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuRelief">
@@ -146,7 +146,7 @@
     <property name="title">
      <string>Debug</string>
     </property>
-    <addaction name="actionTwoLines"/>
+    <addaction name="actionDebug_TwoLines"/>
     <addaction name="separator"/>
     <addaction name="actionDebug_Get_Last_Cost_For_Current"/>
     <addaction name="actionDebug_Calc_Access_Rate_for_current"/>
@@ -291,7 +291,7 @@
     <string>Change Population size</string>
    </property>
   </action>
-  <action name="actionShow_Tables">
+  <action name="actionGradShow_Tables">
    <property name="enabled">
     <bool>true</bool>
    </property>
@@ -362,7 +362,7 @@
     <string>Edit Signal Nodes for All...</string>
    </property>
   </action>
-  <action name="actionTwoLines">
+  <action name="actionDebug_TwoLines">
    <property name="text">
     <string>TwoLines</string>
    </property>
