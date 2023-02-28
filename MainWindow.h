@@ -46,80 +46,54 @@ public:
     void AfterShow();
 
 private slots:
-    void on_actionFileExit_triggered();
+    void on_actionFileNew_Grad_Config_triggered();
     void on_actionFileOpen_Grad_Descent_triggered();
+    void on_actionFileSave_Grad_Config_triggered();
+    void on_actionFileSave_Grad_Config_As_triggered();
+    void on_actionFileExit_triggered();
+
+    void on_actionGradSwitch_Show_One_All_triggered();
     void on_actionGradSetDraw2_triggered();
     void on_actionGradSetDraw3_triggered();
-    void on_actionGradSwitch_Show_One_All_triggered();
+    void on_actionGradSetDraw4_triggered();
+    void on_actionGradSetDraw6_triggered();
+    void on_actionGradSetDraw9_triggered();
+    void on_actionGrad_SetDrawCount_Custom_triggered();
     void on_actionGradSwitch_Pespective_for_Current_triggered();
     void on_actionGradSwitch_Pespective_for_All_triggered();
     void on_actionGradReset_View_Point_for_Current_triggered();
     void on_actionGradReset_View_Point_for_All_triggered();
-    void on_actionGradSetDraw4_triggered();
-    void on_actionGradSetDraw6_triggered();
-    void on_actionGradSetDraw9_triggered();
-
-    void on_actionGradStart_Phase_1_triggered();
-    void on_actionGradStop_triggered();
-    void on_actionGradSettings_triggered();
-    void on_actionGradStart_Phase_2_triggered();
-    void on_actionGradRemove_Uncovered_triggered();
-
     void on_actionGradChange_Population_size_triggered();
-
+    void on_actionGradSettings_triggered();
+    void on_actionGradCalc_Bonds_triggered();
+    void on_actionGradStart_Phase_1_triggered();
+    void on_actionGradStart_Phase_1_for_Current_Config_triggered();
+    void on_actionGradRemove_Uncovered_triggered();
+    void on_actionGradStart_Phase_2_triggered();
+    void on_actionGradStart_Phase_2_for_Current_Config_triggered();
+    void on_actionGradStop_triggered();
     void on_actionGradShow_Tables_triggered();
 
-    void on_actionGradCalc_Bonds_triggered();
+    void on_actionWorld_Show_Abonents_triggered();
+    void on_actionWorld_Show_Grid_triggered();
 
     void on_actionRelief_Relief_Creator_triggered();
 
-    void on_actionFileSave_Grad_Config_triggered();
-
-//    void on_actionWorld_Show_Coords_toggled(bool arg1);
-
     void on_actionEdit_Add_New_Route_triggered();
-
     void on_actionEdit_Finish_Route_triggered();
-
-    void on_actionFileSave_Grad_Config_As_triggered();
-
-    void on_actionFileNew_Grad_Config_triggered();
-
-    void on_actionEdit_Delete_Route_triggered();
-
-    void on_actionEdit_Edit_Signal_Nodes_for_All_triggered();
-
-    void on_actionDebug_TwoLines_triggered();
-
-    void on_actionGradStart_Phase_1_for_Current_Config_triggered();
-
-    void on_actionGradStart_Phase_2_for_Current_Config_triggered();
-
-    void on_actionEdit_Edit_Signal_Nodes_for_Current_triggered();
-
-    void on_actionEdit_Edit_Routes_triggered();
-
-    void on_actionWorld_Show_Abonents_triggered();
-
-    void on_actionEdit_Change_Count_of_Nodes_triggered();
-
-    void on_actionDebug_Get_Last_Cost_For_Current_triggered();
-
-    void on_actionGrad_SetDrawCount_Custom_triggered();
-
-    void on_actionDebug_Calc_Access_Rate_for_current_triggered();
-
+    void on_actionEdit_Delete_Route_triggered(); 
     void on_actionEdit_Select_Cur_Node_triggered();
-
     void on_actionEdit_Editing_Pos_Cur_Node_triggered();
-
     void on_actionEdit_Editing_Angle_Cur_Node_triggered();
-
-//    void on_actionWorld_Show_Coords_triggered();
-
+    void on_actionEdit_Edit_Signal_Nodes_for_All_triggered();
+    void on_actionEdit_Edit_Signal_Nodes_for_Current_triggered();
+    void on_actionEdit_Edit_Routes_triggered();
+    void on_actionEdit_Change_Count_of_Nodes_triggered();
     void on_actionEdit_Apply_Cur_Node_to_All_Configs_triggered();
 
-    void on_actionWorld_Show_Grid_triggered();
+    void on_actionDebug_TwoLines_triggered();
+    void on_actionDebug_Get_Last_Cost_For_Current_triggered();
+    void on_actionDebug_Calc_Access_Rate_for_current_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -163,16 +137,6 @@ private:
 
     void UpdateCurNodeCoordsOnLabel();
 
-//    QStateMachine StateMachine;
-//    QState *StateNothing;
-//    QState *StateNormal;
-//    QState *StateGradDesc;
-//    QState *StateShowAbonents;
-//    QState *StateNewRoute;
-//    QState *StateCurPosOrAngleEditting;
-
-//    void InitStateMachine();
-
     MyStateMachine StateMachine;
 
 public slots:
@@ -197,13 +161,6 @@ public:
 protected:
     void closeEvent(QCloseEvent *event) override;
 
-//signals:
-
-//    void SignalStateToNormal();
-//    void SignalStateToGradDesc();
-//    void SignalStateToShowAbonents();
-//    void SignalStateToAddNewRoute();
-//    void SignalStateToCurPosOrAngleEditing();
 };
 
 #endif // MAINWINDOW_H
