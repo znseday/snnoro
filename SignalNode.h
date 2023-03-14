@@ -73,7 +73,9 @@ public:
     SignalNode(SignalNode &&) = default;
     SignalNode & operator=(SignalNode &&) = default;
 
-    void SetRandomCoord(const Relief3D &_relief);
+    void SetRandomCoord(const QRectF &_area, const Relief3D &_relief);
+
+
     void SetRandomAlpha() {Alpha = rand()/(double)RAND_MAX*2.0*M_PI;}
     bool SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos);
 
@@ -82,7 +84,7 @@ public:
 
     friend std::ostream & operator<<(std::ostream & s, const SignalNode &ob);
 
-    static SignalNodeType ConvertStringToSignalNodeType(QString &str);
+    static SignalNodeType ConvertStringToSignalNodeType(const QString &str);
     static QString ConvertSignalNodeTypeToString(SignalNodeType snt);
 
 

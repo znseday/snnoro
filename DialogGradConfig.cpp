@@ -90,6 +90,46 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
     ui->EditGrid_dx->setText(QString().setNum(_gm.GetGridSettings().dx));
     ui->EditGrid_dy->setText(QString().setNum(_gm.GetGridSettings().dy));
     ui->EditGrid_nDetails->setText(QString().setNum(_gm.GetGridSettings().nDetails));
+
+
+    switch (_gm.GetBoundsRandCoords().BoundsType)
+    {
+    case BoundsTypeEnum::AllArea:
+        ui->rbBoundsRandCoordsAllArea->setChecked(true);
+        break;
+    case BoundsTypeEnum::ByRoutes:
+        ui->rbBoundsRandCoordsByRoutes->setChecked(true);
+        break;
+    case BoundsTypeEnum::Selected:
+        ui->rbBoundsRandCoordsSelected->setChecked(true);
+        break;
+    default:
+        throw std::runtime_error("Unknown BoundsTypeEnum in DialogGradConfig::InitDialog");
+    }
+    ui->EditBoundsRandCoordsStartX->setText(QString().setNum(_gm.GetBoundsRandCoords().SelXstart));
+    ui->EditBoundsRandCoordsStartY->setText(QString().setNum(_gm.GetBoundsRandCoords().SelYstart));
+    ui->EditBoundsRandCoordsWidth->setText(QString().setNum(_gm.GetBoundsRandCoords().SelW));
+    ui->EditBoundsRandCoordsHeight->setText(QString().setNum(_gm.GetBoundsRandCoords().SelH));
+
+
+    switch (_gm.GetBoundsGradDesc().BoundsType)
+    {
+    case BoundsTypeEnum::AllArea:
+        ui->rbBoundsGradDescAllArea->setChecked(true);
+        break;
+    case BoundsTypeEnum::ByRoutes:
+        ui->rbBoundsGradDescByRoutes->setChecked(true);
+        break;
+    case BoundsTypeEnum::Selected:
+        ui->rbBoundsGradDescSelected->setChecked(true);
+        break;
+    default:
+        throw std::runtime_error("Unknown BoundsTypeEnum in DialogGradConfig::InitDialog");
+    }
+    ui->EditBoundsGradDescStartX->setText(QString().setNum(_gm.GetBoundsGradDesc().SelXstart));
+    ui->EditBoundsGradDescStartY->setText(QString().setNum(_gm.GetBoundsGradDesc().SelYstart));
+    ui->EditBoundsGradDescWidth->setText(QString().setNum(_gm.GetBoundsGradDesc().SelW));
+    ui->EditBoundsGradDescHeight->setText(QString().setNum(_gm.GetBoundsGradDesc().SelH));
 }
 //------------------------------------------------------------------
 
@@ -156,6 +196,38 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
                         ui->EditGrid_dy->text().toDouble(),
                         ui->EditGrid_nDetails->text().toInt()});
 
+
+    BoundsStruct bs;
+    if (ui->rbBoundsRandCoordsAllArea->isChecked())
+        bs.BoundsType = BoundsTypeEnum::AllArea;
+    else if (ui->rbBoundsRandCoordsByRoutes->isChecked())
+        bs.BoundsType = BoundsTypeEnum::ByRoutes;
+    else if (ui->rbBoundsRandCoordsSelected->isChecked())
+        bs.BoundsType = BoundsTypeEnum::Selected;
+    else
+        throw std::runtime_error("Unknown BoundsTypeEnum in DialogGradConfig::ReInitGradModel");
+
+    bs.SelXstart = ui->EditBoundsRandCoordsStartX->text().toDouble();
+    bs.SelYstart = ui->EditBoundsRandCoordsStartY->text().toDouble();
+    bs.SelW = ui->EditBoundsRandCoordsWidth->text().toDouble();
+    bs.SelH = ui->EditBoundsRandCoordsHeight->text().toDouble();
+    _gm.SetBoundsRandCoords(bs);
+
+
+    if (ui->rbBoundsGradDescAllArea->isChecked())
+        bs.BoundsType = BoundsTypeEnum::AllArea;
+    else if (ui->rbBoundsGradDescByRoutes->isChecked())
+        bs.BoundsType = BoundsTypeEnum::ByRoutes;
+    else if (ui->rbBoundsGradDescSelected->isChecked())
+        bs.BoundsType = BoundsTypeEnum::Selected;
+    else
+        throw std::runtime_error("Unknown BoundsTypeEnum in DialogGradConfig::ReInitGradModel");
+
+    bs.SelXstart = ui->EditBoundsGradDescStartX->text().toDouble();
+    bs.SelYstart = ui->EditBoundsGradDescStartY->text().toDouble();
+    bs.SelW = ui->EditBoundsGradDescWidth->text().toDouble();
+    bs.SelH = ui->EditBoundsGradDescHeight->text().toDouble();
+    _gm.SetBoundsGradDesc(bs);
 }
 //------------------------------------------------------------------
 
