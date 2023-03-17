@@ -21,9 +21,11 @@ bool operator<(const BondType &lhs, const BondType &rhs)
 }
 //----------------------------------------------------------
 
-void SignalNode::SetRandomCoord(const Relief3D &_relief)
+//void SignalNode::SetRandomCoord(const Relief3D &_relief)
+void SignalNode::SetRandomCoord(const QRectF &_area, const Relief3D &_relief)
 { 
-    const auto &_area = _relief.GetArea();
+//    const auto &_area = _relief.GetArea();
+//    const auto &_area = _relief.GetArea();
 
     Pos.setX( SimpleRandom(_area.left(), _area.right()) );
     Pos.setY( SimpleRandom(_area.bottom(), _area.top()) );
@@ -215,7 +217,7 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 }
 //----------------------------------------------------------
 
-SignalNodeType SignalNode::ConvertStringToSignalNodeType(QString &str) // static member-function
+SignalNodeType SignalNode::ConvertStringToSignalNodeType(const QString &str) // static member-function
 {
     if (str.toUpper() == "SPHERE")
         return SignalNodeType::Sphere;

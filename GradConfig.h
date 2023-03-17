@@ -28,6 +28,26 @@ struct Settings3dType
 };
 
 
+enum class BoundsTypeEnum
+{
+    AllArea, ByRoutes, Selected
+};
+
+struct BoundsStruct
+{
+    BoundsTypeEnum BoundsType = BoundsTypeEnum::AllArea;
+    double SelXstart = 0;
+    double SelYstart = 0;
+    double SelW = 0;
+    double SelH = 0;
+    QJsonObject RepresentAsJsonObject() const;
+    void LoadFromJsonObject(const QJsonObject &_jsonObject);
+    static BoundsTypeEnum ConvertStringToBoundsTypeEnum(const QString &str);
+    static QString ConvertBoundsTypeEnumToString(BoundsTypeEnum bt);
+};
+
+
+
 class MyConfig
 {
 protected:
@@ -49,7 +69,7 @@ protected:
     Relief3D *Relief = nullptr;
 
     void InitNodeCoordsFromParams(const std::vector<double> & _params, SignalNodeType _snt);
-    void InitParamsFromNodeCoords(const int _param_count, SignalNodeType _snt);
+    void InitParamsFromNodeCoords(const int _param_count, SignalNodeType _snt, const QRectF &_area);
 
     struct StatsStruct
     {
@@ -59,7 +79,6 @@ protected:
         double LastCostPhase2 = 0;
         void Reset();
     } Stats;
-
 
     void DrawIntersectsWithEllipses(const Settings3dType & _settings3d) const;
 
@@ -90,21 +109,27 @@ public:
 
     const Relief3D * GetRelief() const {return Relief;}
 
-//    void SetRandomNodeCoords(const QRectF &_area);
-    void SetRandomNodeCoords();
+    void SetRandomNodeCoords(const QRectF &_area);
+//    void SetRandomNodeCoords();
 
-    void DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const;
+    void DrawSomeArea(const QRectF & _area, double offsetX, double offsetY,
+                   double offsetZ, double k, bool _isPerpective) const;
+
+    void DrawIn3D(SignalNodeType _snt, bool isDrawAbonents,
+                  const QRectF &_areaNodeCoords, const QRectF &_areaGradDesc) const;
 
     bool StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoGD,
 //                          const TargetFuncSettingsStruct &_targetFuncSettings,
                           /*const*/ TargetFunctionBase &_targetFunction,
                           SignalNodeType _snt,
+                          const QRectF &_area,
                           IGradDrawable *pGLWidget = nullptr);
 
     bool StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoGD,
 //                               const TargetFuncSettingsStruct &_targetFuncSettings,
                                /*const*/ TargetFunctionBase &_targetFunction,
                                SignalNodeType _snt,
+                               const QRectF &_area,
                                IGradDrawable *pGLWidget = nullptr);
     void CancelGradDescent();
 

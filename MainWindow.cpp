@@ -107,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::AfterShow()
 {
-//    on_actionFileOpen_Grad_Descent_triggered();  // for debug
+    on_actionFileOpen_Grad_Descent_triggered();  // for debug
 //    on_actionRelief_Relief_Creator_triggered();    // for debug
 }
 //-------------------------------------------------------------
@@ -384,6 +384,9 @@ void MainWindow::on_actionGradSettings_triggered()
 
         GradModel.MarkAsNotSaved();
 //        GradModel.SetGridSettings(ui->actionWorld_Show_Grid->ac)
+
+        GradModel.ReCalcAreasByBounds();
+
         on_actionWorld_Show_Grid_triggered();
 
         mainGLWidget->repaint();

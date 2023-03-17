@@ -71,7 +71,14 @@ protected:
 
     QString GradDescFileName;
 
+    BoundsStruct BoundsRandCoords;   QRectF AreaRandCoords;
+    BoundsStruct BoundsGradDesc;     QRectF AreaGradDesc;
+
+    QRectF CalcSomeAreaByBounds(const BoundsStruct &_bs);
+
 public:
+
+    void ReCalcAreasByBounds();
 
     void SetActiveTargetFuncFirstPhase(const std::string &s) {ActiveTargetFuncFirstPhase = s;}
     const std::string & GetActiveTargetFuncFirstPhase() const {return ActiveTargetFuncFirstPhase;}
@@ -203,6 +210,13 @@ public:
 
     void SetGridSettings(const GridSettingsStruct &_gs) {GridSettings = _gs;}
     const GridSettingsStruct & GetGridSettings() const {return GridSettings;}
+
+    void SetBoundsRandCoords(const BoundsStruct &_bs) {BoundsRandCoords = _bs;}
+    const BoundsStruct & GetBoundsRandCoords() const {return BoundsRandCoords;}
+
+    void SetBoundsGradDesc(const BoundsStruct &_bs) {BoundsGradDesc = _bs;}
+    const BoundsStruct & GetBoundsGradDesc() const {return BoundsGradDesc;}
+
 
 signals:
 

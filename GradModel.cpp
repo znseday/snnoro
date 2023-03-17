@@ -161,7 +161,7 @@ void MyGradModel::DrawOneConfig(size_t ind, bool OnlyOne)
         glLoadIdentity();
     }
 
-    Configs.at(ind).DrawIn3D(NodesType, IsDrawAbonents);
+    Configs.at(ind).DrawIn3D(NodesType, IsDrawAbonents, AreaRandCoords, AreaGradDesc);
 }
 //----------------------------------------------------------
 
@@ -545,7 +545,8 @@ void MyGradModel::ApplySignalNodesToAllConfigs()
         cnf.SetNodes(Nodes);
         if (IsRandomNodeCoords)
         {
-            cnf.SetRandomNodeCoords();
+//            cnf.SetRandomNodeCoords(CalcAreaByBoundsRandCoords());
+            cnf.SetRandomNodeCoords(AreaRandCoords);
         }
     }
     IsSaved = false;
@@ -862,7 +863,10 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
     }
 
 
-     GridSettings.LoadFromJsonObject(configObject["GridSettings"].toObject());
+    GridSettings.LoadFromJsonObject(configObject["GridSettings"].toObject());
+
+    BoundsRandCoords.LoadFromJsonObject(configObject["BoundsRandCoords"].toObject());
+    BoundsGradDesc.LoadFromJsonObject(configObject["BoundsGradDesc"].toObject());
 
 
     const QJsonObject &gradDescObject = _jsonObject["GradDesc"].toObject();
@@ -972,6 +976,106 @@ QJsonArray MyGradModel::RepresentNodesAsJsonArray() const
 }
 //----------------------------------------------------------
 
+QRectF MyGradModel::CalcSomeAreaByBounds(const BoundsStruct &_bs)
+{
+    switch (_bs.BoundsType)
+    {
+    case BoundsTypeEnum::AllArea:
+        return Relief.GetArea();
+    break;
+    case BoundsTypeEnum::ByRoutes:
+    {
+        double min_x = Relief.GetArea().right();
+        double max_x = Relief.GetArea().left();
+        double min_y = Relief.GetArea().bottom();
+        double max_y = Relief.GetArea().top();
+
+        for (const auto & route : Routes)
+        {
+            for (const auto & p1 : route.Points)
+            {
+                if (p1.Pos.x() < min_x)
+                    min_x = p1.Pos.x();
+                if (p1.Pos.y() < min_y)
+                    min_y = p1.Pos.y();
+
+                if (p1.Pos.x() > max_x)
+                    max_x = p1.Pos.x();
+                if (p1.Pos.y() > max_y)
+                    max_y = p1.Pos.y();
+            }
+        }
+
+        return QRectF(min_x, min_y, max_x-min_x, max_y-min_y);
+        break;
+    }
+    break;
+    case BoundsTypeEnum::Selected:
+
+        return QRectF(_bs.SelXstart, _bs.SelYstart,
+                      _bs.SelW, _bs.SelH);
+    break;
+    default:
+        throw std::runtime_error("Unknown BoundsTypeEnum in MyGradModel::CalcAreaByBounds");
+    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::ReCalcAreasByBounds()
+{
+     AreaRandCoords = CalcSomeAreaByBounds(BoundsRandCoords);
+     AreaGradDesc = CalcSomeAreaByBounds(BoundsGradDesc);
+}
+//----------------------------------------------------------
+
+/*
+QRectF MyGradModel::CalcAreaByBoundsRandCoords()
+{
+    switch (BoundsRandCoords.BoundsType)
+    {
+    case BoundsTypeEnum::AllArea:
+        AreaRandCoords =  Relief.GetArea();
+    break;
+    case BoundsTypeEnum::ByRoutes:
+    {
+        double min_x = Relief.GetArea().left(); // для жесткий ограничений без поиска
+        double max_x = Relief.GetArea().right();
+        double min_y = Relief.GetArea().top();
+        double max_y = Relief.GetArea().bottom();
+
+        for (const auto & route : Routes)
+        {
+            for (const auto & p1 : route.Points)
+            {
+                if (p1.Pos.x() < min_x)
+                    min_x = p1.Pos.x();
+                if (p1.Pos.y() < min_y)
+                    min_y = p1.Pos.y();
+
+                if (p1.Pos.x() > max_x)
+                    max_x = p1.Pos.x();
+                if (p1.Pos.y() > max_y)
+                    max_y = p1.Pos.y();
+            }
+        }
+
+        AreaRandCoords = QRectF(min_x, min_y, max_x-min_x, max_y-min_y);
+        break;
+    }
+    break;
+    case BoundsTypeEnum::Selected:
+
+        AreaRandCoords = QRectF(BoundsRandCoords.SelXstart, BoundsRandCoords.SelYstart,
+                      BoundsRandCoords.SelW, BoundsRandCoords.SelH);
+    break;
+    default:
+        throw std::runtime_error("Unknown BoundsTypeEnum in MyGradModel::CalcAreaByBoundsRandCoords");
+    }
+
+    return AreaRandCoords;
+}*/
+//----------------------------------------------------------
+
 //QJsonObject MyGradModel::RepresentReliefInfoAsJsonObject() const
 //{
 //    QJsonObject ReliefInfoObject;
@@ -1039,12 +1143,14 @@ bool MyGradModel::LoadFromFile(const QString &_fileName)
         return false;
     }
 
+//    ReCalcAreasByBounds();
 
     CreatePopulation(configCount);
 
     Relief.ReCreateReliefListsGL();
     Relief.BuildReliefToGL(false);
     Relief.BuildReliefToGL(true);
+
 
     //IsLoaded = true;
     IsSaved = true;
@@ -1054,6 +1160,8 @@ bool MyGradModel::LoadFromFile(const QString &_fileName)
 
 void MyGradModel::CreatePopulation(size_t _count)
 {
+    ReCalcAreasByBounds();
+
     Configs.clear();
 
     MyConfig protoConfig;
@@ -1067,7 +1175,8 @@ void MyGradModel::CreatePopulation(size_t _count)
     if (IsRandomNodeCoords)
     {
 //        protoConfig.SetRandomNodeCoords(Relief.GetArea());
-        protoConfig.SetRandomNodeCoords();
+//        protoConfig.SetRandomNodeCoords(CalcAreaByBoundsRandCoords());
+         protoConfig.SetRandomNodeCoords(AreaRandCoords);
     }
 
 
@@ -1084,7 +1193,8 @@ void MyGradModel::CreatePopulation(size_t _count)
         if (IsRandomNodeCoords)
         {
 //            cnf.SetRandomNodeCoords(Relief.GetArea());
-            cnf.SetRandomNodeCoords();
+//            cnf.SetRandomNodeCoords(CalcAreaByBoundsRandCoords());
+            cnf.SetRandomNodeCoords(AreaRandCoords);
         }
     }
 }
@@ -1123,7 +1233,7 @@ bool MyGradModel::StartGradDescent_Phase_1(IGradDrawable *pGLWidget)
             break;
 
 //        c.StartGradDescent(iDraw, ProtoGradDesc, TargetFuncSettingsGlobal, *it_TargetFunc->second, NodesType, pGLWidget);
-        c.StartGradDescent(iDraw, ProtoGradDesc, tf, NodesType, pGLWidget);
+        c.StartGradDescent(iDraw, ProtoGradDesc, tf, NodesType, AreaGradDesc, pGLWidget);
 
         --iDraw;
     }
@@ -1173,7 +1283,7 @@ bool MyGradModel::StartGradDescent_Phase_1_for_Current(IGradDrawable *pGLWidget)
 //                                            *it_TargetFunc->second, NodesType, pGLWidget);
 
     Configs.at(iCurConfig).StartGradDescent(1, ProtoGradDesc,
-                                            tf, NodesType, pGLWidget);
+                                            tf, NodesType, AreaGradDesc, pGLWidget);
 
     cout << "Cost After Grad:" << endl;
     cout << Configs.at(iCurConfig).GradDesc.GetLastCost() << endl;
@@ -1225,7 +1335,7 @@ bool MyGradModel::StartGradDescent_Phase_2(IGradDrawable *pGLWidget)
 //        c.StartFinalGradDescent(iDraw, ProtoGradDesc, TargetFuncSettingsGlobal,
 //                                NodesType, pGLWidget);
         c.StartFinalGradDescent(iDraw, ProtoGradDesc,
-                                tf, NodesType, pGLWidget);
+                                tf, NodesType, AreaGradDesc, pGLWidget);
         --iDraw;
     }
 
@@ -1273,7 +1383,7 @@ bool MyGradModel::StartGradDescent_Phase_2_for_Current(IGradDrawable *pGLWidget)
 //                                                 NodesType, pGLWidget);
 
     Configs.at(iCurConfig).StartFinalGradDescent(1, ProtoGradDesc,
-                                                 tf, NodesType, pGLWidget);
+                                                 tf, NodesType, AreaGradDesc, pGLWidget);
 
     cout << "Cost After Grad:" << endl;
     cout << Configs.at(iCurConfig).GradDesc.GetLastCost() << endl;
@@ -1369,6 +1479,10 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
     ConfigurationObject.insert("ReliefFileName", Relief.GetFileName() );
 
     ConfigurationObject.insert("GridSettings", GridSettings.RepresentAsJsonObject());
+
+
+    ConfigurationObject.insert("BoundsRandCoords", BoundsRandCoords.RepresentAsJsonObject());
+    ConfigurationObject.insert("BoundsGradDesc", BoundsGradDesc.RepresentAsJsonObject());
 
     mainObject.insert("Configuration", ConfigurationObject);
 

@@ -12,11 +12,71 @@
 
 #include "TargetFunctions/TargetFunctionBase.h"
 
-constexpr double arfThreshold = 0.5;
+static constexpr double arfThreshold = 0.5;
 
 const QString ConfigsExtension = "*.cnf";
 
+static constexpr float zOffset = 0.01f;
+
 using namespace std;
+
+
+//----------------------------------------------------------
+BoundsTypeEnum BoundsStruct::ConvertStringToBoundsTypeEnum(const QString &str)  // static
+{
+    if (str.toUpper() == "ALLAREA" || str.toUpper() == "ALL_AREA")
+        return BoundsTypeEnum::AllArea;
+    else if (str.toUpper() == "BYROUTES" || str.toUpper() == "BY_ROUTES")
+        return BoundsTypeEnum::ByRoutes;
+    else if (str.toUpper() == "SELECTED")
+        return BoundsTypeEnum::Selected;
+    else
+    {
+        qDebug() << "Warning! Unknown BoundsTypeEnum in BoundsStruct::ConvertStringToBoundsTypeEnum";
+        qDebug() << "BoundsTypeEnum::AllArea will be set as default";
+        return BoundsTypeEnum::AllArea;
+    }
+}
+//----------------------------------------------------------
+
+QString BoundsStruct::ConvertBoundsTypeEnumToString(BoundsTypeEnum bt)  // static
+{
+    switch (bt)
+    {
+    case BoundsTypeEnum::AllArea:
+        return "AllArea";
+    case BoundsTypeEnum::ByRoutes:
+        return "ByRoutes";
+    case BoundsTypeEnum::Selected:
+        return "Selected";
+    default:
+        throw std::runtime_error("Unknown BoundsTypeEnum in BoundsStruct::ConvertBoundsTypeEnumToString");
+    }
+}
+//----------------------------------------------------------
+
+QJsonObject BoundsStruct::RepresentAsJsonObject() const
+{
+    QJsonObject res;
+    res.insert("BoundsType", ConvertBoundsTypeEnumToString(BoundsType));
+    res.insert("SelXstart", SelXstart);
+    res.insert("SelYstart", SelYstart);
+    res.insert("SelW", SelW);
+    res.insert("SelH", SelH);
+    return res;
+}
+//----------------------------------------------------------
+
+void BoundsStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
+{
+    BoundsType = ConvertStringToBoundsTypeEnum(_jsonObject["BoundsType"].toString("Unknown"));
+    SelXstart = _jsonObject["SelXstart"].toDouble(0);
+    SelYstart = _jsonObject["SelYstart"].toDouble(0);
+    SelW = _jsonObject["SelW"].toDouble(100);
+    SelH = _jsonObject["SelH"].toDouble(100);
+}
+//----------------------------------------------------------
+//----------------------------------------------------------
 
 void MyConfig::StatsStruct::Reset()
 {
@@ -35,21 +95,76 @@ GLUquadric* MyConfig::Quadric()
 }
 //----------------------------------------------------------
 
-//void MyConfig::SetRandomNodeCoords(const QRectF &_area)
-void MyConfig::SetRandomNodeCoords()
+void MyConfig::SetRandomNodeCoords(const QRectF &_area)
+//void MyConfig::SetRandomNodeCoords()
 {
     if (!Relief)
         throw std::runtime_error("There is no relief in MyConfig");
 
     for (auto & node : Nodes)
     {
-        node.SetRandomCoord(*Relief);
+//        node.SetRandomCoord(*Relief);
+        node.SetRandomCoord(_area, *Relief);
         node.SetRandomAlpha();
     }
 }
 //----------------------------------------------------------
 
-void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
+void MyConfig::DrawSomeArea(const QRectF & _area, double offsetX, double offsetY,
+                         double offsetZ, double k, bool _isPerpective) const
+{
+    int n = _isPerpective ? 101 : 2;
+    double dx = _area.width()  / (n-1);
+    double dy = _area.height() / (n-1);
+    glBegin(GL_LINE_STRIP);
+        for (int i = 0; i < n; ++i) // горизонтальная
+        {
+            double x = _area.left() + i*dx;
+            double y = _area.bottom();
+            double z = (Relief->CalcRealZbyRealXY(x, y) - offsetZ)*Relief->Get_kz();
+            x = (x-offsetX)*k;
+            y = (y-offsetY)*k;
+            glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
+        }
+    glEnd();
+    glBegin(GL_LINE_STRIP);
+        for (int i = 0; i < n; ++i) // горизонтальная
+        {
+            double x = _area.left() + i*dx;
+            double y = _area.top();
+            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->Get_kz();
+            x = (x-offsetX)*k;
+            y = (y-offsetY)*k;
+            glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
+        }
+    glEnd();
+    glBegin(GL_LINE_STRIP);
+        for (int i = 0; i < n; ++i) // вертикальная
+        {
+            double x = _area.left();
+            double y = _area.top() + i*dy;
+            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->Get_kz();
+            x = (x-offsetX)*k;
+            y = (y-offsetY)*k;
+            glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
+        }
+    glEnd();
+    glBegin(GL_LINE_STRIP);
+        for (int i = 0; i < n; ++i) // вертикальная
+        {
+            double x = _area.right();
+            double y = _area.top() + i*dy;
+            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->Get_kz();
+            x = (x-offsetX)*k;
+            y = (y-offsetY)*k;
+            glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
+        }
+    glEnd();
+}
+//----------------------------------------------------------
+
+void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents,
+                        const QRectF &_areaNodeCoords, const QRectF &_areaGradDesc) const
 {
     if (!Relief)
         throw std::runtime_error("Relief is not set");
@@ -111,7 +226,13 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
 
     Relief->Draw(!Settings3d.IsPerspective);
 
-    constexpr float zOffset = 0.01f;
+    glLineWidth(0.5f);
+    glColor3f(0.9f, 0.1f, 0.1f);
+    DrawSomeArea(_areaNodeCoords, offsetX, offsetY, offsetZ, k, Settings3d.IsPerspective);
+
+    glLineWidth(0.25f);
+    glColor3f(0.1f, 0.1f, 0.9f);
+    DrawSomeArea(_areaGradDesc, offsetX, offsetY, offsetZ, k, Settings3d.IsPerspective);
 
     for (const auto & r : Routes)
     {
@@ -232,14 +353,10 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents) const
         }
     }
 
-//    for (const auto &node : Nodes)
-//    {
+    glPointSize(3.0f);
+    glLineWidth(1.0f);
     for (size_t i = 0; i < Nodes.size(); ++i)
     {
-//        glColor3f(0.9, 0.1, 0.1);
-        glPointSize(3.0f);
-        glLineWidth(1.0f);
-
         if ((int)i == iCurNode)
             Nodes[i].DrawIn3D(_snt, Relief, Settings3d, SignalNodeStatus::Selected);
         else
@@ -268,7 +385,9 @@ bool MyConfig::StartGradDescent(int nDraw,
 //                                const TargetFuncSettingsStruct &_targetFuncSettings,
                                 /*const*/ TargetFunctionBase &_targetFunction,
                                 SignalNodeType _snt,
-                                IGradDrawable *pGLWidget)
+                                const QRectF &_area,
+                                IGradDrawable *pGLWidget  // = nullptr
+                                )
 {
     cout << endl << "Grad Descent (First Phase) Started" << endl;
 
@@ -348,7 +467,7 @@ bool MyConfig::StartGradDescent(int nDraw,
         });
     }
 
-    InitParamsFromNodeCoords(_targetFunction.Get_param_count(), _snt);
+    InitParamsFromNodeCoords(_targetFunction.Get_param_count(), _snt, _area);
 
     IsGradCalculating = true;
     tf_gd_lib::GradErrorType res = GradDesc.Go();
@@ -400,7 +519,9 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 //                                     const TargetFuncSettingsStruct &_targetFuncSettings,
                                      /*const*/ TargetFunctionBase &_targetFunction,
                                      SignalNodeType _snt,
-                                     IGradDrawable *pGLWidget)
+                                     const QRectF &_area,
+                                     IGradDrawable *pGLWidget // = nullptr
+                                     )
 {
     cout << endl << "Final Grad Descent Started" << endl;
 
@@ -441,7 +562,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
         });
     }
 
-    InitParamsFromNodeCoords(_targetFunction.Get_param_count(), _snt);
+    InitParamsFromNodeCoords(_targetFunction.Get_param_count(), _snt, _area);
 
     IsGradCalculating = true;
     tf_gd_lib::GradErrorType res = GradDesc.Go();
@@ -543,7 +664,7 @@ void MyConfig::InitNodeCoordsFromParams(const std::vector<double> & _params, Sig
 }
 //----------------------------------------------------------
 
-void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _snt)
+void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _snt, const QRectF &_area)
 {
     if (!(_snt == SignalNodeType::Sphere || _snt == SignalNodeType::Cone))
         throw std::runtime_error("Unknown _snt in MyConfig::InitParamsFromNodeCoords");
@@ -554,65 +675,30 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
     vector<double> rel_constrains(_param_count); // relative constrains in %
     vector<bool> type_constrains(_param_count);  // set 'false' to use absolute constrains, 'true' - for relative
 
+//    const auto & area = Relief->GetArea();
 
-    const auto & area = Relief->GetArea();
+    double min_x = _area.left(); // для жесткий ограничений без поиска
+    double max_x = _area.right();
+    double min_y = _area.top();
+    double max_y = _area.bottom();
 
-
-    double min_x = area.left(); // для жесткий ограничений без поиска
-    double max_x = area.right();
-    double min_y = area.top();
-    double max_y = area.bottom();
-
-//    for (const auto & route : Routes)
-//    {
-//        for (const auto & p1 : route.Points)
-//        {
-//            if (p1.Pos.x() < min_x)
-//                min_x = p1.Pos.x();
-//            if (p1.Pos.y() < min_y)
-//                min_y = p1.Pos.y();
-
-//            if (p1.Pos.x() > max_x)
-//                max_x = p1.Pos.x();
-//            if (p1.Pos.y() > max_y)
-//                max_y = p1.Pos.y();
-//        }
-//    }
-
-//    min_x -= 200;
-//    min_y -= 200;
-//    max_x += 200;
-//    max_y += 200;
-
-//    min_x = min_y = 1000;
-//    max_x = max_y = 5000;
 
     size_t i = 0;
     for (const auto & node : Nodes)
     {
         params[i] = node.Pos.x();
-//        min_constrains[i] = Area.left();
-//        max_constrains[i] = Area.right();
 
         min_constrains[i] = min_x;
         max_constrains[i] = max_x;
-
-//        min_constrains[i] = min_x;
-//        max_constrains[i] = min_x;
 
         rel_constrains[i] = 50; // not used yet
         type_constrains[i] = false; // use absolute constrains
         i++;
 
         params[i] = node.Pos.y();
-//        min_constrains[i] = Area.top();
-//        max_constrains[i] = Area.bottom();
 
         min_constrains[i] = min_y;
         max_constrains[i] = max_y;
-
-//        min_constrains[i] = min_y;
-//        max_constrains[i] = min_y;
 
         rel_constrains[i] = 50; // not used yet
         type_constrains[i] = false; // use absolute constrains
