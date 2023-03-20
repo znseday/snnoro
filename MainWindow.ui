@@ -121,6 +121,13 @@
     <addaction name="actionWorld_Show_Abonents"/>
     <addaction name="separator"/>
     <addaction name="actionWorld_Show_Grid"/>
+    <addaction name="actionWorld_Show_Cones"/>
+    <addaction name="actionWorld_Show_Radii"/>
+    <addaction name="actionWorld_Show_Ellipses"/>
+    <addaction name="actionWorld_Show_Lines_Between_SN_and_Points"/>
+    <addaction name="actionWorld_Show_Points_on_Radii"/>
+    <addaction name="actionWorld_Show_Area_For_Random_Nodes"/>
+    <addaction name="actionWorld_Show_Area_For_Grad_Descent"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -489,6 +496,80 @@
    </property>
    <property name="text">
     <string>Show Grid</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Cones">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Cones</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Radii">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Radii</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Ellipses">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Ellipses</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Lines_Between_SN_and_Points">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Lines Between SN and Points</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Points_on_Radii">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Points on Radii</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Area_For_Random_Nodes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Area For Random Nodes</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Area_For_Grad_Descent">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Area For Grad Descent</string>
    </property>
   </action>
  </widget>

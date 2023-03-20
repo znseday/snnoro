@@ -76,6 +76,8 @@ protected:
 
     QRectF CalcSomeAreaByBounds(const BoundsStruct &_bs);
 
+    WhatShowStruct WhatShow;
+
 public:
 
     void ReCalcAreasByBounds();
@@ -207,6 +209,13 @@ public:
     void SetDirectCurNodeByPos(double wx, double wy);
 
     void SetShowGridOnRelief(bool _isShow);
+    void SetShowCones(bool _isShow)    {WhatShow.ShowCones = _isShow;}
+    void SetShowRadii(bool _isShow)    {WhatShow.ShowRadii = _isShow;}
+    void SetShowEllipses(bool _isShow) {WhatShow.ShowEllipses = _isShow;}
+    void SetShowLinesBetweenSNandPoints(bool _isShow) {WhatShow.ShowLinesBetweenSNandPoints = _isShow;}
+    void SetShowPointsOnRadii(bool _isShow)           {WhatShow.ShowPointsOnRadii = _isShow;}
+    void SetShowAreaForRandomNodes(bool _isShow)      {WhatShow.ShowAreaForRandomNodes = _isShow;}
+    void SetShowAreaForGradDesc(bool _isShow)         {WhatShow.ShowAreaForGradDesc = _isShow;}
 
     void SetGridSettings(const GridSettingsStruct &_gs) {GridSettings = _gs;}
     const GridSettingsStruct & GetGridSettings() const {return GridSettings;}
@@ -217,6 +226,10 @@ public:
     void SetBoundsGradDesc(const BoundsStruct &_bs) {BoundsGradDesc = _bs;}
     const BoundsStruct & GetBoundsGradDesc() const {return BoundsGradDesc;}
 
+    bool SaveGlobalSettings() const;
+    bool LoadGlobalSettings();
+
+    const WhatShowStruct & GetWhatShow() const {return WhatShow;}
 
 signals:
 

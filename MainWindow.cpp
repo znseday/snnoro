@@ -97,6 +97,12 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(SlotReceiveNodeCoords(int, double, double, double)));
 
 
+    if ( !GradModel.LoadGlobalSettings() )
+    {
+        qDebug() << "Warning! GlobalSettings not loaded!";
+    }
+    Init_UI_AccordingGlobalSettings();
+
     StateMachine.InitStateMachine(ui);
 
     mainGLWidget->setMouseTracking(true);
@@ -530,15 +536,55 @@ void MainWindow::on_actionWorld_Show_Grid_triggered()
 {
     GradModel.SetShowGridOnRelief(ui->actionWorld_Show_Grid->isChecked());
     mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
 
-//    if (ui->actionWorld_Show_Grid->isChecked())
-//    {
-//        GradModel.SetShowGridOnRelief();
-//    }
-//    else
-//    {
+void MainWindow::on_actionWorld_Show_Cones_triggered()
+{
+    GradModel.SetShowCones(ui->actionWorld_Show_Cones->isChecked());
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
 
-//    }
+void MainWindow::on_actionWorld_Show_Radii_triggered()
+{
+    GradModel.SetShowRadii(ui->actionWorld_Show_Radii->isChecked());
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Ellipses_triggered()
+{
+    GradModel.SetShowEllipses(ui->actionWorld_Show_Ellipses->isChecked());
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Lines_Between_SN_and_Points_triggered()
+{
+    GradModel.SetShowLinesBetweenSNandPoints(ui->actionWorld_Show_Lines_Between_SN_and_Points->isChecked());
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Points_on_Radii_triggered()
+{
+    GradModel.SetShowPointsOnRadii(ui->actionWorld_Show_Points_on_Radii->isChecked());
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Area_For_Random_Nodes_triggered()
+{
+    GradModel.SetShowAreaForRandomNodes(ui->actionWorld_Show_Area_For_Random_Nodes->isChecked());
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Area_For_Grad_Descent_triggered()
+{
+    GradModel.SetShowAreaForGradDesc(ui->actionWorld_Show_Area_For_Grad_Descent->isChecked());
+    mainGLWidget->repaint();
 }
 //-------------------------------------------------------------
 
@@ -759,6 +805,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //        QMessageBox::information(this, "test spontaneous", "test spontaneous");
 //    }
 
+    if ( !GradModel.SaveGlobalSettings() )
+    {
+        qDebug() << "Warning! GlobalSettings not Saved!";
+    }
+
     formAboCalc.close();
 
     if (CheckIsSavedAndSaveIfNecessary())
@@ -959,4 +1010,18 @@ void MainWindow::SlotReceiveNodeCoords(int n, double x, double y, double z)
                         QString().setNum(z) + "}");
 }
 //-------------------------------------------------------------
+
+void MainWindow::Init_UI_AccordingGlobalSettings()
+{
+    ui->actionWorld_Show_Grid->setChecked(GradModel.GetWhatShow().ShowGrid);
+    ui->actionWorld_Show_Cones->setChecked(GradModel.GetWhatShow().ShowCones);
+    ui->actionWorld_Show_Ellipses->setChecked(GradModel.GetWhatShow().ShowEllipses);
+    ui->actionWorld_Show_Radii->setChecked(GradModel.GetWhatShow().ShowRadii);
+    ui->actionWorld_Show_Lines_Between_SN_and_Points->setChecked(GradModel.GetWhatShow().ShowLinesBetweenSNandPoints);
+    ui->actionWorld_Show_Area_For_Random_Nodes->setChecked(GradModel.GetWhatShow().ShowAreaForRandomNodes);
+    ui->actionWorld_Show_Area_For_Grad_Descent->setChecked(GradModel.GetWhatShow().ShowAreaForGradDesc);
+    ui->actionWorld_Show_Points_on_Radii->setChecked(GradModel.GetWhatShow().ShowPointsOnRadii);
+}
+//-------------------------------------------------------------
+
 

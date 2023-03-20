@@ -11,6 +11,7 @@ double SimpleRandom(double a, double b)
     int l = rand() % 10001;
     return a + (k*f + k*k*l)*(b - a);
 }
+//-------------------------------------------------------------
 
 void RotatePoint(QPointF &p, double alpha)
 {
@@ -19,6 +20,7 @@ void RotatePoint(QPointF &p, double alpha)
     p.setX(x1);
     p.setY(y1);
 }
+//-------------------------------------------------------------
 
 int CalcLineInterEllipse(double Rx, double Ry, const QPointF &p1, const QPointF &p2, QPointF &Res1, QPointF &Res2)
 {
@@ -81,3 +83,4 @@ int CalcLineInterEllipse(double Rx, double Ry, const QPointF &p1, const QPointF 
 
     return Result;
 }
+//-------------------------------------------------------------
