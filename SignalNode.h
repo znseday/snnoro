@@ -96,7 +96,8 @@ public:
     static GLUquadric * Quadric();
 
     void DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
-                  const Settings3dType & _settings3d, SignalNodeStatus _sns) const;
+                  const Settings3dType & _settings3d, SignalNodeStatus _sns,
+                  const WhatShowStruct &_whatShow) const;
 
     int CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_result) const;
 };

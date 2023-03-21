@@ -80,7 +80,8 @@ protected:
         void Reset();
     } Stats;
 
-    void DrawIntersectsWithEllipses(const Settings3dType & _settings3d) const;
+    void DrawIntersectsWithEllipses(const Settings3dType & _settings3d,
+                                    const WhatShowStruct &_whatShow) const;
 
 public:
 
@@ -116,7 +117,8 @@ public:
                    double offsetZ, double k, bool _isPerpective) const;
 
     void DrawIn3D(SignalNodeType _snt, bool isDrawAbonents,
-                  const QRectF &_areaNodeCoords, const QRectF &_areaGradDesc) const;
+                  const QRectF &_areaNodeCoords, const QRectF &_areaGradDesc,
+                  const WhatShowStruct &_whatShowD) const;
 
     bool StartGradDescent(int nDraw, const tf_gd_lib::GradDescent &_protoGD,
 //                          const TargetFuncSettingsStruct &_targetFuncSettings,

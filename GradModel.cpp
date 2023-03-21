@@ -163,7 +163,7 @@ void MyGradModel::DrawOneConfig(size_t ind, bool OnlyOne)
         glLoadIdentity();
     }
 
-    Configs.at(ind).DrawIn3D(NodesType, IsDrawAbonents, AreaRandCoords, AreaGradDesc);
+    Configs.at(ind).DrawIn3D(NodesType, IsDrawAbonents, AreaRandCoords, AreaGradDesc, WhatShow);
 }
 //----------------------------------------------------------
 
@@ -1710,6 +1710,8 @@ bool MyGradModel::LoadGlobalSettings()
         qDebug() << "json file not open";
         return false;
     }
+
+    SetShowGridOnRelief(WhatShow.ShowGrid);
 
     return true;
 }

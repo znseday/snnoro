@@ -508,6 +508,9 @@
    <property name="text">
     <string>Show Cones</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionWorld_Show_Radii">
    <property name="checkable">

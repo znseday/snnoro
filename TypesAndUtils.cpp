@@ -53,7 +53,7 @@ bool CorrectFileNameIfDoesntExist(QString &_fileName,
 QJsonObject WhatShowStruct::RepresentAsJsonObject() const
 {
     QJsonObject res;
-    res.insert("ShowGrid", ShowGrid);
+//    res.insert("ShowGrid", ShowGrid);
     res.insert("ShowCones", ShowCones);
     res.insert("ShowRadii", ShowRadii);
     res.insert("ShowEllipses", ShowEllipses);
@@ -67,7 +67,7 @@ QJsonObject WhatShowStruct::RepresentAsJsonObject() const
 
 void WhatShowStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
 {
-    ShowGrid                    = _jsonObject["ShowGrid"].toBool(false);
+//    ShowGrid                    = _jsonObject["ShowGrid"].toBool(false);
     ShowCones                   = _jsonObject["ShowCones"].toBool(false);
     ShowRadii                   = _jsonObject["ShowRadii"].toBool(false);
     ShowEllipses                = _jsonObject["ShowEllipses"].toBool(false);
