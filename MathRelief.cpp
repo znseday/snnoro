@@ -13,12 +13,14 @@ ostream & operator<<(ostream &s, const ReliefMatInfoStruct ob)
     s << "A_r2 = " << ob.A_r2 << endl;
     return s;
 }
-
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
 MathRelief::MathRelief()
 {
 
 }
+//-------------------------------------------------------------
 
 void MathRelief::CreateMathRelief(const ReliefMatInfoStruct &_reliefCoeffs)
 {

@@ -26,6 +26,8 @@
 
 using namespace std;
 
+static const QString GlobalSettingsFileName = "Settings_snnoro.json";
+
 constexpr float RotSpeed = 0.12f;
 constexpr float TransSpeed = 0.004f;
 
@@ -161,7 +163,7 @@ void MyGradModel::DrawOneConfig(size_t ind, bool OnlyOne)
         glLoadIdentity();
     }
 
-    Configs.at(ind).DrawIn3D(NodesType, IsDrawAbonents, AreaRandCoords, AreaGradDesc);
+    Configs.at(ind).DrawIn3D(NodesType, IsDrawAbonents, AreaRandCoords, AreaGradDesc, WhatShow);
 }
 //----------------------------------------------------------
 
@@ -1609,6 +1611,8 @@ void MyGradModel::SetDirectCurNodeByPos(double wx, double wy)
 
 void MyGradModel::SetShowGridOnRelief(bool _isShow)
 {
+    WhatShow.ShowGrid = _isShow;
+
     if (_isShow)
     {
         Relief.ReCreateGridListsGL();
@@ -1653,6 +1657,64 @@ void MyGradModel::SetShowGridOnRelief(bool _isShow)
 //        return "Unknown";
 //    }
 //}
+//----------------------------------------------------------
+
+bool MyGradModel::SaveGlobalSettings() const
+{
+    QJsonDocument jsonDoc;
+
+    QJsonObject mainObject;
+
+    mainObject.insert("WhatShow", WhatShow.RepresentAsJsonObject());
+
+    jsonDoc.setObject(mainObject);
+
+    QFile jsonFile(GlobalSettingsFileName);
+    if (jsonFile.open(QIODevice::WriteOnly))
+    {
+        jsonFile.write(jsonDoc.toJson());
+    }
+    else
+    {
+        qDebug() << "json file not open to write";
+        return false;
+    }
+
+    return true;
+}
+//----------------------------------------------------------
+
+bool MyGradModel::LoadGlobalSettings()
+{
+    QFile json(GlobalSettingsFileName);
+    if (json.open(QIODevice::ReadOnly))
+    {
+        QJsonParseError parseError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(json.readAll(), &parseError);
+        if (parseError.error == QJsonParseError::NoError)
+        {
+            if (jsonDoc.isObject())
+            {
+                WhatShow.LoadFromJsonObject(jsonDoc["WhatShow"].toObject());
+            }
+        }
+        else
+        {
+            qDebug() << parseError.errorString();
+            return false;
+        }
+
+    }
+    else
+    {
+        qDebug() << "json file not open";
+        return false;
+    }
+
+    SetShowGridOnRelief(WhatShow.ShowGrid);
+
+    return true;
+}
 //----------------------------------------------------------
 
 

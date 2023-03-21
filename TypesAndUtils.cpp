@@ -47,3 +47,34 @@ bool CorrectFileNameIfDoesntExist(QString &_fileName,
 
     return false; // Корректировка не потребовалась
 }
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+
+QJsonObject WhatShowStruct::RepresentAsJsonObject() const
+{
+    QJsonObject res;
+//    res.insert("ShowGrid", ShowGrid);
+    res.insert("ShowCones", ShowCones);
+    res.insert("ShowRadii", ShowRadii);
+    res.insert("ShowEllipses", ShowEllipses);
+    res.insert("ShowLinesBetweenSNandPoints", ShowLinesBetweenSNandPoints);
+    res.insert("ShowPointsOnRadii", ShowPointsOnRadii);
+    res.insert("ShowAreaForRandomNodes", ShowAreaForRandomNodes);
+    res.insert("ShowAreaForGradDesc", ShowAreaForGradDesc);
+    return res;
+}
+//-------------------------------------------------------------
+
+void WhatShowStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
+{
+//    ShowGrid                    = _jsonObject["ShowGrid"].toBool(false);
+    ShowCones                   = _jsonObject["ShowCones"].toBool(false);
+    ShowRadii                   = _jsonObject["ShowRadii"].toBool(false);
+    ShowEllipses                = _jsonObject["ShowEllipses"].toBool(false);
+    ShowLinesBetweenSNandPoints = _jsonObject["ShowLinesBetweenSNandPoints"].toBool(false);
+    ShowPointsOnRadii           = _jsonObject["ShowPointsOnRadii"].toBool(false);
+    ShowAreaForRandomNodes      = _jsonObject["ShowAreaForRandomNodes"].toBool(false);
+    ShowAreaForGradDesc         = _jsonObject["ShowAreaForGradDesc"].toBool(false);
+}
+//-------------------------------------------------------------
+//-------------------------------------------------------------

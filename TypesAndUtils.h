@@ -5,6 +5,8 @@
 
 using Pos3d = QVector3D;
 
+#include <QJsonObject>
+
 enum class WorkModeType
 {
     Nothing,
@@ -33,6 +35,21 @@ enum class TargetFuncTypeEnum
     Unknown,
     Additive,
     Probabilistic
+};
+
+struct WhatShowStruct
+{
+    bool ShowGrid = false;
+    bool ShowCones = false;
+    bool ShowRadii = false;
+    bool ShowEllipses = false;
+    bool ShowLinesBetweenSNandPoints = false;
+    bool ShowPointsOnRadii = false;
+    bool ShowAreaForRandomNodes = false;
+    bool ShowAreaForGradDesc = false;
+
+    QJsonObject RepresentAsJsonObject() const;
+    void LoadFromJsonObject(const QJsonObject &_jsonObject);
 };
 
 class IGradDrawable

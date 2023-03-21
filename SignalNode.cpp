@@ -281,7 +281,8 @@ GLUquadric* SignalNode::Quadric()
 //----------------------------------------------------------
 
 void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
-                          const Settings3dType & _settings3d, SignalNodeStatus _sns) const
+                          const Settings3dType & _settings3d, SignalNodeStatus _sns,
+                          const WhatShowStruct &_whatShow) const
 {
     constexpr float zOffset = 0.01f;
     const auto & area = relief->GetArea();
@@ -296,8 +297,6 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
     double offsetY = area.y()+hH; // in meters
     double offsetZ = 0;
 
-
-
     double x = (Pos.x()-offsetX)*k;
     double y = (Pos.y()-offsetY)*k;
     double z;
@@ -308,11 +307,6 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         glColor3f(0.95, 0.05, 0.05);
 
     z = (Pos.z()-offsetZ)*relief->Get_kz();
-
-//    glPointSize(5.0f);
-//    glBegin(GL_POINTS);
-//        glVertex3d(x, y, z);
-//    glEnd();
 
     glPushMatrix();
 
@@ -332,75 +326,75 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
 
     glPopMatrix();
 
-    const int nr = 32;
-    double dfi, fiStart;
-
-    if (_snt == SignalNodeType::Sphere)
+    if (_whatShow.ShowRadii)
     {
-        dfi = 2.0*M_PI/nr;
-        fiStart = 0;
+        const int nr = 32;
+        double dfi, fiStart;
+
+        if (_snt == SignalNodeType::Sphere)
+        {
+            dfi = 2.0*M_PI/nr;
+            fiStart = 0;
+        }
+        else if (_snt == SignalNodeType::Cone)
+        {
+            dfi = 2.0*Beta / nr;
+            fiStart = Alpha - Beta;
+        }
+        else
+        {
+            qDebug() << "Error: SignalNodeType is Unknown";
+            dfi = 2*M_PI/nr;
+            fiStart = 0;
+        }
+
+        glBegin(GL_LINE_STRIP);
+
+        if (_snt == SignalNodeType::Cone) // далее будет копипаст этого ифа
+        {
+            double x = (Pos.x()-offsetX)*k;
+            double y = (Pos.y()-offsetY)*k;
+            double z;
+
+            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
+            glVertex3f(x, y, z);
+        }
+
+        for (int i = 0; i <= nr; i++)
+        {
+            double xt = Pos.x() + R*cos(fiStart + i*dfi);
+            double yt = Pos.y() + R*sin(fiStart + i*dfi);
+            double x = (xt-offsetX)*k;
+            double y = (yt-offsetY)*k;
+            double z;
+
+            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
+            glVertex3f(x, y, z);
+        }
+
+        if (_snt == SignalNodeType::Cone) // здесь копипаст
+        {
+            double x = (Pos.x()-offsetX)*k;
+            double y = (Pos.y()-offsetY)*k;
+            double z;
+
+            z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
+            glVertex3f(x, y, z);
+        }
+
+        glEnd();
+
     }
-    else if (_snt == SignalNodeType::Cone)
-    {
-        dfi = 2.0*Beta / nr;
-        fiStart = Alpha - Beta;
-    }
-    else
-    {
-        qDebug() << "Error: SignalNodeType is Unknown";
-        dfi = 2*M_PI/nr;
-        fiStart = 0;
-    }
-
-    glBegin(GL_LINE_STRIP);
-
-    if (_snt == SignalNodeType::Cone) // далее будет копипаст этого ифа
-    {
-        double x = (Pos.x()-offsetX)*k;
-        double y = (Pos.y()-offsetY)*k;
-        double z;
-
-        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
-        glVertex3f(x, y, z);
-    }
-
-    for (int i = 0; i <= nr; i++)
-    {
-        double xt = Pos.x() + R*cos(fiStart + i*dfi);
-        double yt = Pos.y() + R*sin(fiStart + i*dfi);
-        double x = (xt-offsetX)*k;
-        double y = (yt-offsetY)*k;
-        double z;
-
-        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(xt, yt) : 0);
-        glVertex3f(x, y, z);
-    }
-
-    if (_snt == SignalNodeType::Cone) // здесь копипаст
-    {
-        double x = (Pos.x()-offsetX)*k;
-        double y = (Pos.y()-offsetY)*k;
-        double z;
-
-        z = zOffset + (_settings3d.IsPerspective ? relief->CalcNormToRealZbyRealXY(Pos.x(), Pos.y()) : 0);
-        glVertex3f(x, y, z);
-    }
-
-    glEnd();
 
 
     glColor3f(0.9, 0.1, 0.9);
-    if (/*false &&*/ _snt == SignalNodeType::Cone) // здесь ellipse // !!!!!!!!!! false !!!!
+
+    if (_whatShow.ShowEllipses && _snt == SignalNodeType::Cone) // здесь ellipse // !!!!!!!!!!
     {
         glBegin(GL_LINE_STRIP);
 
         const int nr = 32;
         double dfi = 2.0*M_PI/(nr-1);
-
-//        double asp_ab = M_PI / Beta;
-//        double a = R*1.2;
-//        double b = a / sqrt(asp_ab);
-//        const double c = sqrt(abs(a*a - b*b));
 
         auto [Rx, Ry, c] = CalcEllispe_abc();
 

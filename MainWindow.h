@@ -95,6 +95,20 @@ private slots:
     void on_actionDebug_Get_Last_Cost_For_Current_triggered();
     void on_actionDebug_Calc_Access_Rate_for_current_triggered();
 
+    void on_actionWorld_Show_Cones_triggered();
+
+    void on_actionWorld_Show_Radii_triggered();
+
+    void on_actionWorld_Show_Ellipses_triggered();
+
+    void on_actionWorld_Show_Lines_Between_SN_and_Points_triggered();
+
+    void on_actionWorld_Show_Points_on_Radii_triggered();
+
+    void on_actionWorld_Show_Area_For_Random_Nodes_triggered();
+
+    void on_actionWorld_Show_Area_For_Grad_Descent_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -138,6 +152,8 @@ private:
     void UpdateCurNodeCoordsOnLabel();
 
     MyStateMachine StateMachine;
+
+    void Init_UI_AccordingGlobalSettings();
 
 public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);
