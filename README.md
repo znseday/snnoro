@@ -32,4 +32,25 @@ __Поиск оптимальных точек расположения сете
 
 Для решения задачи оптимизации методом градиентного спуска выбрана библиотека [tf_gd_lib](https://github.com/znseday/tf_gd_lib), т.к. она универсальна, проста, кроссплатформенна, ее можно использовать с любыми пользовательскими целевыми функциями, и она хорошо справляется с нестандартными и овражными функциями. Автором данной библиотеки является Цыникин Сергей Анатольевич. Библиотека распространяется под лицензией [Boost](https://www.boost.org/LICENSE_1_0.txt)
 
- 
+
+#### Литература
+
+1. Блинова О.В. On how to model and investigate the interaction of mobile network nodes with a limited number of mobile access points / Journal of Physics: Conference Series. Saint Petersburg,: IOP Publishing Ltd, 2021. Vol.1864. С. 1-8
+
+2. Блинова О.В. Поиск оптимальных точек расположения сетевых устройств для беспроводных сетей с учетов траекторий движения абонентов и распространения сигнала // Управление большими системами. 2022. Вып. 95. С. 136-151.
+
+3. Блинова О.В., Васьковский С.В., Рыков Я.В. Проектирование сетей связи быстрого развертывания с использованием программного приложения анализа конфигурации сети // Управление большими системами: сборник трудов. 2021. Вып. 90. С. 121-138.
+
+4. Фархадов М.П., Блинова О.В., Васьковский С.В. Оценка надежности системы связи с подвижными узлами. // Датчики и системы. 2018. № 5. С. 3-8.
+
+5. Фархадов М.П., Васьковский С.В., Блинова О.В. Взаимосвязь подвижных абонентов и стационарных узлов связи при известных характеристиках движения // Датчики и системы. 2017. № 3. С. 3-8.
+
+6. Фархадов М.П., Блинова О.В., Воронцов Ю.А., Васьковский С.В. ИНФОРМАЦИОННАЯ СИСТЕМА С ПОДВИЖНЫМИ УЗЛАМИ СВЯЗИ // Датчики и системы. 2015. № 12 (198). С. 24-28.
+
+7. Блинова О.В., Фархадов М.П. Development of a Portal to Help Organize Temporary Wireless Networks / Proceedings of 2022 International Conference on Information, Control, and Communication Technologies (ICCT). Astrakhan, Russian Federation: IEEE, 2022. С. 1-5.
+
+8. Блинова О.В. Development of a System for Designing Wireless Networks with Incomplete Coverage and Specified Subscriber Routes / Proceedings of 15th International Conference on Application of Information and Communication Technologies (AICT, Baku, Azerbaijan). Baku: IEEE, 2021. С. 1-4. 
+
+9. Фархадов М.П., Блинова О.В., Васьковский С.В. How to Estimate Reliability of a Network with Movable Nodes? / Proceedings of the 12th IEEE International Conference on Application of Information and Communication Technologies (AICT2018, Almaty). Almaty: IEEE Catalog Number: CFP1856H-PRT, 2018. С. 229-232. 
+
+10. Разработка среды для быстрого проектирования временных сетей связи с учетом рельефа местности и траекторий движения / О. В. Блинова, С. А. Цыникин // Управление большими системами : труды XVIII Всероссийской школы-конференции молодых ученых, Челябинск, 05–08 сентября 2022 года / Министерство науки и высшего образования Российской Федерации Южно-Уральский государственный университет Институт проблем управления им. В.А. Трапезникова Российской академии наук. – Челябинск: Издательский центр ЮУрГУ, 2022. – С. 286-291. – EDN BPOYDP.
