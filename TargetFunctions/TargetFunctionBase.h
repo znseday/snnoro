@@ -53,7 +53,7 @@ protected:
     std::size_t param_count = 0;
 public:
     TargetFunctionBase() = default;
-    virtual double operator()(const std::vector<double>& params) const = 0;
+    virtual long double operator()(const std::vector<long double>& params) const = 0;
     virtual ~TargetFunctionBase() = default;
 
 //    void Set_param_count(std::size_t)

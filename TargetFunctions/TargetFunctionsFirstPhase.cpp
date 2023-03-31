@@ -13,7 +13,7 @@ void TargetFuncAdditiveSphereFirstPhase::Init(MyConfig *_myConfig)
     param_count = myConfig->NodesAccess().size()*2;
 }
 
-double TargetFuncAdditiveSphereFirstPhase::operator()(const std::vector<double> &params) const
+long double TargetFuncAdditiveSphereFirstPhase::operator()(const std::vector<long double> &params) const
 {
     const auto & Routes = myConfig->RoutesAccess();
     const auto & Relief = myConfig->GetRelief();
@@ -112,7 +112,7 @@ void TargetFuncProbabilisticSphereFirstPhase::Init(MyConfig *_myConfig)
     param_count = myConfig->NodesAccess().size()*2;
 }
 
-double TargetFuncProbabilisticSphereFirstPhase::operator()(const std::vector<double> &params) const
+long double TargetFuncProbabilisticSphereFirstPhase::operator()(const std::vector<long double> &params) const
 {
     const auto & Routes = myConfig->RoutesAccess();
     const auto & Relief = myConfig->GetRelief();
@@ -213,7 +213,7 @@ void TargetFuncAdditiveConeFirstPhase::Init(MyConfig *_myConfig)
     param_count = myConfig->NodesAccess().size()*3;
 }
 
-double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<double> &params) const
+long double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<long double> &params) const
 {
     const auto & Routes = myConfig->RoutesAccess();
     const auto & Relief = myConfig->GetRelief();
@@ -332,7 +332,7 @@ void TargetFuncProbabilisticConeFirstPhase::Init(MyConfig *_myConfig)
     param_count = myConfig->NodesAccess().size()*3;
 }
 
-double TargetFuncProbabilisticConeFirstPhase::operator()(const std::vector<double> &params) const
+long double TargetFuncProbabilisticConeFirstPhase::operator()(const std::vector<long double> &params) const
 {
     const auto & Routes = myConfig->RoutesAccess();
     const auto & Relief = myConfig->GetRelief();

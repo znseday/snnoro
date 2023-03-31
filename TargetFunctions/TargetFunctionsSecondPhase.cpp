@@ -9,7 +9,7 @@ void TargetFuncAdditiveSphereSecondPhase::Init(MyConfig *_myConfig)
     param_count = myConfig->NodesAccess().size()*2;
 }
 
-double TargetFuncAdditiveSphereSecondPhase::operator()(const std::vector<double> &params) const
+long double TargetFuncAdditiveSphereSecondPhase::operator()(const std::vector<long double> &params) const
 {
     const auto & Routes = myConfig->RoutesAccess();
     const auto & Relief = myConfig->GetRelief();
@@ -78,7 +78,7 @@ void TargetFuncProbabilisticSphereSecondPhase::Init(MyConfig *_myConfig)
     param_count = myConfig->NodesAccess().size()*2;
 }
 
-double TargetFuncProbabilisticSphereSecondPhase::operator()(const std::vector<double> &params) const
+long double TargetFuncProbabilisticSphereSecondPhase::operator()(const std::vector<long double> &params) const
 {
     const auto & Routes = myConfig->RoutesAccess();
     const auto & Relief = myConfig->GetRelief();
@@ -170,7 +170,7 @@ void TargetFuncAdditiveConeSecondPhase::Init(MyConfig *_myConfig)
 }
 //-------------------------------------------------------------
 
-double TargetFuncAdditiveConeSecondPhase::operator()(const std::vector<double> &params) const
+long double TargetFuncAdditiveConeSecondPhase::operator()(const std::vector<long double> &params) const
 {
     const auto & Routes = myConfig->RoutesAccess();
     const auto & Relief = myConfig->GetRelief();
@@ -220,7 +220,6 @@ double TargetFuncAdditiveConeSecondPhase::operator()(const std::vector<double> &
 }
 //-------------------------------------------------------------
 
-
 void TargetFuncProbabilisticConeSecondPhase::Init(MyConfig *_myConfig)
 {
     TargetFunctionBase::Init(_myConfig);
@@ -228,8 +227,7 @@ void TargetFuncProbabilisticConeSecondPhase::Init(MyConfig *_myConfig)
 }
 //-------------------------------------------------------------
 
-
-double TargetFuncProbabilisticConeSecondPhase::operator()(const std::vector<double> &params) const
+long double TargetFuncProbabilisticConeSecondPhase::operator()(const std::vector<long double> &params) const
 {
     const auto & Routes = myConfig->RoutesAccess();
     const auto & Relief = myConfig->GetRelief();

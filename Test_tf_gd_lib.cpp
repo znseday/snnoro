@@ -9,13 +9,13 @@ using namespace tf_gd_lib;
 
 using namespace std;
 
-double user_target_function(const std::vector<double>& p)
+long double user_target_function(const std::vector<long double>& p)
 {
-    double r1 = sqrt((p[0] - 0) * (p[0] - 0) + (p[1] - 1000) * (p[1] - 1000));
-    double r2 = sqrt((p[0] - 0) * (p[0] - 0) + (p[1] - 0) * (p[1] - 0));
-    double r3 = sqrt((p[2] - p[0]) * (p[2] - p[0]) + (p[3] - p[1]) * (p[3] - p[1]));
-    double r4 = sqrt((1000 - p[2]) * (1000 - p[2]) + (1000 - p[3]) * (1000 - p[3]));
-    double r5 = sqrt((1000 - p[2]) * (1000 - p[2]) + (0 - p[3]) * (0 - p[3]));
+    long double r1 = sqrt((p[0] - 0) * (p[0] - 0) + (p[1] - 1000) * (p[1] - 1000));
+    long double r2 = sqrt((p[0] - 0) * (p[0] - 0) + (p[1] - 0) * (p[1] - 0));
+    long double r3 = sqrt((p[2] - p[0]) * (p[2] - p[0]) + (p[3] - p[1]) * (p[3] - p[1]));
+    long double r4 = sqrt((1000 - p[2]) * (1000 - p[2]) + (1000 - p[3]) * (1000 - p[3]));
+    long double r5 = sqrt((1000 - p[2]) * (1000 - p[2]) + (0 - p[3]) * (0 - p[3]));
 
     return r1 + r2 + r3 + r4 + r5;
 }
@@ -48,10 +48,10 @@ void MyLibTest()
     gd.SetMaxTime(3);          // time limit (seconds)
 
     const int param_count = 4;
-    vector<double> params(param_count);
-    vector<double> min_constrains(param_count);
-    vector<double> max_constrains(param_count);
-    vector<double> rel_constrains(param_count); // relative constrains in %
+    vector<long double> params(param_count);
+    vector<long double> min_constrains(param_count);
+    vector<long double> max_constrains(param_count);
+    vector<long double> rel_constrains(param_count); // relative constrains in %
     vector<bool> type_constrains(param_count);  // set 'false' to use absolute constrains, 'true' - for relative
 
     //params[0] = 900;

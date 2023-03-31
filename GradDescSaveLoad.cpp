@@ -73,16 +73,16 @@ bool GradDescSaveToFile(const tf_gd_lib::GradDescent &_gd, const QString &_fileN
 
     QJsonObject GeneralSettingsObject;
 
-    GeneralSettingsObject.insert("Alpha", _gd.GetAlpha());
+    GeneralSettingsObject.insert("Alpha", (double)_gd.GetAlpha());
     GeneralSettingsObject.insert("CallBackFreq", (int)_gd.GetCallBackFreq());
-    GeneralSettingsObject.insert("Eps", _gd.GetEps());
-    GeneralSettingsObject.insert("Eta_FirstJump", _gd.GetEta_FirstJump());
-    GeneralSettingsObject.insert("Eta_k_dec", _gd.GetEta_k_dec());
-    GeneralSettingsObject.insert("Eta_k_inc", _gd.GetEta_k_inc());
+    GeneralSettingsObject.insert("Eps", (double)_gd.GetEps());
+    GeneralSettingsObject.insert("Eta_FirstJump", (double)_gd.GetEta_FirstJump());
+    GeneralSettingsObject.insert("Eta_k_dec", (double)_gd.GetEta_k_dec());
+    GeneralSettingsObject.insert("Eta_k_inc", (double)_gd.GetEta_k_inc());
     GeneralSettingsObject.insert("FinDifMethod", _gd.GetFinDifMethod());
     GeneralSettingsObject.insert("MaxIters", (int)_gd.GetMaxIters());
-    GeneralSettingsObject.insert("MaxTime", _gd.GetMaxTime());
-    GeneralSettingsObject.insert("Min_Eta", _gd.GetMin_Eta());
+    GeneralSettingsObject.insert("MaxTime", (double)_gd.GetMaxTime());
+    GeneralSettingsObject.insert("Min_Eta", (double)_gd.GetMin_Eta());
 
     mainObject.insert("GeneralSettings", GeneralSettingsObject);
 

@@ -25,16 +25,16 @@ void DialogGradConfig::InitTargetFuncSettingsDialog(const TargetFuncSettingsStru
 
 void DialogGradConfig::InitGradDescDialog(const tf_gd_lib::GradDescent &_gd)
 {
-    ui->EditMinEta->setText(QString().setNum(_gd.GetMin_Eta()));
-    ui->EditFirstJump->setText(QString().setNum(_gd.GetEta_FirstJump()));
-    ui->Edit_k_mult->setText(QString().setNum(_gd.GetEta_k_inc()));
-    ui->Edit_k_div->setText(QString().setNum(_gd.GetEta_k_dec()));
-    ui->EditAlpha->setText(QString().setNum(_gd.GetAlpha()));
-    ui->Edit_eps->setText(QString().setNum(_gd.GetEps()));
-    ui->EditCallbackFreq->setText(QString().setNum(_gd.GetCallBackFreq()));
-    ui->chbFinMethod->setChecked(_gd.GetFinDifMethod());
-    ui->EditMaxIters->setText(QString().setNum(_gd.GetMaxIters()));
-    ui->EditMaxTime->setText(QString().setNum(_gd.GetMaxTime()));
+    ui->EditMinEta->setText(QString().setNum((double)_gd.GetMin_Eta()));
+    ui->EditFirstJump->setText(QString().setNum((double)_gd.GetEta_FirstJump()));
+    ui->Edit_k_mult->setText(QString().setNum((double)_gd.GetEta_k_inc()));
+    ui->Edit_k_div->setText(QString().setNum((double)_gd.GetEta_k_dec()));
+    ui->EditAlpha->setText(QString().setNum((double)_gd.GetAlpha()));
+    ui->Edit_eps->setText(QString().setNum((double)_gd.GetEps()));
+    ui->EditCallbackFreq->setText(QString().setNum((double)_gd.GetCallBackFreq()));
+    ui->chbFinMethod->setChecked((double)_gd.GetFinDifMethod());
+    ui->EditMaxIters->setText(QString().setNum((double)_gd.GetMaxIters()));
+    ui->EditMaxTime->setText(QString().setNum((double)_gd.GetMaxTime()));
 }
 //----------------------------------------------------------
 

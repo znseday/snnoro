@@ -7,7 +7,7 @@ class TargetFuncAdditiveSphereSecondPhase : public TargetFunctionBase
 {
 public:
     void Init(MyConfig *_myConfig) override;
-    double operator()(const std::vector<double> &params) const override;
+    long double operator()(const std::vector<long double> &params) const override;
     ~TargetFuncAdditiveSphereSecondPhase(); // just to be sure
 };
 //-------------------------------------------------------------
@@ -17,7 +17,7 @@ class TargetFuncProbabilisticSphereSecondPhase : public TargetFunctionBase
 {
 public:
     void Init(MyConfig *_myConfig) override;
-    double operator()(const std::vector<double> &params) const override;
+    long double operator()(const std::vector<long double> &params) const override;
 };
 //-------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class TargetFuncAdditiveConeSecondPhase : public TargetFunctionBase
 {
 public:
     void Init(MyConfig *_myConfig) override;
-    double operator()(const std::vector<double> &params) const override;
+    long double operator()(const std::vector<long double> &params) const override;
 };
 //-------------------------------------------------------------
 
@@ -35,7 +35,7 @@ class TargetFuncProbabilisticConeSecondPhase : public TargetFunctionBase
 {
 public:
     void Init(MyConfig *_myConfig) override;
-    double operator()(const std::vector<double> &params) const override;
+    long double operator()(const std::vector<long double> &params) const override;
 };
 
 #endif // TARGETFUNCTIONSSECONDPHASE_H

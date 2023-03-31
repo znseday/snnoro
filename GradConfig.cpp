@@ -408,7 +408,7 @@ bool MyConfig::StartGradDescent(int nDraw,
 
     _targetFunction.Init(this);
 
-    auto lambdaTargetFunc = [&_targetFunction](const std::vector<double>&params)
+    auto lambdaTargetFunc = [&_targetFunction](const std::vector<long double>&params)
     {
         return _targetFunction(params);
     };
@@ -536,7 +536,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 
     _targetFunction.Init(this);
 
-    auto lambdaTargetFunc = [&_targetFunction](const std::vector<double>&params)
+    auto lambdaTargetFunc = [&_targetFunction](const std::vector<long double>&params)
     {
         return _targetFunction(params);
     };
@@ -633,7 +633,7 @@ bool MyConfig::StartFinalGradDescent(int nDraw, const tf_gd_lib::GradDescent &_p
 }
 //----------------------------------------------------------
 
-void MyConfig::InitNodeCoordsFromParams(const std::vector<double> & _params, SignalNodeType _snt)
+void MyConfig::InitNodeCoordsFromParams(const std::vector<long double> & _params, SignalNodeType _snt)
 {
     if (_snt == SignalNodeType::Sphere)
     {
@@ -676,10 +676,10 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
     if (!(_snt == SignalNodeType::Sphere || _snt == SignalNodeType::Cone))
         throw std::runtime_error("Unknown _snt in MyConfig::InitParamsFromNodeCoords");
 
-    vector<double> params(_param_count);
-    vector<double> min_constrains(_param_count);
-    vector<double> max_constrains(_param_count);
-    vector<double> rel_constrains(_param_count); // relative constrains in %
+    vector<long double> params(_param_count);
+    vector<long double> min_constrains(_param_count);
+    vector<long double> max_constrains(_param_count);
+    vector<long double> rel_constrains(_param_count); // relative constrains in %
     vector<bool> type_constrains(_param_count);  // set 'false' to use absolute constrains, 'true' - for relative
 
 //    const auto & area = Relief->GetArea();
@@ -743,7 +743,7 @@ void MyConfig::InitParamsFromNodeCoords(const int _param_count, SignalNodeType _
 }
 //----------------------------------------------------------
 
-void MyConfig::FindCoveredPointsUsingParams(const std::vector<double> &params, SignalNodeType _snt)
+void MyConfig::FindCoveredPointsUsingParams(const std::vector<long double> &params, SignalNodeType _snt)
 {
     int iRoute = 0;
     for (/*const*/ auto & route : Routes)

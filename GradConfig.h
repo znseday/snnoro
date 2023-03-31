@@ -68,7 +68,7 @@ protected:
 
     Relief3D *Relief = nullptr;
 
-    void InitNodeCoordsFromParams(const std::vector<double> & _params, SignalNodeType _snt);
+    void InitNodeCoordsFromParams(const std::vector<long double> & _params, SignalNodeType _snt);
     void InitParamsFromNodeCoords(const int _param_count, SignalNodeType _snt, const QRectF &_area);
 
     struct StatsStruct
@@ -154,7 +154,7 @@ public:
                                SignalNodeType _snt,
                                TargetFuncTypeEnum funcType);
 
-    void FindCoveredPointsUsingParams(const std::vector<double>& params, SignalNodeType _snt);
+    void FindCoveredPointsUsingParams(const std::vector<long double>& params, SignalNodeType _snt);
 
 
     void CalcAccessRateForCurrent(); // DEBUG
