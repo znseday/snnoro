@@ -332,7 +332,19 @@ void MainGLWidget::wheelEvent(QWheelEvent *pe)
 
     if (WorkMode == WorkModeType::GradWork)
     {
-        GradModel.OnMouseWheel(pe);
+        double wx = -1, wy = -1, wz = -1;
+        bool wExists = MouseToWorld(pe->position().x(), pe->position().y(), wx, wy, wz);
+
+//        if (wExists)
+//        {
+//            GradModel.OnMouseWheel(pe);
+//        }
+//        else
+//        {
+
+//        }
+        GradModel.OnMouseWheel(pe, wExists, wx, wy, wz);
+
         this->repaint();
     }
 }

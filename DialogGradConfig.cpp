@@ -188,6 +188,33 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
     _gm.SetActiveTargetFuncFirstPhase(ui->cbTargetFuncFirstPhase->currentText().toStdString());
     _gm.SetActiveTargetFuncSecondPhase(ui->cbTargetFuncSecondPhase->currentText().toStdString());
 
+
+
+    if (_gm.GetNodesType() == SignalNodeType::Cone)
+    {
+        if (_gm.GetActiveTargetFuncFirstPhase().find("Cone") == std::string::npos)
+        {
+            QMessageBox::warning(this, "Warning", "Incompatible target function (first phase) for Cone nodes! Please reset target functions.");
+        }
+        if (_gm.GetActiveTargetFuncSecondPhase().find("Cone") == std::string::npos)
+        {
+            QMessageBox::warning(this, "Warning", "Incompatible target function (second phase) for Cone nodes! Please reset target functions.");
+        }
+    }
+
+    if (_gm.GetNodesType() == SignalNodeType::Sphere)
+    {
+        if (_gm.GetActiveTargetFuncFirstPhase().find("Sphere") == std::string::npos)
+        {
+            QMessageBox::warning(this, "Warning", "Incompatible target function (first phase) for Sphere nodes! Please reset target functions.");
+        }
+        if (_gm.GetActiveTargetFuncSecondPhase().find("Sphere") == std::string::npos)
+        {
+            QMessageBox::warning(this, "Warning", "Incompatible target function (second phase) for Sphere nodes! Please reset target functions.");
+        }
+    }
+
+
     _gm.SetGradDescFileName(ui->EditGradDescFile->text());
 
 

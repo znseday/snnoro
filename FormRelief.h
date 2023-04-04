@@ -102,27 +102,20 @@ private slots:
     void SlotColorCellPressed(int r, int c);
 
     void on_actionFile_Save_Legend_As_triggered();
-
     void on_actionFile_Load_Legend_triggered();
-
     void on_chbColorToLegend_stateChanged(int arg1);
 
     void on_actionRelief_Calc_Discrete_Img_triggered();
     void on_actionRelief_Calc_Relief_And_Save_As_triggered();
-
     void on_actionFile_Open_Relief_triggered();
-
     void on_tableColors_itemChanged(QTableWidgetItem *item);
-
     void on_actionRelief_Undo_triggered();
-
     void on_actionRelief_Redo_triggered();
-
     void on_actionLegend_Undo_triggered();
-
     void on_actionLegend_Redo_triggered();
-
     void on_tableColors_cellChanged(int row, int column);
+
+    void on_cbLegends_currentIndexChanged(int index);
 
 private:
 
@@ -191,6 +184,10 @@ public slots:
     // QWidget interface
 protected:
     void closeEvent(QCloseEvent *event) override;
+
+    // QWidget interface
+protected:
+    void showEvent(QShowEvent *event) override;
 };
 
 #endif // FORMRELIEF_H

@@ -13,6 +13,8 @@
 #include <QJsonArray>
 #include <QMouseEvent>
 
+#include <QDirIterator>
+
 
 void MyPicSrcWidget::mousePressEvent(QMouseEvent *pe)
 {
@@ -337,7 +339,7 @@ void FormRelief::on_actionFile_Close_triggered()
 
 void FormRelief::SlotColorDblClicked(QTableWidgetItem *pItem)
 {
-    qDebug() << __PRETTY_FUNCTION__;
+//    qDebug() << __PRETTY_FUNCTION__;
 
     if (pItem->column() != 0)
         return;
@@ -996,7 +998,7 @@ void FormRelief::on_actionFile_Open_Relief_triggered()
 void FormRelief::on_tableColors_itemChanged(QTableWidgetItem *item) // срабатывает при загрузки легенды из файла
 {                                                 // надо что-то с этим сделать
 //    (void)item;
-    qDebug() << __PRETTY_FUNCTION__ << item->text();
+//    qDebug() << __PRETTY_FUNCTION__ << item->text();
 
 //    if (IsLegendReadyToBeSavedToTemp)
 //        SaveCurrentLegendToTemp();
@@ -1146,4 +1148,53 @@ void FormRelief::on_tableColors_cellChanged(int row, int column)
 //    if (IsLegendReadyToBeSavedToTemp)
 //        SaveCurrentLegendToTemp();
 }
+//-------------------------------------------------------------
+
+void FormRelief::showEvent(QShowEvent *event)
+{
+    if (event->spontaneous() )
+    {
+//        qDebug() << __PRETTY_FUNCTION__ << "  spontaneous";
+        return;
+    }
+
+//    QString dir = "./Reliefs/Legends";
+
+//    ui->cbLegends->blockSignals(true);
+    ui->cbLegends->clear();
+
+//    QDirIterator it(dir, QStringList() << "*.rlgd", QDir::Files, QDirIterator::Subdirectories);
+//    while (it.hasNext())
+//    {
+//        qDebug() << it.next();
+//    }
+
+    QDirIterator it(ReliefsLegendsDefaultDir, QStringList() << "*.rlgd", QDir::Files, QDirIterator::Subdirectories);
+    while (it.hasNext())
+    {
+//        QString fn = it.next();
+        it.next();
+        ui->cbLegends->addItem(it.fileName());
+    }
+//    ui->cbLegends->blockSignals(false);
+}
+//-------------------------------------------------------------
+
+void FormRelief::on_cbLegends_currentIndexChanged(int index)
+{
+    if (index < 0)
+    {
+        qDebug() << __PRETTY_FUNCTION__ << " with index < 0 !!!";
+        return;
+    }
+
+    QString fn = ReliefsLegendsDefaultDir + "/" + ui->cbLegends->itemText(index);
+    qDebug() << fn;
+
+    if (!LoadLegend(fn))
+    {
+        QMessageBox::critical(this, "Error", "Selected legend not loaded");
+    }
+}
+//-------------------------------------------------------------
 

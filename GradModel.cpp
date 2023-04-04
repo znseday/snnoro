@@ -638,8 +638,6 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
     int dy = CurrentY - OldY;
 
 
-
-
     if (QApplication::keyboardModifiers() == Qt::ControlModifier) // Отследить состояние клавиши Ctrl
     {
         if (Configs.at(iCurConfig).Settings3d.IsPerspective)
@@ -683,13 +681,74 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
 }
 //----------------------------------------------------------
 
-void MyGradModel::OnMouseWheel(QWheelEvent *pe)
+void MyGradModel::OnMouseWheel(QWheelEvent *pe, bool wExists,
+                               double wx, double wy, double wz)
 {
     if (iCurConfig < 0 || iCurConfig >= (int)Configs.size())
         return;
 
     //if (Configs.at(iCurConfig).Settings3d.IsPerpective)
-    Configs.at(iCurConfig).Settings3d.TrZ += pe->angleDelta().y() / 600.0f / 2.0f;
+
+    const auto & vPort = DrawOnlyOne ? BigViewPort : ViewPorts.at(iCurConfig);
+
+    int x = pe->position().x();
+    int y = pe->position().y();
+
+    if (x < vPort.left() || x > vPort.right())
+    {
+        qDebug() << "x < vPort.left() || x > vPort.right()";
+        return;
+    }
+    if (y < vPort.top() || y > vPort.bottom())
+    {
+        qDebug() << "y < vPort.top() || y > vPort.bottom()";
+        return;
+    }
+
+    double dzWheel = pe->angleDelta().y() / 600.0f / 2.0f;
+
+    if (wExists)
+    {
+        double dx = wx - Configs.at(iCurConfig).Settings3d.TrX;
+        double dy = wy - Configs.at(iCurConfig).Settings3d.TrY;
+        double dz = wz - Configs.at(iCurConfig).Settings3d.TrZ;
+
+        Configs.at(iCurConfig).Settings3d.TrX -= dx*dzWheel;
+        Configs.at(iCurConfig).Settings3d.TrY -= dy*dzWheel;
+        Configs.at(iCurConfig).Settings3d.TrZ += dz*dzWheel;
+    }
+    else
+    {
+        qDebug() << "NOT wExists";
+        Configs.at(iCurConfig).Settings3d.TrZ += dzWheel;
+    }
+
+
+//    int xp = 2*x/vPort.width();
+//    int yp = 2*y/vPort.height();
+
+//    double dz = pe->angleDelta().y() / 600.0f / 2.0f;
+
+//    double tgx = (pe->position().x() - vPort.center().x()) / Configs.at(iCurConfig).Settings3d.TrZ;
+//    double a = dz*tgx;
+
+//    double tgy = (pe->position().y() - vPort.center().y()) / Configs.at(iCurConfig).Settings3d.TrZ;
+//    double b = dz*tgy;
+
+//    double k = 0.08;
+
+//    Configs.at(iCurConfig).Settings3d.TrZ += dz;
+
+//    Configs.at(iCurConfig).Settings3d.TrX -= a*k*log(std::abs(Configs.at(iCurConfig).Settings3d.TrZ));
+//    Configs.at(iCurConfig).Settings3d.TrY -= b*k*log(std::abs(Configs.at(iCurConfig).Settings3d.TrZ));
+
+
+//    qDebug() << "TrZ = " << Configs.at(iCurConfig).Settings3d.TrZ;
+//    qDebug() << "TrX = " << Configs.at(iCurConfig).Settings3d.TrX;
+
+
+
+
 }
 //----------------------------------------------------------
 
@@ -1020,6 +1079,24 @@ QRectF MyGradModel::CalcSomeAreaByBounds(const BoundsStruct &_bs)
     default:
         throw std::runtime_error("Unknown BoundsTypeEnum in MyGradModel::CalcAreaByBounds");
     }
+}
+//----------------------------------------------------------
+
+void MyGradModel::CorrectAreaBoundsIfItIsOutOfRelief(BoundsStruct &_bs)
+{
+    if (_bs.SelXstart < Relief.GetArea().left())
+        _bs.SelXstart = Relief.GetArea().left();
+    if (_bs.SelXstart >= Relief.GetArea().right())
+        _bs.SelXstart = Relief.GetArea().right()-1;
+    if (_bs.SelXstart + _bs.SelW > Relief.GetArea().right())
+        _bs.SelW -= (_bs.SelXstart + _bs.SelW - Relief.GetArea().right());
+
+    if (_bs.SelYstart < Relief.GetArea().top())
+        _bs.SelYstart = Relief.GetArea().top();
+    if (_bs.SelYstart >= Relief.GetArea().bottom())
+        _bs.SelYstart = Relief.GetArea().bottom()-1;
+    if (_bs.SelYstart + _bs.SelH > Relief.GetArea().bottom())
+        _bs.SelH -= (_bs.SelYstart + _bs.SelH - Relief.GetArea().bottom());
 }
 //----------------------------------------------------------
 

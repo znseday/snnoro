@@ -286,6 +286,9 @@
           </widget>
          </item>
          <item>
+          <widget class="QComboBox" name="cbLegends"/>
+         </item>
+         <item>
           <widget class="QTableWidget" name="tableColors">
            <property name="maximumSize">
             <size>

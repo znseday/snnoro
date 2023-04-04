@@ -75,6 +75,7 @@ protected:
     BoundsStruct BoundsGradDesc;     QRectF AreaGradDesc;
 
     QRectF CalcSomeAreaByBounds(const BoundsStruct &_bs);
+    void CorrectAreaBoundsIfItIsOutOfRelief(BoundsStruct &_bs);
 
     WhatShowStruct WhatShow;
 
@@ -132,7 +133,8 @@ public:
 
     void OnMousePress(QMouseEvent *pe);
     void OnMouseMove(QMouseEvent *pe);
-    void OnMouseWheel(QWheelEvent *pe);
+    void OnMouseWheel(QWheelEvent *pe, bool wExists,
+                      double wx, double wy, double wz);
 
     bool StartGradDescent_Phase_1(IGradDrawable *pGLWidget);
     bool StartGradDescent_Phase_1_for_Current(IGradDrawable *pGLWidget);
@@ -220,10 +222,10 @@ public:
     void SetGridSettings(const GridSettingsStruct &_gs) {GridSettings = _gs;}
     const GridSettingsStruct & GetGridSettings() const {return GridSettings;}
 
-    void SetBoundsRandCoords(const BoundsStruct &_bs) {BoundsRandCoords = _bs;}
+    void SetBoundsRandCoords(const BoundsStruct &_bs) {BoundsRandCoords = _bs; CorrectAreaBoundsIfItIsOutOfRelief(BoundsRandCoords);}
     const BoundsStruct & GetBoundsRandCoords() const {return BoundsRandCoords;}
 
-    void SetBoundsGradDesc(const BoundsStruct &_bs) {BoundsGradDesc = _bs;}
+    void SetBoundsGradDesc(const BoundsStruct &_bs) {BoundsGradDesc = _bs; CorrectAreaBoundsIfItIsOutOfRelief(BoundsRandCoords);}
     const BoundsStruct & GetBoundsGradDesc() const {return BoundsGradDesc;}
 
     bool SaveGlobalSettings() const;
