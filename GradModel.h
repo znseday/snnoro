@@ -133,7 +133,8 @@ public:
 
     void OnMousePress(QMouseEvent *pe);
     void OnMouseMove(QMouseEvent *pe);
-    void OnMouseWheel(QWheelEvent *pe);
+    void OnMouseWheel(QWheelEvent *pe, bool wExists,
+                      double wx, double wy, double wz);
 
     bool StartGradDescent_Phase_1(IGradDrawable *pGLWidget);
     bool StartGradDescent_Phase_1_for_Current(IGradDrawable *pGLWidget);
