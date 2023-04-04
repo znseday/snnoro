@@ -1025,11 +1025,6 @@ QRectF MyGradModel::CalcSomeAreaByBounds(const BoundsStruct &_bs)
 
 void MyGradModel::CorrectAreaBoundsIfItIsOutOfRelief(BoundsStruct &_bs)
 {
-//    double SelXstart = 0;
-//    double SelYstart = 0;
-//    double SelW = 0;
-//    double SelH = 0;
-
     if (_bs.SelXstart < Relief.GetArea().left())
         _bs.SelXstart = Relief.GetArea().left();
     if (_bs.SelXstart >= Relief.GetArea().right())
