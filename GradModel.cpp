@@ -1023,6 +1023,29 @@ QRectF MyGradModel::CalcSomeAreaByBounds(const BoundsStruct &_bs)
 }
 //----------------------------------------------------------
 
+void MyGradModel::CorrectAreaBoundsIfItIsOutOfRelief(BoundsStruct &_bs)
+{
+//    double SelXstart = 0;
+//    double SelYstart = 0;
+//    double SelW = 0;
+//    double SelH = 0;
+
+    if (_bs.SelXstart < Relief.GetArea().left())
+        _bs.SelXstart = Relief.GetArea().left();
+    if (_bs.SelXstart >= Relief.GetArea().right())
+        _bs.SelXstart = Relief.GetArea().right()-1;
+    if (_bs.SelXstart + _bs.SelW > Relief.GetArea().right())
+        _bs.SelW -= (_bs.SelXstart + _bs.SelW - Relief.GetArea().right());
+
+    if (_bs.SelYstart < Relief.GetArea().top())
+        _bs.SelYstart = Relief.GetArea().top();
+    if (_bs.SelYstart >= Relief.GetArea().bottom())
+        _bs.SelYstart = Relief.GetArea().bottom()-1;
+    if (_bs.SelYstart + _bs.SelH > Relief.GetArea().bottom())
+        _bs.SelH -= (_bs.SelYstart + _bs.SelH - Relief.GetArea().bottom());
+}
+//----------------------------------------------------------
+
 void MyGradModel::ReCalcAreasByBounds()
 {
      AreaRandCoords = CalcSomeAreaByBounds(BoundsRandCoords);
