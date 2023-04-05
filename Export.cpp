@@ -36,10 +36,10 @@ void CopySelectedTableToClipboard(QTableWidget *_table)
 }
 //----------------------------------------------------------
 
-QString QVector2D_ToQString(const QVector2D &_v)
-{
-    return QString().setNum(_v.x(), 'f', 2) + "; " + QString().setNum(_v.y(), 'f', 2);
-}
+//QString QVector2D_ToQString(const QVector2D &_v)
+//{
+//    return QString().setNum(_v.x(), 'f', 2) + "; " + QString().setNum(_v.y(), 'f', 2);
+//}
 //----------------------------------------------------------
 
 

@@ -34,7 +34,7 @@ void SignalNode::SetRandomCoord(const QRectF &_area, const Relief3D &_relief)
 }
 //----------------------------------------------------------
 
-bool SignalNode::SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos)
+bool SignalNode::SetCoordForPos(const Relief3D &_relief, const MyPos3d<> &_pos)
 {
     const auto &_area = _relief.GetArea();
 
@@ -44,7 +44,7 @@ bool SignalNode::SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos)
         qDebug() << "Invalid";
 
 
-    double x, y;
+    MyDoubleType x, y;
     x = _pos.x();
     y = _pos.y();
     bool isOk = true;
@@ -78,15 +78,15 @@ bool SignalNode::SetCoordForPos(const Relief3D &_relief, const Pos3d &_pos)
 }
 //----------------------------------------------------------
 
-double SignalNode::accessRateSphere(const Pos3d &p) const
+MyDoubleType SignalNode::accessRateSphere(const MyPos3d<> &p) const
 {
     // это квадрат расстояния между текущей позицией и p
-    double d2 = (p.x()-Pos.x())*(p.x()-Pos.x()) +
-                (p.y()-Pos.y())*(p.y()-Pos.y()) +
-                (p.z()-Pos.z())*(p.z()-Pos.z());
+    MyDoubleType d2 = (p.x()-Pos.x())*(p.x()-Pos.x()) +
+                      (p.y()-Pos.y())*(p.y()-Pos.y()) +
+                      (p.z()-Pos.z())*(p.z()-Pos.z());
 
-    double q = 3; // Сделать настроиваемым параметром???
-    double k;
+    MyDoubleType q = 3; // Сделать настроиваемым параметром???
+    MyDoubleType k;
 
     if (d2 >= (q*q))
     {
@@ -95,16 +95,15 @@ double SignalNode::accessRateSphere(const Pos3d &p) const
     else
     {
         k = d2/(q*q);
-        qDebug() << "d2 < (q*q)";
+//        qDebug() << "d2 < (q*q)";  // !!!!!!!!!!!!!!!!!!!!
     }
 
-
-    double y = exp(-d2/(2.0*R*R)) * k;
+    MyDoubleType y = exp(-d2/(2.0*R*R)) * k;
     return y;
 }
 //----------------------------------------------------------
 
-double SignalNode::accessRateCone(const Pos3d &p) const
+MyDoubleType SignalNode::accessRateCone(const MyPos3d<> &p) const
 {
 //    return 1; // !!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -127,9 +126,9 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 
 //    interPoint = {100, 100};
 
-//    double dist_from_sn_to_intersect = QLineF(Pos.toPointF(), interPoint).length();
-//    double dist_from_sn_to_point_of_route = QLineF(Pos.toPointF(), p.toPointF()).length();
-//    double k;// = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route + 10);
+//    MyDoubleType dist_from_sn_to_intersect = QLineF(Pos.toPointF(), interPoint).length();
+//    MyDoubleType dist_from_sn_to_point_of_route = QLineF(Pos.toPointF(), p.toPointF()).length();
+//    MyDoubleType k;// = dist_from_sn_to_intersect / (dist_from_sn_to_point_of_route + 10);
 
 
 //    // Переделать. Сделать физично.
@@ -145,16 +144,16 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 
 //    return k;
 
-    QVector2D v1 = { float(p.x() - Pos.x()), float(p.y() - Pos.y()) };
-    QVector2D v2 = { float(cos(Alpha)), float(sin(Alpha))};
+    MyVector2D<> v1 = { float(p.x() - Pos.x()), float(p.y() - Pos.y()) };
+    MyVector2D<> v2 = { float(cos(Alpha)), float(sin(Alpha))};
 
-    double fix_zero = 0;
+    MyDoubleType fix_zero = 0;
 
-    double c = QVector2D::dotProduct(v1, v2) / (v1.length()+fix_zero); // fix_zero???
+    MyDoubleType c = MyVector2D<>::dotProduct(v1, v2) / (v1.length()+fix_zero); // fix_zero???
 
     if (v1.length() < 1e-6)
     {
-        qDebug() << "v1.length() =" << v1.length();
+        qDebug() << "v1.length() =" << (double)v1.length();
 //        fix_zero = 20; // ???
         c = 0;
     }
@@ -174,7 +173,7 @@ double SignalNode::accessRateCone(const Pos3d &p) const
         c = -1.0;
     }
 
-    double gamma = acos( c ); // fix_zero???
+    MyDoubleType gamma = acos( c ); // fix_zero???
 
 
 
@@ -183,22 +182,22 @@ double SignalNode::accessRateCone(const Pos3d &p) const
 //    qDebug() << "Beta =" << Beta;
 
 
-    double sigma = Beta/1.0;  // Beta in radians?
-    double k = /* 1/(sigma*sqrt(2.0*M_PI)) * */ exp(-0.5*gamma*gamma/(sigma*sigma));
+    MyDoubleType sigma = Beta/1.0;  // Beta in radians?
+    MyDoubleType k = /* 1/(sigma*sqrt(2.0*M_PI)) * */ exp(-0.5*gamma*gamma/(sigma*sigma));
 
 //    qDebug() << "gamma =" << gamma;
 
-    double arfS = accessRateSphere(p);
+    MyDoubleType arfS = accessRateSphere(p);
 
 //    qDebug() << "arfS =" << gamma;
 
-    double res = k * arfS;
+    MyDoubleType res = k * arfS;
 
     if (std::isnan(k))
     {
-        qDebug() << "sigma =" << sigma;
-        qDebug() << "gamma =" << gamma;
-        qDebug() << "c =" << c;
+        qDebug() << "sigma =" << (double)sigma;
+        qDebug() << "gamma =" << (double)gamma;
+        qDebug() << "c =" << (double)c;
 
         qDebug() << "std::isnan(k) in SignalNode::accessRateCone";
     }
@@ -259,7 +258,7 @@ QJsonObject SignalNode::RepresentAsJsonObject() const
 {
     QJsonObject nodeObject;
     nodeObject.insert("R", (int)R);
-    nodeObject.insert("Beta", qRadiansToDegrees(Beta));
+    nodeObject.insert("Beta", qRadiansToDegrees((double)Beta));
     return nodeObject;
 }
 //----------------------------------------------------------
@@ -268,7 +267,6 @@ void SignalNode::LoadFromJsonObject(const QJsonObject &_jsonObject)
 {
     R = _jsonObject["R"].toDouble(-1);
     Beta = qDegreesToRadians(_jsonObject["Beta"].toDouble(0));
-
 }
 //----------------------------------------------------------
 
@@ -402,7 +400,7 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
         {
             double fi = dfi*i;
 
-            QPointF tp = {c + Rx*cos(fi), Ry*sin(fi)};
+            QPointF tp = {double(c + Rx*cos(fi)), double(Ry*sin(fi))};
             RotatePoint(tp, Alpha);
             tp += Pos.toPointF();
 
@@ -423,13 +421,13 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
 }
 //----------------------------------------------------------
 
-int SignalNode::CalcIntersectWithLineToPoint(const Pos3d &_point, QPointF &_result) const
+int SignalNode::CalcIntersectWithLineToPoint(const MyPos3d<> &_point, QPointF &_result) const
 {
     // ВАЖНО! Рассчет ведется в 2d проекции!
 
     _result = {-1, -1}; // ?
     auto [Rx, Ry, c] = CalcEllispe_abc();
-    QPointF ellCenter = {c, 0};
+    QPointF ellCenter = {(double)c, 0};
     RotatePoint(ellCenter, Alpha);
 
     ellCenter += Pos.toPointF();

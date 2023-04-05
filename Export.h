@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <QVector2D>
+//#include <QVector2D>
 #include <QString>
 
 class QTableWidget;
@@ -23,20 +23,23 @@ class QTableWidget;
 //    std::vector<ExportGeneralInfo> GeneralInfos;
 //};
 
-struct ExportDetailedInfo
-{
-    int nConfig = -1;
-    double Time = -1;
 
-    std::vector<QVector2D> PeopleCoords;
-    std::vector<QVector2D> NodeCoords;
-    std::vector<float> SignalPowers;
-    std::vector<float> DistToNearestNode;
-};
+
+
+//struct ExportDetailedInfo
+//{
+//    int nConfig = -1;
+//    double Time = -1;
+
+//    std::vector<QVector2D> PeopleCoords;
+//    std::vector<QVector2D> NodeCoords;
+//    std::vector<float> SignalPowers;
+//    std::vector<float> DistToNearestNode;
+//};
 
 void CopySelectedTableToClipboard(QTableWidget *_table);
 
-QString QVector2D_ToQString(const QVector2D &_v);
+//QString QVector2D_ToQString(const QVector2D &_v);
 
 
 #endif // EXPORT_H

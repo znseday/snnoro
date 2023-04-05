@@ -169,7 +169,7 @@ double Relief3D::CalcRealZbyRealXY(double x, double y) const
 }
 //----------------------------------------------------------
 
-void Relief3D::CalcAndReWriteRealZforPos3d(Pos3d &_pos3d) const
+void Relief3D::CalcAndReWriteRealZforPos3d(MyPos3d<> &_pos3d) const
 {
     if (std::isnan(_pos3d.y())) // Временная ловушка - потом удалить!!!
     {
@@ -260,8 +260,8 @@ void Relief3D::BuildReliefToGL(bool _is2d)
     const double dx = wInside / (ColCount-1);
     const double dy = hInside / (RowCount-1);
 
-    std::vector<QVector3D> oneRow(ColCount);
-    std::vector<std::vector<QVector3D>> points(RowCount, oneRow);
+    std::vector<MyVector3D<>> oneRow(ColCount);
+    std::vector<std::vector<MyVector3D<>>> points(RowCount, oneRow);
 
     std::vector<QColor> oneRowColor(ColCount);
     std::vector<std::vector<QColor>> colors(RowCount, oneRowColor);
@@ -278,7 +278,7 @@ void Relief3D::BuildReliefToGL(bool _is2d)
     {
         for (int j = 0; j < ColCount; j++)
         {
-            points[i][j] = QVector3D(xStartInside + j * dx, yStartInside + i * dy, 0);
+            points[i][j] = MyVector3D<>(xStartInside + j * dx, yStartInside + i * dy, 0);
 
             if (points[i][j].x() < -1)
                 qDebug() << "points[i][j].x() < -1";
@@ -332,7 +332,7 @@ void Relief3D::BuildReliefToGL(bool _is2d)
     {
         for (int j = 0; j < ColCount-1; j++)
         {
-            QVector3D
+            MyVector3D
                 p0 = points[i][j],
                 p1 = points[i][j+1],
                 p2 = points[i+1][j+1],
@@ -398,8 +398,8 @@ void Relief3D::ReBuildGridToGL(bool _is2d, const double dx, const double dy,
     else
         glNewList(Grid2dCompileList, GL_COMPILE);
 
-    std::vector<QVector3D> oneRow(ColCount);
-    std::vector<std::vector<QVector3D>> points(RowCount, oneRow);
+    std::vector<MyVector3D<>> oneRow(ColCount);
+    std::vector<std::vector<MyVector3D<>>> points(RowCount, oneRow);
 
     const double aspect = Area.width()/Area.height();
 

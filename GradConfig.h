@@ -146,7 +146,7 @@ public:
 
     void FillExternVportModlAndProj(GLint _vport[4], GLdouble _modl[16], GLdouble _proj[16]) const;
 
-    double IsLineBetweenTwoPoints(const Pos3d &p1, const Pos3d &p2) const;
+    double IsLineBetweenTwoPoints(const MyPos3d<> &p1, const MyPos3d<> &p2) const;
 
     void TestTwoLines() const;
 

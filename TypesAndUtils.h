@@ -1,9 +1,8 @@
 #ifndef MYTYPES_H
 #define MYTYPES_H
 
-#include <QVector3D>
-
-using Pos3d = QVector3D;
+//#include <QVector3D>
+//using Pos3d = QVector3D;
 
 #include <QJsonObject>
 

@@ -27,10 +27,10 @@ long double TargetFuncAdditiveSphereSecondPhase::operator()(const std::vector<lo
 //    for (size_t k = 0; k < Nodes.size()*dk; k += dk)
     for (size_t k = 0; k < param_count; k += dk)
     {
-        SignalNode sn(QVector3D(params[k],
-                                params[k+1],
-                              Relief->CalcRealZbyRealXY(params[k], params[k+1]) ),
-                      Nodes[k/dk].R);
+        SignalNode sn(MyVector3D<>(params[k],
+                                   params[k+1],
+                                   Relief->CalcRealZbyRealXY(params[k], params[k+1]) ),
+                                   Nodes[k/dk].R);
 
 
         for (const auto & b : Nodes[k/dk].Bonds)
@@ -99,10 +99,10 @@ long double TargetFuncProbabilisticSphereSecondPhase::operator()(const std::vect
 
             for (size_t k = 0; k < param_count; k += dk)
             {
-                SignalNode sn(QVector3D(params[k],
-                                            params[k+1],
-                                            Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                                  Nodes[k/dk].R);
+                SignalNode sn(MyVector3D<>(params[k],
+                                           params[k+1],
+                                           Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                           Nodes[k/dk].R);
 
                 bool isService = false;
                 for (const auto & b : Nodes[k/dk].Bonds)
@@ -189,12 +189,12 @@ long double TargetFuncAdditiveConeSecondPhase::operator()(const std::vector<long
 
     for (size_t k = 0; k < param_count; k += dk)
     {
-        SignalNode sn(QVector3D(params[k],
-                                params[k+1],
-                                Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                      Nodes[k/dk].R,
-                      params[k+2] / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
-                      Nodes[k/dk].Beta);
+        SignalNode sn(MyVector3D<>(params[k],
+                                   params[k+1],
+                                   Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                   Nodes[k/dk].R,
+                                   params[k+2] / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
+                                   Nodes[k/dk].Beta);
 
         for (const auto & b : Nodes[k/dk].Bonds)
         {
@@ -249,12 +249,12 @@ long double TargetFuncProbabilisticConeSecondPhase::operator()(const std::vector
 
             for (size_t k = 0; k < param_count; k += dk)
             {
-                SignalNode sn(QVector3D(params[k],
-                                        params[k+1],
-                                        Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                              Nodes[k/dk].R,
-                              params[k+2], //Nodes[k/dk].Alpha,
-                              Nodes[k/dk].Beta);
+                SignalNode sn(MyVector3D<>(params[k],
+                                           params[k+1],
+                                           Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                           Nodes[k/dk].R,
+                                           params[k+2], //Nodes[k/dk].Alpha,
+                                           Nodes[k/dk].Beta);
 
 //                    double y = /* _targetFuncSettings.Aarf * */ sn.accessRateSphere(p1.Pos);
                 bool isService = false;

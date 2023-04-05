@@ -5,17 +5,18 @@
 #include <QJsonObject>
 
 #include "TypesAndUtils.h"
+#include "MathUtils.h"
 
 class RoutePoint
 {
 public:
-    Pos3d Pos;
+    MyPos3d<> Pos;
     double Weight = -1;
 
     bool IsCovered = false;
 
-    double SignalPower = -1;
-    double DistToNearestNode = -1;
+    MyDoubleType SignalPower = -1;
+    MyDoubleType DistToNearestNode = -1;
 };
 //----------------------------------------------------------
 
@@ -23,19 +24,17 @@ class Abonent_t
 {
 public:
     QString Name;
-    Pos3d Pos;
+    MyPos3d<> Pos;
     double v = 0;
 
-    QVector3D q;
+    MyVector3D<> q;
 
-    double accessRate = 0;
+    MyDoubleType accessRate = 0;
 
     Abonent_t() = default;
-    Abonent_t(const Pos3d &_pos, double _v) : Pos(_pos), v(_v) {}
+    Abonent_t(const MyPos3d<> &_pos, double _v) : Pos(_pos), v(_v) {}
     QJsonObject RepresentAsJsonObject() const;
     void LoadFromJsonObject(const QJsonObject &_jsonObject);
-
-    // double Calc(rel, nodes)
 };
 //----------------------------------------------------------
 

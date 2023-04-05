@@ -78,11 +78,12 @@ void Route::CalcAbonentPos(int t) // in sec
         S += Abonent.q.length();
         if (S > AboLen)
         {
-            double reverseS = S - AboLen;
+            long double reverseS = S - AboLen;
 
-            Abonent.Pos = Points[i2].Pos - Abonent.q.normalized()*reverseS;
+            Abonent.Pos = Points[i2].Pos - reverseS * Abonent.q.normalized();
 
-            qDebug() << "Abonent.Pos =" << Abonent.Pos;
+            qDebug() << "Abonent.Pos =" << (double)Abonent.Pos.x() << "\t" <<
+                        (double)Abonent.Pos.y() << "\t" << (double)Abonent.Pos.z();
 
             break;
 //            Abonent.Pos = Points[i].Pos + q.normalized()*Abonent.v*dt;
@@ -100,7 +101,7 @@ void Route::CalcRouteLength()
     RouteLength = 0;
     for (size_t i = 0; i < Points.size()-1; ++i)
     {
-        QVector3D q = Points[i+1].Pos - Points[i].Pos;
+        MyVector3D q = Points[i+1].Pos - Points[i].Pos;
         RouteLength += q.length();
     }
     qDebug() << "RouteLength =" << RouteLength;

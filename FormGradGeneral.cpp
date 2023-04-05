@@ -117,10 +117,10 @@ bool FormGradGeneral::ShowTable(/*const std::vector<MyConfig> &_configs*/)
         for (size_t j = 0; j < NodeCount; ++j)
         {
             ui->Table->setItem(3 + i, stGT + 2*j + 0,
-                               new QTableWidgetItem(QString().setNum(Configs[i].GetNodes().at(j).Pos.x())));
+                               new QTableWidgetItem(QString().setNum((double)Configs[i].GetNodes().at(j).Pos.x())));
 
             ui->Table->setItem(3 + i, stGT + 2*j + 1,
-                               new QTableWidgetItem(QString().setNum(Configs[i].GetNodes().at(j).Pos.y())));
+                               new QTableWidgetItem(QString().setNum((double)Configs[i].GetNodes().at(j).Pos.y())));
         }
 
         ui->Table->setItem(i+3, stGT + 2*NodeCount + 0,

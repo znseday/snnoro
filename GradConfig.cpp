@@ -294,7 +294,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents,
 
             double tetha = acos(q.z() / q.length()) * 180.0 / M_PI;
             double fi;
-            if (qFuzzyCompare(q.toVector2D().length(), 0))
+            if (qFuzzyCompare(q.toVector2D().length(), 0.0))
                 fi = 0;
             else
                 fi = acos(q.y() / q.toVector2D().length()) * 180.8 / M_PI;
@@ -757,7 +757,7 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<long double> &para
             {
                 if (_snt == SignalNodeType::Sphere)
                 {
-                    SignalNode sn(QVector3D(params[k],
+                    SignalNode sn(MyVector3D<>(params[k],
                                             params[k+1],
                                             Relief->CalcRealZbyRealXY(params[k], params[k+1])),
                                             Nodes[k/dk].R);
@@ -771,7 +771,7 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<long double> &para
                 }
                 else if (_snt == SignalNodeType::Cone)
                 {
-                    SignalNode sn(QVector3D(params[k],
+                    SignalNode sn(MyVector3D<>(params[k],
                                             params[k+1],
                                             Relief->CalcRealZbyRealXY(params[k], params[k+1])),
                                             Nodes[k/dk].R,
@@ -799,7 +799,7 @@ void MyConfig::FindCoveredPointsUsingParams(const std::vector<long double> &para
 
 void MyConfig::CalcAccessRateForCurrent()
 {
-    qDebug() << Nodes.front().accessRateCone(Routes.front().Points.front().Pos);
+    qDebug() << (double)Nodes.front().accessRateCone(Routes.front().Points.front().Pos);
 }
 //----------------------------------------------------------
 
@@ -1059,11 +1059,11 @@ void MyConfig::FillExternVportModlAndProj(GLint _vport[4], GLdouble _modl[16], G
 }
 //----------------------------------------------------------
 
-double MyConfig::IsLineBetweenTwoPoints(const Pos3d &_p1, const Pos3d &_p2) const
+double MyConfig::IsLineBetweenTwoPoints(const MyPos3d<> &_p1, const MyPos3d<> &_p2) const
 {
     double result = 1.0;
 
-    double dRay = Relief->GetDeltaDiag();
+    long double dRay = Relief->GetDeltaDiag();
    // qDebug() << "dRay  =" << dRay;
 
    // Pos3d p1 = _p1;
@@ -1077,10 +1077,10 @@ double MyConfig::IsLineBetweenTwoPoints(const Pos3d &_p1, const Pos3d &_p2) cons
   //  qDebug() << "n =" << n;
   //  qDebug() << "dRay2 =" << dRay;
 
-    QVector2D d = (_p2.toVector2D() - _p1.toVector2D()).normalized() * dRay;
+    MyVector2D d = dRay * (_p2.toVector2D() - _p1.toVector2D()).normalized();
 //    Pos3d p;
-    QVector2D p;
-    QVector2D p0 = _p1.toVector2D();
+    MyVector2D p;
+    MyVector2D p0 = _p1.toVector2D();
 
     double lenZ = _p2.z() - _p1.z();
     double dz = lenZ / (n-1);
@@ -1088,7 +1088,7 @@ double MyConfig::IsLineBetweenTwoPoints(const Pos3d &_p1, const Pos3d &_p2) cons
 
     for (int i = 0; i < n; ++i)
     {
-        p = p0 + i*d;
+        p = p0 + (MyDoubleType)i*d;
         double RealZ = Relief->CalcRealZbyRealXY(p.x(), p.y());
 
         //double k = (p - p0).length() / len;

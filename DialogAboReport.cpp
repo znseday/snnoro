@@ -92,7 +92,7 @@ void DialogAboReport::CalcTable(const MyConfig &_cnfg,
             ui->Table->item(1 + i, 2)->setFlags( ui->Table->item(1 + i, 2)->flags() & ~Qt::ItemIsEditable );
 
             auto ar = r.GetAbonent().accessRate;
-            ui->Table->setItem(1 + i, 3, new QTableWidgetItem(QString().setNum(ar)));
+            ui->Table->setItem(1 + i, 3, new QTableWidgetItem(QString().setNum((double)ar)));
             ui->Table->item(1 + i, 3)->setFlags( ui->Table->item(1 + i, 3)->flags() & ~Qt::ItemIsEditable );
 
             ++i;

@@ -149,14 +149,14 @@ void DialogEditSignalNodes::InitDialog_ForCurrent(SignalNodeType _snt, const std
 
     for (size_t i = 0; i < _signalNodes.size(); ++i)
     {
-        ui->Table->setItem(1 + i, 2 + offCol, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Pos.x() )));
-        ui->Table->setItem(1 + i, 3 + offCol, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Pos.y() )));
+        ui->Table->setItem(1 + i, 2 + offCol, new QTableWidgetItem(QString().setNum( (double)_signalNodes.at(i).Pos.x() )));
+        ui->Table->setItem(1 + i, 3 + offCol, new QTableWidgetItem(QString().setNum( (double)_signalNodes.at(i).Pos.y() )));
 
-        ui->Table->setItem(1 + i, 4 + offCol, new QTableWidgetItem(QString().setNum( _signalNodes.at(i).Pos.z() )));
+        ui->Table->setItem(1 + i, 4 + offCol, new QTableWidgetItem(QString().setNum( (double)_signalNodes.at(i).Pos.z() )));
         ui->Table->item(1 + i, 4 + offCol)->setFlags( ui->Table->item(1, 4 + offCol)->flags() & ~Qt::ItemIsEditable );
 
         if (_snt == SignalNodeType::Cone)
-            ui->Table->setItem(1 + i, 3+2, new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_signalNodes.at(i).Alpha) )));
+            ui->Table->setItem(1 + i, 3+2, new QTableWidgetItem(QString().setNum((double)qRadiansToDegrees(_signalNodes.at(i).Alpha) )));
     }
 }
 //----------------------------------------------------------
@@ -304,11 +304,11 @@ void DialogEditSignalNodes::SetSignalNodeFormTable(SignalNode &_sn, SignalNodeTy
 
 void DialogEditSignalNodes::SetRowInTableFromSignalNode(const SignalNode &_sn, int i)
 {
-    ui->Table->setItem(1 + i, 1+2, new QTableWidgetItem(QString().setNum( _sn.R )));
+    ui->Table->setItem(1 + i, 1+2, new QTableWidgetItem(QString().setNum( (double)_sn.R )));
 
     if (CurNodeType == SignalNodeType::Cone)
         ui->Table->setItem(1 + i, 2+2,
-                           new QTableWidgetItem(QString().setNum( qRadiansToDegrees(_sn.Beta) )));
+                           new QTableWidgetItem(QString().setNum( (double)qRadiansToDegrees(_sn.Beta) )));
 }
 //----------------------------------------------------------
 

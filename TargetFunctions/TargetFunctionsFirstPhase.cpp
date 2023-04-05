@@ -30,10 +30,10 @@ long double TargetFuncAdditiveSphereFirstPhase::operator()(const std::vector<lon
 
     for (size_t k = 0; k < param_count; k += dk)
     {
-        SignalNode sn(QVector3D(params[k],
-                                params[k+1],
-                                Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                                Nodes[k/2].R);
+        SignalNode sn(MyVector3D<>(params[k],
+                                  params[k+1],
+                                  Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                  Nodes[k/2].R);
 
 //            qDebug() << "params[k] =" << params[k];
 //            qDebug() << "params[k+1] =" <<  params[k+1];
@@ -73,15 +73,15 @@ long double TargetFuncAdditiveSphereFirstPhase::operator()(const std::vector<lon
     {
         for (size_t k2 = k1+dk; k2 < Nodes.size()*dk; k2 += dk)
         {
-            SignalNode sn1(QVector3D(params[k1],
-                                     params[k1+1],
-                                     Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
-                           Nodes[k1/dk].R);
+            SignalNode sn1(MyVector3D<>(params[k1],
+                                        params[k1+1],
+                                        Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
+                                        Nodes[k1/dk].R);
 
-            SignalNode sn2(QVector3D(params[k2],
-                                     params[k2+1],
-                                     Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
-                           Nodes[k2/dk].R);
+            SignalNode sn2(MyVector3D<>(params[k2],
+                                        params[k2+1],
+                                        Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
+                                        Nodes[k2/dk].R);
 
             double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
             double R12 = sn1.R + sn2.R;
@@ -131,10 +131,10 @@ long double TargetFuncProbabilisticSphereFirstPhase::operator()(const std::vecto
             double s = 0;
             for (size_t k = 0; k < param_count; k += dk)
             {
-                SignalNode sn(QVector3D(params[k],
-                                            params[k+1],
-                                            Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                                  Nodes[k/dk].R);
+                SignalNode sn(MyVector3D<>(params[k],
+                                           params[k+1],
+                                           Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                           Nodes[k/dk].R);
 
 //                    double y = /* _targetFuncSettings.Aarf * */ sn.accessRateSphere(p1.Pos);
                 double y;
@@ -179,15 +179,15 @@ long double TargetFuncProbabilisticSphereFirstPhase::operator()(const std::vecto
     {
         for (size_t k2 = k1+dk; k2 < Nodes.size()*dk; k2 += dk)
         {
-            SignalNode sn1(QVector3D(params[k1],
-                                     params[k1+1],
-                                     Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
-                           Nodes[k1/dk].R);
+            SignalNode sn1(MyVector3D<>(params[k1],
+                                        params[k1+1],
+                                        Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
+                                        Nodes[k1/dk].R);
 
-            SignalNode sn2(QVector3D(params[k2],
-                                     params[k2+1],
-                                     Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
-                           Nodes[k2/dk].R);
+            SignalNode sn2(MyVector3D<>(params[k2],
+                                        params[k2+1],
+                                        Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
+                                        Nodes[k2/dk].R);
 
             double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
             double R12 = sn1.R + sn2.R;
@@ -232,12 +232,12 @@ long double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<long 
 
     for (size_t k = 0; k < param_count; k += dk)
     {
-        SignalNode sn(QVector3D(params[k],
-                                params[k+1],
-                                Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                      Nodes[k/dk].R,
-                      params[k+2] / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
-                      Nodes[k/dk].Beta);
+        SignalNode sn(MyVector3D<>(params[k],
+                                   params[k+1],
+                                   Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                   Nodes[k/dk].R,
+                                   params[k+2] / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
+                                   Nodes[k/dk].Beta);
 
 //        qDebug() << "params[k] =" << params[k];
 //        qDebug() << "params[k+1] =" <<  params[k+1];
@@ -289,19 +289,19 @@ long double TargetFuncAdditiveConeFirstPhase::operator()(const std::vector<long 
     {
         for (size_t k2 = k1+dk; k2 < Nodes.size()*dk; k2 += dk) // +dk !!!!!!!!!!!!!!!!!!
         {
-            SignalNode sn1(QVector3D(params[k1],
-                                    params[k1+1],
-                                    Relief->CalcRealZbyRealXY(params[k1], params[k1+1])  ),
-                          Nodes[k1/dk].R,
-                          params[k1+2]  / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
-                          Nodes[k1/dk].Beta);
+            SignalNode sn1(MyVector3D<>(params[k1],
+                                       params[k1+1],
+                                       Relief->CalcRealZbyRealXY(params[k1], params[k1+1])  ),
+                                       Nodes[k1/dk].R,
+                                       params[k1+2]  / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
+                                       Nodes[k1/dk].Beta);
 
-            SignalNode sn2(QVector3D(params[k2],
-                                    params[k2+1],
-                                    Relief->CalcRealZbyRealXY(params[k2], params[k2+1])  ),
-                          Nodes[k2/dk].R,
-                          params[k2+2]   / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
-                          Nodes[k2/dk].Beta);
+            SignalNode sn2(MyVector3D<>(params[k2],
+                                        params[k2+1],
+                                        Relief->CalcRealZbyRealXY(params[k2], params[k2+1])  ),
+                                        Nodes[k2/dk].R,
+                                        params[k2+2]   / WierdCoeffAlpha, //Nodes[k/dk].Alpha,
+                                        Nodes[k2/dk].Beta);
 
 //            qDebug() << "sn1.Pos =" << sn1.Pos;
 //            qDebug() << "sn2.Pos =" << sn2.Pos;
@@ -351,12 +351,12 @@ long double TargetFuncProbabilisticConeFirstPhase::operator()(const std::vector<
             double s = 0;
             for (size_t k = 0; k < param_count; k += dk)
             {
-                SignalNode sn(QVector3D(params[k],
-                                        params[k+1],
-                                        Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
-                              Nodes[k/dk].R,
-                              params[k+2], //Nodes[k/dk].Alpha,
-                              Nodes[k/dk].Beta);
+                SignalNode sn(MyVector3D<>(params[k],
+                                           params[k+1],
+                                           Relief->CalcRealZbyRealXY(params[k], params[k+1])  ),
+                                           Nodes[k/dk].R,
+                                           params[k+2], //Nodes[k/dk].Alpha,
+                                           Nodes[k/dk].Beta);
 
 //                    double y = /* _targetFuncSettings.Aarf * */ sn.accessRateSphere(p1.Pos);
                 double y;
@@ -402,29 +402,29 @@ long double TargetFuncProbabilisticConeFirstPhase::operator()(const std::vector<
     {
         for (size_t k2 = k1+dk; k2 < Nodes.size()*dk; k2 += dk) //  +dk
         {
-//                SignalNode sn1(QVector3D(params[k1],
+//                SignalNode sn1(MyVector3D<>(params[k1],
 //                                         params[k1+1],
 //                                         Relief->CalcRealZbyRealXY(params[k1], params[k1+1]) ),
 //                               Nodes[k1/dk].R);
 
-            SignalNode sn1(QVector3D(params[k1],
-                                    params[k1+1],
-                                    Relief->CalcRealZbyRealXY(params[k1], params[k1+1])  ),
-                          Nodes[k1/dk].R,
-                          params[k1+2], //Nodes[k/dk].Alpha,
-                          Nodes[k1/dk].Beta);
+            SignalNode sn1(MyVector3D<>(params[k1],
+                                       params[k1+1],
+                                       Relief->CalcRealZbyRealXY(params[k1], params[k1+1])  ),
+                                       Nodes[k1/dk].R,
+                                       params[k1+2], //Nodes[k/dk].Alpha,
+                                       Nodes[k1/dk].Beta);
 
-//                SignalNode sn2(QVector3D(params[k2],
+//                SignalNode sn2(MyVector3D<>(params[k2],
 //                                         params[k2+1],
 //                                         Relief->CalcRealZbyRealXY(params[k2], params[k2+1])),
 //                               Nodes[k2/dk].R);
 
-            SignalNode sn2(QVector3D(params[k2],
-                                    params[k2+1],
-                                    Relief->CalcRealZbyRealXY(params[k2], params[k2+1])  ),
-                          Nodes[k2/dk].R,
-                          params[k2+2], //Nodes[k/dk].Alpha,
-                          Nodes[k2/dk].Beta);
+            SignalNode sn2(MyVector3D<>(params[k2],
+                                        params[k2+1],
+                                        Relief->CalcRealZbyRealXY(params[k2], params[k2+1])  ),
+                                        Nodes[k2/dk].R,
+                                        params[k2+2], //Nodes[k/dk].Alpha,
+                                        Nodes[k2/dk].Beta);
 
             double x = sn1.Pos.distanceToPoint(sn2.Pos); // Это расстояние в 3d !!! Считать его в 2d или 3d ?
             double R12 = sn1.R + sn2.R;

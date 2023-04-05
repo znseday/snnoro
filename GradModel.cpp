@@ -425,7 +425,7 @@ bool MyGradModel::DeleteRoute(double wx, double wy)
     double realX, realY, realZ;
     realZ = Relief.CalcRealXYZbyNormXY(wx, wy, realX, realY);
 
-    QVector3D PosToDel = {(float)realX, (float)realY, (float)realZ};
+    MyVector3D<> PosToDel = {realX, realY, realZ};
     float MinDist = std::numeric_limits<float>::max();
     auto itToDel = Routes.end();
     for ( auto it = Routes.begin(); it != Routes.end(); ++it)
@@ -535,7 +535,7 @@ void MyGradModel::ReCreateSignalNodes(size_t _count, double _R, double _betha)
 
     for (size_t i = 0; i < _count; ++i)
     {
-        Nodes.emplace_back(QVector3D(), _R, 0, _betha);
+        Nodes.emplace_back(MyVector3D<>(), _R, 0, _betha);
     }
 }
 //----------------------------------------------------------
@@ -885,7 +885,8 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
         qDebug() << "iRoute = " << iRoute;
         for (const auto & p : route.Points)
         {
-            qDebug() << "\t" << p.Pos << "\tw = " << p.Weight;
+            qDebug() << "\t" << (double)p.Pos.x() << "\t" <<
+                        (double)p.Pos.y() << "\t" << (double)p.Pos.z() << "\tw = " << p.Weight;
         }
         iRoute++;
     }
@@ -999,9 +1000,9 @@ QJsonArray MyGradModel::RepresentRoutesAsJsonArray() const
         for (const auto &p : r.Points)
         {
             QJsonObject pointObject;
-            pointObject.insert("x", p.Pos.x());
-            pointObject.insert("y", p.Pos.y());
-            pointObject.insert("z", p.Pos.z());
+            pointObject.insert("x", (double)p.Pos.x());
+            pointObject.insert("y", (double)p.Pos.y());
+            pointObject.insert("z", (double)p.Pos.z());
 
             pointObject.insert("w", p.Weight);
 

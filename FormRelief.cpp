@@ -997,7 +997,7 @@ void FormRelief::on_actionFile_Open_Relief_triggered()
 
 void FormRelief::on_tableColors_itemChanged(QTableWidgetItem *item) // срабатывает при загрузки легенды из файла
 {                                                 // надо что-то с этим сделать
-//    (void)item;
+    (void)item;
 //    qDebug() << __PRETTY_FUNCTION__ << item->text();
 
 //    if (IsLegendReadyToBeSavedToTemp)

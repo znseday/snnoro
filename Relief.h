@@ -6,6 +6,7 @@
 #include <QColor>
 
 #include "TypesAndUtils.h"
+#include "MathUtils.h"
 #include <iostream>
 #include <map>
 #include <QRectF>
@@ -86,7 +87,7 @@ public:
     double CalcRealXYZbyNormXY(double normX, double normY, double &_realX, double &_realY) const;
 
     double CalcRealZbyRealXY(double x, double y) const;
-    void CalcAndReWriteRealZforPos3d(Pos3d &_pos3d) const;
+    void CalcAndReWriteRealZforPos3d(MyPos3d<> &_pos3d) const;
 
     double CalcNormZbyRealXY(double x, double y) const;
     double CalcNormToRealZbyRealXY(double x, double y) const;

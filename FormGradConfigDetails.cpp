@@ -88,37 +88,10 @@ bool FormGradConfigDetails::ShowTable(const MyConfig &_config, size_t number)
             ui->Table->setItem(row, 0, new QTableWidgetItem(QString().setNum(iNode)));
             ui->Table->setItem(row, 1, new QTableWidgetItem(QString().setNum(b.iRoute)));
             ui->Table->setItem(row, 2, new QTableWidgetItem(QString().setNum(b.iPoint)));
-            ui->Table->setItem(row, 3, new QTableWidgetItem(QString().setNum(b.arf)));
-            ui->Table->setItem(row, 4, new QTableWidgetItem(QString().setNum(b.relDist)));
+            ui->Table->setItem(row, 3, new QTableWidgetItem(QString().setNum((double)b.arf)));
+            ui->Table->setItem(row, 4, new QTableWidgetItem(QString().setNum((double)b.relDist)));
         }
     }
-
-//    ui->Table->setRowCount(3 + _configs.size());
-
-//    for (size_t i = 0; i < _configs.size(); ++i)
-//    {
-//        ui->Table->setItem(i+3, 0, new QTableWidgetItem(QString().setNum(i)));
-
-//        for (size_t j = 0; j < NodeCount; ++j)
-//        {
-//            ui->Table->setItem(3 + i, stGT + 2*j + 0,
-//                               new QTableWidgetItem(QString().setNum(_configs[i].GetNodes().at(j).Pos.x())));
-
-//            ui->Table->setItem(3 + i, stGT + 2*j + 1,
-//                               new QTableWidgetItem(QString().setNum(_configs[i].GetNodes().at(j).Pos.y())));
-//        }
-
-//        ui->Table->setItem(i+3, stGT + 2*NodeCount + 0,
-//                           new QTableWidgetItem(QString().setNum(_configs[i].GetStats().PercentOfCovered)));
-//        ui->Table->setItem(i+3, stGT + 2*NodeCount + 1,
-//                           new QTableWidgetItem(QString().setNum(_configs[i].GetStats().UncoveredCount)));
-//        ui->Table->setItem(i+3, stGT + 2*NodeCount + 2,
-//                           new QTableWidgetItem(QString().setNum(_configs[i].GetStats().LastCostPhase1)));
-//        ui->Table->setItem(i+3, stGT + 2*NodeCount + 3,
-//                           new QTableWidgetItem(_configs[i].GetStats().LastCostPhase2 ?
-//                                                QString().setNum(_configs[i].GetStats().LastCostPhase2) : QString("-")
-//                                                                     ));
-//    }
 
     return true;
 }
