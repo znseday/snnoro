@@ -17,13 +17,22 @@ class TargetFunctionBase;
 
 struct Settings3dType
 {
-    float TrX = 0;
-    float TrY = 0;
-    float TrZ = -3.5f;
-    float RotX = 0;
-    float RotY = 0;
-    float RotZ = 0;
-    //float OrthoZoom = 1.0f;
+//    double TrX = 0;
+//    double TrY = 0;
+//    double TrZ = -3.5;
+
+    double eyeX = 0;
+    double eyeY = 0;
+    double eyeZ = 3;
+
+    double centerX = 0;
+    double centerY = 0;
+    double centerZ = 0;
+
+    double RotX = 0;
+    double RotY = 0;
+    double RotZ = 0;
+    //double OrthoZoom = 1.0;
     bool IsPerspective = false;
 };
 

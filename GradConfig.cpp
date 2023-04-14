@@ -185,15 +185,31 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents,
 
     if (Settings3d.IsPerspective)
     {
-        glTranslatef(Settings3d.TrX, Settings3d.TrY, Settings3d.TrZ);
+//        glTranslatef(Settings3d.TrX, Settings3d.TrY, Settings3d.TrZ);
+
+        gluLookAt(Settings3d.eyeX, Settings3d.eyeY, Settings3d.eyeZ,
+                  Settings3d.centerX, Settings3d.centerY, Settings3d.centerZ,
+                  0, 1, 0);
+
         glRotatef(Settings3d.RotX, 1, 0, 0);
         glRotatef(Settings3d.RotY, 0, 1, 0);
         glRotatef(Settings3d.RotZ, 0, 0, 1);
     }
     else
     {
-        glTranslatef(Settings3d.TrX, Settings3d.TrY, 0);
-        float ks = fabs(1.0/(Settings3d.TrZ+2.5));
+//        glTranslatef(Settings3d.TrX, Settings3d.TrY, 0);
+//        float ks = fabs(1.0/(Settings3d.TrZ+2.5));
+//        glScalef(ks, ks, 1.0);
+
+//        glTranslatef(Settings3d.eyeX, Settings3d.eyeY, 0);
+        glTranslatef(Settings3d.centerX, Settings3d.centerY, 0);
+
+//        gluLookAt(Settings3d.eyeX, Settings3d.eyeY, Settings3d.eyeZ,
+//                  Settings3d.centerX, Settings3d.centerY, Settings3d.centerZ,
+//                  0, 1, 0);
+
+
+        float ks = fabs(1.0/(Settings3d.eyeZ-2));
         glScalef(ks, ks, 1.0);
     }
 
@@ -275,7 +291,7 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents,
             glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
 
             gluQuadricDrawStyle(Quadric(), GLU_FILL);
-            gluSphere(Quadric(), (0.01 + 0.025*sqrt(p.Weight)) * pow(fabs(Settings3d.TrZ), 0.25), 12, 12);
+            gluSphere(Quadric(), (0.01 + 0.025*sqrt(p.Weight)) * pow(fabs(Settings3d.eyeZ), 0.25), 12, 12);
             glPopMatrix();
         }
 

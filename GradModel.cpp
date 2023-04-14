@@ -645,7 +645,7 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
     }
     else if (QApplication::keyboardModifiers() == Qt::AltModifier)
     {
-        double k1 = Configs.at(iCurConfig).Settings3d.IsPerspective ? -Configs.at(iCurConfig).Settings3d.TrZ / 2.5  : 1;
+        double k1 = Configs.at(iCurConfig).Settings3d.IsPerspective ? -Configs.at(iCurConfig).Settings3d.eyeZ / 2.5  : 1;
 
         const auto & vPort = DrawOnlyOne ? BigViewPort : ViewPorts.at(iCurConfig);
 
@@ -663,8 +663,14 @@ void MyGradModel::OnMouseMove(QMouseEvent *pe)
 //        qDebug() << "k2 =" << k2;
 //        qDebug() << "Height =" << Height;
 
-        Configs.at(iCurConfig).Settings3d.TrX += k1*k2*TransSpeed*dx;
-        Configs.at(iCurConfig).Settings3d.TrY -= k1*k2*TransSpeed*dy;
+//        Configs.at(iCurConfig).Settings3d.TrX += k1*k2*TransSpeed*dx;
+//        Configs.at(iCurConfig).Settings3d.TrY -= k1*k2*TransSpeed*dy;
+
+        Configs.at(iCurConfig).Settings3d.centerX += k1*k2*TransSpeed*dx;
+        Configs.at(iCurConfig).Settings3d.centerY -= k1*k2*TransSpeed*dy;
+
+        Configs.at(iCurConfig).Settings3d.eyeX += k1*k2*TransSpeed*dx;
+        Configs.at(iCurConfig).Settings3d.eyeY -= k1*k2*TransSpeed*dy;
     }
     else
     {
@@ -707,22 +713,48 @@ void MyGradModel::OnMouseWheel(QWheelEvent *pe, bool wExists,
 
     double dzWheel = pe->angleDelta().y() / 600.0f / 2.0f;
 
+
+    qDebug() << "Center:" << Configs.at(iCurConfig).Settings3d.centerX << " - "
+                          << Configs.at(iCurConfig).Settings3d.centerY << " - "
+                          << Configs.at(iCurConfig).Settings3d.centerZ;
+
+    qDebug() << "Eye:"    << Configs.at(iCurConfig).Settings3d.eyeX << " - "
+                          << Configs.at(iCurConfig).Settings3d.eyeY << " - "
+                          << Configs.at(iCurConfig).Settings3d.eyeZ;
+
     if (wExists)
     {
-        double dx = wx - Configs.at(iCurConfig).Settings3d.TrX;
-        double dy = wy - Configs.at(iCurConfig).Settings3d.TrY;
-        double dz = wz - Configs.at(iCurConfig).Settings3d.TrZ;
+//        wz = 0;
 
-        Configs.at(iCurConfig).Settings3d.TrX -= dx*dzWheel;
-        Configs.at(iCurConfig).Settings3d.TrY -= dy*dzWheel;
-        Configs.at(iCurConfig).Settings3d.TrZ += dz*dzWheel;
+
+        double dx = wx - Configs.at(iCurConfig).Settings3d.eyeX;
+        double dy = wy - Configs.at(iCurConfig).Settings3d.eyeY;
+        double dz = wz - Configs.at(iCurConfig).Settings3d.eyeZ;
+
+        Configs.at(iCurConfig).Settings3d.eyeX += dx*dzWheel;
+        Configs.at(iCurConfig).Settings3d.eyeY += dy*dzWheel;
+        Configs.at(iCurConfig).Settings3d.eyeZ += dz*dzWheel;
+
+        dx = wx - Configs.at(iCurConfig).Settings3d.centerX;
+        dy = wy - Configs.at(iCurConfig).Settings3d.centerY;
+        dz = wz - Configs.at(iCurConfig).Settings3d.centerZ;
+
+        Configs.at(iCurConfig).Settings3d.centerX += dx*dzWheel;
+        Configs.at(iCurConfig).Settings3d.centerY += dy*dzWheel;
+        Configs.at(iCurConfig).Settings3d.centerZ += dz*dzWheel;
+
+
+//        Configs.at(iCurConfig).Settings3d.centerX = wx;
+//        Configs.at(iCurConfig).Settings3d.centerY = wy;
+//        Configs.at(iCurConfig).Settings3d.centerZ = wz;
     }
     else
     {
         qDebug() << "NOT wExists";
-        Configs.at(iCurConfig).Settings3d.TrZ += dzWheel;
+        Configs.at(iCurConfig).Settings3d.eyeZ += dzWheel;
     }
 
+//    Configs.at(iCurConfig).Settings3d.eyeZ -= dzWheel;
 
 //    int xp = 2*x/vPort.width();
 //    int yp = 2*y/vPort.height();
