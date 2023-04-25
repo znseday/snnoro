@@ -48,6 +48,8 @@ protected:
     bool IsRandomRoutes = false;
 
     GridSettingsStruct GridSettings;
+    IsolinesSettingsStruct IsolinesSettings;
+
     Relief3D Relief;
     bool IsRandomRelief = true;
 
@@ -211,6 +213,8 @@ public:
     void SetDirectCurNodeByPos(double wx, double wy);
 
     void SetShowGridOnRelief(bool _isShow);
+    void SetShowIsolinesOfAccessRate(bool _isShow);
+
     void SetShowCones(bool _isShow)    {WhatShow.ShowCones = _isShow;}
     void SetShowRadii(bool _isShow)    {WhatShow.ShowRadii = _isShow;}
     void SetShowEllipses(bool _isShow) {WhatShow.ShowEllipses = _isShow;}
@@ -218,9 +222,13 @@ public:
     void SetShowPointsOnRadii(bool _isShow)           {WhatShow.ShowPointsOnRadii = _isShow;}
     void SetShowAreaForRandomNodes(bool _isShow)      {WhatShow.ShowAreaForRandomNodes = _isShow;}
     void SetShowAreaForGradDesc(bool _isShow)         {WhatShow.ShowAreaForGradDesc = _isShow;}
+    void SetShowRoutes(bool _isShow)   {WhatShow.ShowRoutes = _isShow;}
 
     void SetGridSettings(const GridSettingsStruct &_gs) {GridSettings = _gs;}
     const GridSettingsStruct & GetGridSettings() const {return GridSettings;}
+
+    void SetIsolinesSettings(const IsolinesSettingsStruct &_is) {IsolinesSettings = _is;}
+    const IsolinesSettingsStruct & GetIsolinesSettings() const {return IsolinesSettings;}
 
     void SetBoundsRandCoords(const BoundsStruct &_bs) {BoundsRandCoords = _bs; CorrectAreaBoundsIfItIsOutOfRelief(BoundsRandCoords);}
     const BoundsStruct & GetBoundsRandCoords() const {return BoundsRandCoords;}

@@ -110,6 +110,341 @@ void MyConfig::SetRandomNodeCoords(const QRectF &_area)
 }
 //----------------------------------------------------------
 
+void MyConfig::ReCreateIsolinesARFListsGL()
+{
+    ClearIsolinesARF();
+
+    IsolinesARFCompileList = glGenLists(1);
+    IsolinesARF2dCompileList = glGenLists(1);
+
+//    qDebug() << "GridCompileList =" << GridCompileList;
+//    qDebug() << "Grid2dCompileList =" << Grid2dCompileList;
+}
+//----------------------------------------------------------
+
+void MyConfig::ClearIsolinesARF()
+{
+    if (IsolinesARFCompileList)
+        glDeleteLists(IsolinesARFCompileList, 1);
+    if (IsolinesARF2dCompileList)
+        glDeleteLists(IsolinesARF2dCompileList, 1);
+
+    IsolinesARFCompileList = 0;
+    IsIsolinesARFBuilt = false;
+    IsolinesARF2dCompileList = 0;
+    IsIsolinesARF2dBuilt = false;
+}
+//----------------------------------------------------------
+
+/*static*/ void MyConfig::HandleSquare(const MyPos3d<> &p0, const MyPos3d<> &p1,
+                         const MyPos3d<> &p2, const MyPos3d<> &p3,
+                         double level, double offsetX, double offsetY, double offsetZ, double k, bool _is2d)
+{
+    int Case = 0;
+
+    if (p0.z() >= level)
+        Case |= 1 << 3;
+    if (p1.z() >= level)
+        Case |= 1 << 2;
+    if (p2.z() >= level)
+        Case |= 1 << 1;
+    if (p3.z() >= level)
+        Case |= 1;
+
+    if (Case == 0b1111 || Case == 0b0000)
+    {
+        return; // no contour
+    }
+
+    double dx = p2.x() - p3.x();
+    double dy = p0.y() - p3.y();
+
+    double x1, y1, x2, y2, z1, z2;
+
+    if (Case == 0b1110 || Case == 0b0001)
+    {
+        x1 = p3.x() + (level - p3.z()) / (p2.z() - p3.z()) * dx;
+        y1 = p3.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p3.x();
+        y2 = p3.y() + (level - p3.z()) / (p0.z() - p3.z()) * dy;
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+    }
+    else if (Case == 0b1101 || Case == 0b0010)
+    {
+        x1 = p2.x() - (level - p2.z()) / (p3.z() - p2.z()) * dx;
+        y1 = p3.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p2.x();
+        y2 = p2.y() + (level - p2.z()) / (p1.z() - p2.z()) * dy;
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+    }
+    else if (Case == 0b1011 || Case == 0b0100)
+    {
+        x1 = p1.x() - (level - p1.z()) / (p0.z() - p1.z()) * dx;
+        y1 = p0.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p1.x();
+        y2 = p1.y() - (level - p1.z()) / (p2.z() - p1.z()) * dy;
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+    }
+    else if (Case == 0b0111 || Case == 0b1000)
+    {
+        x1 = p0.x() + (level - p0.z()) / (p1.z() - p0.z()) * dx;
+        y1 = p0.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p0.x();
+        y2 = p0.y() - (level - p0.z()) / (p3.z() - p0.z()) * dy;
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+    }
+    else if (Case == 0b1100 || Case == 0b0011)
+    {
+        x1 = p3.x();
+        y1 = p3.y() + (level - p3.z()) / (p0.z() - p3.z()) * dy;
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p2.x();
+        y2 = p2.y() + (level - p2.z()) / (p1.z() - p2.z()) * dy;
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+    }
+    else if (Case == 0b1001 || Case == 0b0110)
+    {
+        x1 = p2.x() - (level - p2.z()) / (p3.z() - p2.z()) * dx;
+        y1 = p2.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p1.x() - (level - p1.z()) / (p0.z() - p1.z()) * dx;
+        y2 = p1.y();
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+    }
+    else if ((Case == 0b1010 && Relief->CalcRealZbyRealXY((p2.x() + p3.x()) / 2.0, (p3.y() + p0.y()) / 2.0) < 0) ||
+             (Case == 0b0101 && Relief->CalcRealZbyRealXY((p2.x() + p3.x()) / 2.0, (p3.y() + p0.y()) / 2.0) >= 0) )
+    {
+        x1 = p3.x() + (level - p3.z()) / (p2.z() - p3.z()) * dx;
+        y1 = p3.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p2.x();
+        y2 = p1.y() - (level - p1.z()) / (p2.z() - p1.z()) * dy;
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+
+        double x, y, z;
+
+        x = (x1 - offsetX)*k;
+        y = (y1 - offsetY)*k;
+        z = (z1 - offsetZ)*Relief->GetGlobal_kz();
+        glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+
+        x = (x2 - offsetX)*k;
+        y = (y2 - offsetY)*k;
+        z = (z2 - offsetZ)*Relief->GetGlobal_kz();
+        glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+        //---
+
+        x1 = p1.x() - (level - p1.z()) / (p0.z() - p1.z()) * dx;
+        y1 = p1.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p0.x();
+        y2 = p3.y() + (level - p3.z()) / (p0.z() - p3.z()) * dy;
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+
+    }
+    else
+    {
+
+        x1 = p3.x() + (level - p3.z()) / (p2.z() - p3.z()) * dx;
+        y1 = p3.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p3.x();
+        y2 = p3.y() + (level - p3.z()) / (p0.z() - p3.z()) * dy;
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+
+        double x, y, z;
+
+        x = (x1 - offsetX)*k;
+        y = (y1 - offsetY)*k;
+        z = (z1 - offsetZ)*Relief->GetGlobal_kz();
+        glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+
+        x = (x2 - offsetX)*k;
+        y = (y2 - offsetY)*k;
+        z = (z2 - offsetZ)*Relief->GetGlobal_kz();
+        glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+        //---
+
+        x1 = p1.x() - (level - p1.z()) / (p0.z() - p1.z()) * dx;
+        y1 = p1.y();
+        z1 = Relief->CalcRealZbyRealXY(x1, y1);
+
+        x2 = p1.x();
+        y2 = p1.y() - (level - p1.z()) / (p2.z() - p1.z()) * dy;
+
+        z2 = Relief->CalcRealZbyRealXY(x2, y2);
+
+    }
+
+    double x, y, z;
+
+    x = (x1 - offsetX)*k;
+    y = (y1 - offsetY)*k;
+    z = (z1 - offsetZ)*Relief->GetGlobal_kz();
+    glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+
+    x = (x2 - offsetX)*k;
+    y = (y2 - offsetY)*k;
+    z = (z2 - offsetZ)*Relief->GetGlobal_kz();
+    glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+}
+//----------------------------------------------------------
+
+void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
+                                  int nDetail, bool _isShowPoints,
+                                  bool _isUseLineBetweenTwoPoints,
+                                  SignalNodeType _snt,
+                                  TargetFuncTypeEnum funcType)
+{
+    if (!_is2d && IsIsolinesARFBuilt)
+        throw std::runtime_error("IsGridBuilt == true in Relief3D::ReBuildGridToGL");
+    if (_is2d && IsIsolinesARF2dBuilt)
+        throw std::runtime_error("IsGrid2dBuilt == true in Relief3D::ReBuildGridToGL");
+
+    int RowCount = nDetail;
+    int ColCount = nDetail;
+
+    if (!_is2d)
+        glNewList(IsolinesARFCompileList, GL_COMPILE);
+    else
+        glNewList(IsolinesARF2dCompileList, GL_COMPILE);
+
+
+    const auto & _area = Relief->GetArea();
+    constexpr float zOffset = 0.0001f;
+    double kx = 2.0/_area.width();
+    double ky = 2.0/_area.height();
+    double k = min(kx, ky);
+//    double k = max(kx, ky);
+
+    double hW = _area.width()/2.0;
+    double hH = _area.height()/2.0;
+
+    double offsetX = _area.x()+hW; // in meters
+    double offsetY = _area.y()+hH; // in meters
+    double offsetZ = 0;
+
+    std::vector<MyVector3D<>> oneRow(ColCount);
+    std::vector<std::vector<MyVector3D<>>> points(RowCount, oneRow);
+
+//    const double aspect = _area.width()/_area.height();
+
+//    double dx = _area.width() / double(nDetail);   // in meters
+//    double dy = _area.height() / double(nDetail);  // in meters
+
+    double dx = _area.width() / double(nDetail-1);   // in meters
+    double dy = _area.height() / double(nDetail-1);  // in meters
+
+//    double dxInside = 2.0*dx/_area.width();
+//    double dyInside = 2.0*dy/_area.height();
+
+//    if (aspect > 1)
+//        dyInside /= aspect;
+//    else
+//        dxInside *= aspect;
+
+
+    for (int i = 0; i < RowCount; ++i)
+    {
+        for (int j = 0; j < ColCount; ++j)
+        {
+            double x = _area.left() + /*dx/2.0*/ + dx*j;
+            double y = _area.top() + /*dy/2.0*/ + dy*i;
+            double z = Relief->CalcRealZbyRealXY(x, y);
+
+            double arf = CalcAccessRateForAnyPos({x, y, z}, _isUseLineBetweenTwoPoints, _snt, funcType);
+
+
+            points.at(i).at(j) = {x, y, z};
+//            points.at(i).at(j) = {x, y, arf};
+        }
+    }
+    //--------------------------------------------------
+
+    const double dColor = 1.0 / nLevels;
+    double levelMin = 0;
+    double levelMax = 0;
+
+    for (int i = 0; i < RowCount; ++i)
+    {
+        for (int j = 0; j < ColCount; ++j)
+        {
+            levelMin = std::min(levelMin, (double)points.at(i).at(j).z());
+            levelMax = std::max(levelMax, (double)points.at(i).at(j).z());
+        }
+    }
+
+//    qDebug() << "levelMin = " << levelMin;
+//    qDebug() << "levelMax = " << levelMax;
+
+    const double dLevel = (levelMax - levelMin) / double(nLevels);
+
+
+    glColor3f(0.5f, 0.5f, 0.5f);
+
+    if (_isShowPoints)
+    {
+        glPointSize(3.0);
+        glBegin(GL_POINTS);
+        for (int i = 0; i < RowCount; ++i)
+        {
+            for (int j = 0; j < ColCount; ++j)
+            {
+                double x = (points.at(i).at(j).x() - offsetX)*k;
+                double y = (points.at(i).at(j).y() - offsetY)*k;
+                double z = (points.at(i).at(j).z() - offsetZ)*Relief->GetGlobal_kz();
+
+                glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
+            }
+        }
+        glEnd();
+    }
+
+
+    for (int n = 0; n < nLevels; ++n)
+    {
+        double level = dLevel/2.0 + dLevel*n;
+//        qDebug() << "level = " << level;
+
+        double color = dColor/2.0 + dColor*n;
+
+        glColor3f(color/2.0, 0, color);
+
+        glBegin(GL_LINES);
+        for (int i = 0; i < RowCount-1; ++i)
+        {
+            for (int j = 0; j < ColCount-1; ++j)
+            {
+                HandleSquare(points.at(i+1).at(j), points.at(i+1).at(j+1),
+                             points.at(i).at(j+1), points.at(i).at(j),
+                             level, offsetX, offsetY, offsetZ, k, _is2d);
+            }
+        }
+        glEnd();
+    }
+
+    glEndList(); // закончить список
+
+    if (!_is2d)
+        IsIsolinesARFBuilt = true;
+    else
+        IsIsolinesARF2dBuilt = true;
+}
+//----------------------------------------------------------
+
 void MyConfig::DrawSomeArea(const QRectF & _area, double offsetX, double offsetY,
                          double offsetZ, double k, bool _isPerpective) const
 {
@@ -121,7 +456,7 @@ void MyConfig::DrawSomeArea(const QRectF & _area, double offsetX, double offsetY
         {
             double x = _area.left() + i*dx;
             double y = _area.bottom();
-            double z = (Relief->CalcRealZbyRealXY(x, y) - offsetZ)*Relief->Get_kz();
+            double z = (Relief->CalcRealZbyRealXY(x, y) - offsetZ)*Relief->GetGlobal_kz();
             x = (x-offsetX)*k;
             y = (y-offsetY)*k;
             glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
@@ -132,7 +467,7 @@ void MyConfig::DrawSomeArea(const QRectF & _area, double offsetX, double offsetY
         {
             double x = _area.left() + i*dx;
             double y = _area.top();
-            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->Get_kz();
+            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->GetGlobal_kz();
             x = (x-offsetX)*k;
             y = (y-offsetY)*k;
             glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
@@ -143,7 +478,7 @@ void MyConfig::DrawSomeArea(const QRectF & _area, double offsetX, double offsetY
         {
             double x = _area.left();
             double y = _area.top() + i*dy;
-            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->Get_kz();
+            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->GetGlobal_kz();
             x = (x-offsetX)*k;
             y = (y-offsetY)*k;
             glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
@@ -154,7 +489,7 @@ void MyConfig::DrawSomeArea(const QRectF & _area, double offsetX, double offsetY
         {
             double x = _area.right();
             double y = _area.top() + i*dy;
-            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->Get_kz();
+            double z = (Relief->CalcRealZbyRealXY(x, y) -offsetZ)*Relief->GetGlobal_kz();
             x = (x-offsetX)*k;
             y = (y-offsetY)*k;
             glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
@@ -257,122 +592,125 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents,
         DrawSomeArea(_areaGradDesc, offsetX, offsetY, offsetZ, k, Settings3d.IsPerspective);
     }
 
-    for (const auto & r : Routes)
+    if (_whatShow.ShowRoutes)
     {
-        glColor3f(0.1f, 0.7f, 0.7f);
-
-        glBegin(GL_LINE_STRIP);
-        for (const auto & p : r.Points)
+        for (const auto & r : Routes)
         {
-            double x = (p.Pos.x()-offsetX)*k;
-            double y = (p.Pos.y()-offsetY)*k;
+            glColor3f(0.1f, 0.7f, 0.7f);
 
-            double z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
-            glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
-        }
-        glEnd();
+            glBegin(GL_LINE_STRIP);
+            for (const auto & p : r.Points)
+            {
+                double x = (p.Pos.x()-offsetX)*k;
+                double y = (p.Pos.y()-offsetY)*k;
+                double z = (p.Pos.z()-offsetZ)*Relief->GetGlobal_kz();
 
-        for (const auto & p : r.Points)
-        {
-            if (p.IsCovered)
-                glColor3f(0.1f, 0.8f, 0);
-            else
-                glColor3f(0.1f, 0.1f, 0.8f);
-
-            //glPointSize(3.0 + p.Weight*16.0);
-            //glBegin(GL_POINTS);
-            //glVertex3f((p.Pos.x()-offsetX)*k, (p.Pos.y()-offsetY)*k, 0);
-            //glEnd();
-
-            glPushMatrix();    
-            double x = (p.Pos.x()-offsetX)*k;
-            double y = (p.Pos.y()-offsetY)*k;
-            double z = (p.Pos.z()-offsetZ)*Relief->Get_kz();
-            glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
-
-            gluQuadricDrawStyle(Quadric(), GLU_FILL);
-            gluSphere(Quadric(), (0.01 + 0.025*sqrt(p.Weight)) * pow(fabs(Settings3d.eyeZ), 0.25), 12, 12);
-            glPopMatrix();
-        }
-
-        if (/*false && */ isDrawAbonents)
-        {
-            const auto & abo = r.GetAbonent();
-            double x = (abo.Pos.x()-offsetX)*k;
-            double y = (abo.Pos.y()-offsetY)*k;
-            double z = (abo.Pos.z()-offsetZ)*Relief->Get_kz();
-
-            constexpr float kTri = 0.02f;
-
-            glPushMatrix();         
-
-            const auto & q = abo.q;
-
-            double tetha = acos(q.z() / q.length()) * 180.0 / M_PI;
-            double fi;
-            if (qFuzzyCompare(q.toVector2D().length(), 0.0))
-                fi = 0;
-            else
-                fi = acos(q.y() / q.toVector2D().length()) * 180.8 / M_PI;
-
-            glTranslatef(x, y, z);
-
-            //glDisable(GL_DEPTH_TEST);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glBegin(GL_QUADS);
-            constexpr float hr = 0.03;
-            constexpr float wr = 0.25;
-
-            float wrr = abo.accessRate / 1.0 * wr;
-            constexpr double endHue = 120;
-            int hu = /*startHue -*/ -20 + (abo.accessRate - 0)/(1.0 - 0)*endHue;
-            if (hu > 120)
-                hu = 120;
-            if (hu < 0)
-                hu += 360;
-
-            QColor res = QColor::fromHsv(hu, 220, 150);
-        //    qDebug() << res.hslHue() << res.hslSaturation() << res.lightness();
-        //    qDebug() << res.isValid();
-            res = res.toRgb();
-
-            glColor3f(res.redF(), res.greenF(), res.blueF());
-            glVertex3f(0, 0, 0);
-            glVertex3f(0, hr, 0);
-            glVertex3f(wrr, hr, 0);
-            glVertex3f(wrr, 0, 0);
+                glVertex3f(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
+            }
             glEnd();
 
-            glLineWidth(2.0f);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            glBegin(GL_QUADS);
-            glColor3f(0, 0, 0);
-            glVertex3f(0, 0, 0);
-            glVertex3f(0, hr, 0);
-            glVertex3f(wr, hr, 0);
-            glVertex3f(wr, 0, 0);
-            glEnd();
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            for (const auto & p : r.Points)
+            {
+                if (p.IsCovered)
+                    glColor3f(0.1f, 0.8f, 0);
+                else
+                    glColor3f(0.1f, 0.1f, 0.8f);
 
-            glColor3f(0.9f, 0.1f, 0.1f);
-            glRotatef( (q.x() > 0) ? -fi : fi, 0, 0, 1);
-            glRotatef(-tetha, 1, 0, 0);
+                //glPointSize(3.0 + p.Weight*16.0);
+                //glBegin(GL_POINTS);
+                //glVertex3f((p.Pos.x()-offsetX)*k, (p.Pos.y()-offsetY)*k, 0);
+                //glEnd();
 
-            glTranslatef(0, 0, -kTri*2);
+                glPushMatrix();
+                double x = (p.Pos.x()-offsetX)*k;
+                double y = (p.Pos.y()-offsetY)*k;
+                double z = (p.Pos.z()-offsetZ)*Relief->GetGlobal_kz();
+                glTranslatef(x, y, zOffset + (Settings3d.IsPerspective ? z : 0));
 
-            glLineWidth(1.0);
-            gluQuadricDrawStyle(Quadric(), GLU_LINE);
-            gluCylinder(Quadric(), kTri, 0, kTri*4, 16, 4);
+                gluQuadricDrawStyle(Quadric(), GLU_FILL);
+                gluSphere(Quadric(), (0.01 + 0.025*sqrt(p.Weight)) * pow(fabs(Settings3d.eyeZ), 0.25), 12, 12);
+                glPopMatrix();
+            }
 
-            //glEnable(GL_DEPTH_TEST);
-            glPopMatrix();
+            if (/*false && */ isDrawAbonents)
+            {
+                const auto & abo = r.GetAbonent();
+                double x = (abo.Pos.x()-offsetX)*k;
+                double y = (abo.Pos.y()-offsetY)*k;
+                double z = (abo.Pos.z()-offsetZ)*Relief->GetGlobal_kz();
 
-//            qDebug() << "abo =" << abo.Pos << ", ar =" << abo.accessRate;
-//            glBegin(GL_LINE_LOOP);
-//            glVertex3f(x-kTri, y - kTri,     z + zOffset);
-//            glVertex3f(x,      y + kTri,     z + zOffset);
-//            glVertex3f(x+kTri, y - kTri,     z + zOffset);
-//            glEnd();
+                constexpr float kTri = 0.02f;
+
+                glPushMatrix();
+
+                const auto & q = abo.q;
+
+                double tetha = acos(q.z() / q.length()) * 180.0 / M_PI;
+                double fi;
+                if (qFuzzyCompare(q.toVector2D().length(), 0.0))
+                    fi = 0;
+                else
+                    fi = acos(q.y() / q.toVector2D().length()) * 180.8 / M_PI;
+
+                glTranslatef(x, y, z);
+
+                //glDisable(GL_DEPTH_TEST);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                glBegin(GL_QUADS);
+                constexpr float hr = 0.03;
+                constexpr float wr = 0.25;
+
+                float wrr = abo.accessRate / 1.0 * wr;
+                constexpr double endHue = 120;
+                int hu = /*startHue -*/ -20 + (abo.accessRate - 0)/(1.0 - 0)*endHue;
+                if (hu > 120)
+                    hu = 120;
+                if (hu < 0)
+                    hu += 360;
+
+                QColor res = QColor::fromHsv(hu, 220, 150);
+            //    qDebug() << res.hslHue() << res.hslSaturation() << res.lightness();
+            //    qDebug() << res.isValid();
+                res = res.toRgb();
+
+                glColor3f(res.redF(), res.greenF(), res.blueF());
+                glVertex3f(0, 0, 0);
+                glVertex3f(0, hr, 0);
+                glVertex3f(wrr, hr, 0);
+                glVertex3f(wrr, 0, 0);
+                glEnd();
+
+                glLineWidth(2.0f);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glBegin(GL_QUADS);
+                glColor3f(0, 0, 0);
+                glVertex3f(0, 0, 0);
+                glVertex3f(0, hr, 0);
+                glVertex3f(wr, hr, 0);
+                glVertex3f(wr, 0, 0);
+                glEnd();
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+                glColor3f(0.9f, 0.1f, 0.1f);
+                glRotatef( (q.x() > 0) ? -fi : fi, 0, 0, 1);
+                glRotatef(-tetha, 1, 0, 0);
+
+                glTranslatef(0, 0, -kTri*2);
+
+                glLineWidth(1.0);
+                gluQuadricDrawStyle(Quadric(), GLU_LINE);
+                gluCylinder(Quadric(), kTri, 0, kTri*4, 16, 4);
+
+                //glEnable(GL_DEPTH_TEST);
+                glPopMatrix();
+
+    //            qDebug() << "abo =" << abo.Pos << ", ar =" << abo.accessRate;
+    //            glBegin(GL_LINE_LOOP);
+    //            glVertex3f(x-kTri, y - kTri,     z + zOffset);
+    //            glVertex3f(x,      y + kTri,     z + zOffset);
+    //            glVertex3f(x+kTri, y - kTri,     z + zOffset);
+    //            glEnd();
+            }
         }
     }
 
@@ -388,6 +726,24 @@ void MyConfig::DrawIn3D(SignalNodeType _snt, bool isDrawAbonents,
 
     if (_snt == SignalNodeType::Cone)
         DrawIntersectsWithEllipses(Settings3d, _whatShow);
+
+
+    if (Settings3d.IsPerspective)
+    {
+        if (IsIsolinesARFBuilt)
+        {
+//            glDepthFunc(GL_ALWAYS);
+            glCallList(IsolinesARFCompileList);
+//            glDepthFunc(GL_LESS);
+        }
+    }
+    else
+    {
+        if (IsIsolinesARF2dBuilt)
+        {
+            glCallList(IsolinesARF2dCompileList);
+        }
+    }
 
     glPopMatrix();
 
@@ -943,14 +1299,14 @@ void MyConfig::DrawIntersectsWithEllipses(const Settings3dType &_settings3d,
                 {
                     glBegin(GL_LINES);
 
-                    zNode = (node.Pos.z()-offsetZ)*Relief->Get_kz();
+                    zNode = (node.Pos.z()-offsetZ)*Relief->GetGlobal_kz();
                     glVertex3f(xNode, yNode, zOffset + (_settings3d.IsPerspective ? zNode : 0));
 
                     double xPoint = (p.Pos.x()-offsetX)*k;
                     double yPoint = (p.Pos.y()-offsetY)*k;
                     double zPoint;
 
-                    zPoint = (p.Pos.z()-offsetZ)*Relief->Get_kz();
+                    zPoint = (p.Pos.z()-offsetZ)*Relief->GetGlobal_kz();
                     glVertex3f(xPoint, yPoint, zOffset + (Settings3d.IsPerspective ? zPoint : 0));
 
                     glEnd(); // LINES
@@ -1189,6 +1545,49 @@ void MyConfig::CalcPointStats()
 }
 //----------------------------------------------------------
 
+double MyConfig::CalcAccessRateForAnyPos(const MyPos3d<> &_pos, bool _isUseLineBetweenTwoPoints,
+                                     SignalNodeType _snt,
+                                     TargetFuncTypeEnum funcType)
+{
+    double y1 = 0;
+
+    for (const auto & sn : Nodes)
+    {
+        double y;// = sn.accessRateSphere(abo.Pos);
+        if (_snt == SignalNodeType::Sphere)
+            y = sn.accessRateSphere(_pos);
+        else if (_snt == SignalNodeType::Cone)
+            y = sn.accessRateCone(_pos);
+        else
+            throw std::runtime_error("Unknown _snt in MyConfig::CalcAccessRateForAbos");
+
+        if (_isUseLineBetweenTwoPoints)
+        {
+            y *= IsLineBetweenTwoPoints(sn.Pos, _pos); // осторожно для Cone!
+        }
+
+
+        if (funcType == TargetFuncTypeEnum::Additive)
+        {
+            y1 += y;
+        }
+        else if (funcType == TargetFuncTypeEnum::Probabilistic)
+        {
+            if (y1 == 0)  // Для первой итерации - для первого сигнального узла
+                y1 = y;
+            else
+                y1 = y1 + y - y1*y;
+        }
+        else
+        {
+            throw std::runtime_error("funcType is TargetFuncTypeEnum::Unknown in MyConfig::CalcAccessRateForAbos");
+        }
+    }
+
+    return y1;
+}
+//----------------------------------------------------------
+
 void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints,
                                      SignalNodeType _snt,
                                      TargetFuncTypeEnum funcType)
@@ -1198,40 +1597,40 @@ void MyConfig::CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints,
         auto & abo = route.AbonentDirectAccess();
         double y1 = 0;
 
+        y1 = CalcAccessRateForAnyPos(abo.Pos, _isUseLineBetweenTwoPoints, _snt, funcType);
+
+//        for (const auto & sn : Nodes)
+//        {
+//            double y;// = sn.accessRateSphere(abo.Pos);
+//            if (_snt == SignalNodeType::Sphere)
+//                y = sn.accessRateSphere(abo.Pos);
+//            else if (_snt == SignalNodeType::Cone)
+//                y = sn.accessRateCone(abo.Pos);
+//            else
+//                throw std::runtime_error("Unknown _snt in MyConfig::CalcAccessRateForAbos");
+
+//            if (_isUseLineBetweenTwoPoints)
+//            {
+//                y *= IsLineBetweenTwoPoints(sn.Pos, abo.Pos); // осторожно для Cone!
+//            }
 
 
-        for (const auto & sn : Nodes)
-        {
-            double y;// = sn.accessRateSphere(abo.Pos);
-            if (_snt == SignalNodeType::Sphere)
-                y = sn.accessRateSphere(abo.Pos);
-            else if (_snt == SignalNodeType::Cone)
-                y = sn.accessRateCone(abo.Pos);
-            else
-                throw std::runtime_error("Unknown _snt in MyConfig::CalcAccessRateForAbos");
-
-            if (_isUseLineBetweenTwoPoints)
-            {
-                y *= IsLineBetweenTwoPoints(sn.Pos, abo.Pos); // осторожно для Cone!
-            }
-
-
-            if (funcType == TargetFuncTypeEnum::Additive)
-            {
-                y1 += y;
-            }
-            else if (funcType == TargetFuncTypeEnum::Probabilistic)
-            {
-                if (y1 == 0)  // Для первой итерации - для первого сигнального узла
-                    y1 = y;
-                else
-                    y1 = y1 + y - y1*y;
-            }
-            else
-            {
-                throw std::runtime_error("funcType is TargetFuncTypeEnum::Unknown in MyConfig::CalcAccessRateForAbos");
-            }
-        }
+//            if (funcType == TargetFuncTypeEnum::Additive)
+//            {
+//                y1 += y;
+//            }
+//            else if (funcType == TargetFuncTypeEnum::Probabilistic)
+//            {
+//                if (y1 == 0)  // Для первой итерации - для первого сигнального узла
+//                    y1 = y;
+//                else
+//                    y1 = y1 + y - y1*y;
+//            }
+//            else
+//            {
+//                throw std::runtime_error("funcType is TargetFuncTypeEnum::Unknown in MyConfig::CalcAccessRateForAbos");
+//            }
+//        }
 
         abo.accessRate = y1;
     }

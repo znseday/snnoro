@@ -109,6 +109,10 @@ private slots:
 
     void on_actionWorld_Show_Area_For_Grad_Descent_triggered();
 
+    void on_actionWorld_Show_Isolines_of_Access_Rate_triggered();
+
+    void on_actionWorld_Show_Routes_triggered();
+
 private:
     Ui::MainWindow *ui;
 

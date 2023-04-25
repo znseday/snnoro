@@ -35,7 +35,26 @@ void GridSettingsStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
 {
     dx = _jsonObject["dx"].toDouble(100);
     dy = _jsonObject["dy"].toDouble(100);
-    nDetails = _jsonObject["nDetails"].toDouble(50);
+    nDetails = _jsonObject["nDetails"].toInt(50);
+}
+//----------------------------------------------------------
+//----------------------------------------------------------
+
+QJsonObject IsolinesSettingsStruct::RepresentAsJsonObject() const
+{
+    QJsonObject res;
+    res.insert("nLevels", nLevels);
+    res.insert("nDetails", nDetails);
+    res.insert("IsShowPoints", IsShowPoints);
+    return res;
+}
+//----------------------------------------------------------
+
+void IsolinesSettingsStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
+{
+    nLevels = _jsonObject["nLevels"].toInt(5);
+    nDetails = _jsonObject["nDetails"].toInt(7);
+    IsShowPoints = _jsonObject["IsShowPoints"].toBool(false);
 }
 //----------------------------------------------------------
 //----------------------------------------------------------
@@ -398,8 +417,8 @@ void Relief3D::ReBuildGridToGL(bool _is2d, const double dx, const double dy,
     else
         glNewList(Grid2dCompileList, GL_COMPILE);
 
-    std::vector<MyVector3D<>> oneRow(ColCount);
-    std::vector<std::vector<MyVector3D<>>> points(RowCount, oneRow);
+//    std::vector<MyVector3D<>> oneRow(ColCount);
+//    std::vector<std::vector<MyVector3D<>>> points(RowCount, oneRow);
 
     const double aspect = Area.width()/Area.height();
 
@@ -489,7 +508,6 @@ void Relief3D::Draw(bool _is2d)
         {
 //            glEnable(GL_POLYGON_OFFSET_LINE);
 //            glPolygonOffset(1.0, 1.0);
-
 //            glDisable(GL_DEPTH_TEST);
 
             glDepthFunc(GL_ALWAYS);

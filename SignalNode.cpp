@@ -304,7 +304,7 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
     else
         glColor3f(0.95, 0.05, 0.05);
 
-    z = (Pos.z()-offsetZ)*relief->Get_kz();
+    z = (Pos.z()-offsetZ)*relief->GetGlobal_kz();
 
     glPushMatrix();
 

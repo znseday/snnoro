@@ -46,6 +46,9 @@ struct WhatShowStruct
     bool ShowPointsOnRadii = false;
     bool ShowAreaForRandomNodes = false;
     bool ShowAreaForGradDesc = false;
+    bool ShowRoutes = false;
+
+    bool ShowIsolinesOfAccessRate = false;
 
     QJsonObject RepresentAsJsonObject() const;
     void LoadFromJsonObject(const QJsonObject &_jsonObject);

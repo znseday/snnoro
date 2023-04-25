@@ -61,6 +61,9 @@ QJsonObject WhatShowStruct::RepresentAsJsonObject() const
     res.insert("ShowPointsOnRadii", ShowPointsOnRadii);
     res.insert("ShowAreaForRandomNodes", ShowAreaForRandomNodes);
     res.insert("ShowAreaForGradDesc", ShowAreaForGradDesc);
+//    res.insert("ShowIsolinesOfAccessRate", ShowIsolinesOfAccessRate);
+    res.insert("ShowRoutes", ShowRoutes);
+
     return res;
 }
 //-------------------------------------------------------------
@@ -74,7 +77,9 @@ void WhatShowStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
     ShowLinesBetweenSNandPoints = _jsonObject["ShowLinesBetweenSNandPoints"].toBool(false);
     ShowPointsOnRadii           = _jsonObject["ShowPointsOnRadii"].toBool(false);
     ShowAreaForRandomNodes      = _jsonObject["ShowAreaForRandomNodes"].toBool(false);
-    ShowAreaForGradDesc         = _jsonObject["ShowAreaForGradDesc"].toBool(false);
+    ShowAreaForGradDesc         = _jsonObject["ShowAreaForGradDesc"].toBool(false);  
+//    ShowIsolinesOfAccessRate    = _jsonObject["ShowIsolinesOfAccessRate"].toBool(false);
+    ShowRoutes                  = _jsonObject["ShowRoutes"].toBool(false);
 }
 //-------------------------------------------------------------
 //-------------------------------------------------------------
