@@ -128,6 +128,8 @@
     <addaction name="actionWorld_Show_Points_on_Radii"/>
     <addaction name="actionWorld_Show_Area_For_Random_Nodes"/>
     <addaction name="actionWorld_Show_Area_For_Grad_Descent"/>
+    <addaction name="actionWorld_Show_Isolines_of_Access_Rate"/>
+    <addaction name="actionWorld_Show_Routes"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -573,6 +575,28 @@
    </property>
    <property name="text">
     <string>Show Area For Grad Descent</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Isolines_of_Access_Rate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Isolines of Access Rate</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Routes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Routes</string>
    </property>
   </action>
  </widget>

@@ -714,13 +714,13 @@ void MyGradModel::OnMouseWheel(QWheelEvent *pe, bool wExists,
     double dzWheel = pe->angleDelta().y() / 600.0f / 2.0f;
 
 
-    qDebug() << "Center:" << Configs.at(iCurConfig).Settings3d.centerX << " - "
-                          << Configs.at(iCurConfig).Settings3d.centerY << " - "
-                          << Configs.at(iCurConfig).Settings3d.centerZ;
+//    qDebug() << "Center:" << Configs.at(iCurConfig).Settings3d.centerX << " - "
+//                          << Configs.at(iCurConfig).Settings3d.centerY << " - "
+//                          << Configs.at(iCurConfig).Settings3d.centerZ;
 
-    qDebug() << "Eye:"    << Configs.at(iCurConfig).Settings3d.eyeX << " - "
-                          << Configs.at(iCurConfig).Settings3d.eyeY << " - "
-                          << Configs.at(iCurConfig).Settings3d.eyeZ;
+//    qDebug() << "Eye:"    << Configs.at(iCurConfig).Settings3d.eyeX << " - "
+//                          << Configs.at(iCurConfig).Settings3d.eyeY << " - "
+//                          << Configs.at(iCurConfig).Settings3d.eyeZ;
 
     if (wExists)
     {
@@ -751,7 +751,7 @@ void MyGradModel::OnMouseWheel(QWheelEvent *pe, bool wExists,
     else
     {
         qDebug() << "NOT wExists";
-        Configs.at(iCurConfig).Settings3d.eyeZ += dzWheel;
+        Configs.at(iCurConfig).Settings3d.eyeZ -= dzWheel;
     }
 
 //    Configs.at(iCurConfig).Settings3d.eyeZ -= dzWheel;
@@ -958,6 +958,8 @@ size_t MyGradModel::ParseJson(const QJsonObject &_jsonObject, const QJsonParseEr
 
 
     GridSettings.LoadFromJsonObject(configObject["GridSettings"].toObject());
+
+    IsolinesSettings.LoadFromJsonObject(configObject["IsolinesSettings"].toObject());
 
     BoundsRandCoords.LoadFromJsonObject(configObject["BoundsRandCoords"].toObject());
     BoundsGradDesc.LoadFromJsonObject(configObject["BoundsGradDesc"].toObject());
@@ -1592,6 +1594,8 @@ bool MyGradModel::SaveToFile(/*const QString &_fileName*/)
 
     ConfigurationObject.insert("GridSettings", GridSettings.RepresentAsJsonObject());
 
+    ConfigurationObject.insert("IsolinesSettings", IsolinesSettings.RepresentAsJsonObject());
+
 
     ConfigurationObject.insert("BoundsRandCoords", BoundsRandCoords.RepresentAsJsonObject());
     ConfigurationObject.insert("BoundsGradDesc", BoundsGradDesc.RepresentAsJsonObject());
@@ -1742,6 +1746,47 @@ void MyGradModel::SetShowGridOnRelief(bool _isShow)
 }
 //----------------------------------------------------------
 
+void MyGradModel::SetShowIsolinesOfAccessRate(bool _isShow)
+{
+    WhatShow.ShowIsolinesOfAccessRate = _isShow;
+
+//    auto it_TargetFunc = TargetFunctions.find(ActiveTargetFuncFirstPhase);
+//    if (it_TargetFunc == TargetFunctions.end())
+//        throw std::logic_error("TargetFunctionFirstPhase not found in MyGradModel::StartGradDescent_Phase_1");
+
+//    auto & tf = *it_TargetFunc->second;
+
+    TargetFuncTypeEnum funcType = TargetFuncTypeEnum::Additive; //  !!!!!!!!!!!!!
+
+    for (auto & cnf : Configs)
+    {
+        if (_isShow)
+        {
+            cnf.ReCreateIsolinesARFListsGL();
+
+//            const int nLevels = 10;
+//            const int nDetails = 7;
+
+            cnf.ReBuildIsolinesARFToGL(false, IsolinesSettings.nLevels, IsolinesSettings.nDetails,
+                                       IsolinesSettings.IsShowPoints,
+                                       TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
+                                                       NodesType,
+                                                       funcType);
+
+            cnf.ReBuildIsolinesARFToGL(true,  IsolinesSettings.nLevels, IsolinesSettings.nDetails,
+                                       IsolinesSettings.IsShowPoints,
+                                       TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
+                                                                   NodesType,
+                                                                   funcType);
+        }
+        else
+        {
+            cnf.ClearIsolinesARF();
+        }
+    }
+}
+//----------------------------------------------------------
+
 //TargetFuncEnum MyGradModel::ConvertStringToTargetFuncType(QString &str) // static member-function
 //{
 //    if (str.toUpper() == "ADDITIVE")
@@ -1822,6 +1867,7 @@ bool MyGradModel::LoadGlobalSettings()
     }
 
     SetShowGridOnRelief(WhatShow.ShowGrid);
+//    SetShowIsolinesOfAccessRate(WhatShow.ShowIsolinesOfAccessRate);
 
     return true;
 }

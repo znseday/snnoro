@@ -37,6 +37,8 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNothing->assignProperty(ui->actionWorld_Show_Points_on_Radii, "enabled", false);
     StateNothing->assignProperty(ui->actionWorld_Show_Area_For_Random_Nodes, "enabled", false);
     StateNothing->assignProperty(ui->actionWorld_Show_Area_For_Grad_Descent, "enabled", false);
+    StateNothing->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", false);
+    StateNothing->assignProperty(ui->actionWorld_Show_Routes, "enabled", false);
     StateNothing->assignProperty(ui->actionGradSwitch_Show_One_All, "enabled", false);
     StateNothing->assignProperty(ui->menuGrad_Count_of_Viewports, "enabled", false);
     StateNothing->assignProperty(ui->actionGrad_SetDrawCount_Custom, "enabled", false);
@@ -84,6 +86,8 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNormal->assignProperty(ui->actionWorld_Show_Points_on_Radii, "enabled", true);
     StateNormal->assignProperty(ui->actionWorld_Show_Area_For_Random_Nodes, "enabled", true);
     StateNormal->assignProperty(ui->actionWorld_Show_Area_For_Grad_Descent, "enabled", true);
+    StateNormal->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", true);
+    StateNormal->assignProperty(ui->actionWorld_Show_Routes, "enabled", true);
     StateNormal->assignProperty(ui->actionGradSwitch_Show_One_All, "enabled", true);
     StateNormal->assignProperty(ui->menuGrad_Count_of_Viewports, "enabled", true);
     StateNormal->assignProperty(ui->actionGrad_SetDrawCount_Custom, "enabled", true);
@@ -133,6 +137,8 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateGradDesc->assignProperty(ui->actionWorld_Show_Points_on_Radii, "enabled", true);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Area_For_Random_Nodes, "enabled", true);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Area_For_Grad_Descent, "enabled", true);
+    StateGradDesc->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", true);
+    StateGradDesc->assignProperty(ui->actionWorld_Show_Routes, "enabled", true);
     StateGradDesc->assignProperty(ui->actionGradSwitch_Show_One_All, "enabled", true);
     StateGradDesc->assignProperty(ui->menuGrad_Count_of_Viewports, "enabled", true);
     StateGradDesc->assignProperty(ui->actionGrad_SetDrawCount_Custom, "enabled", true);
@@ -186,6 +192,8 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateShowAbonents->assignProperty(ui->actionWorld_Show_Points_on_Radii, "enabled", true);
     StateShowAbonents->assignProperty(ui->actionWorld_Show_Area_For_Random_Nodes, "enabled", true);
     StateShowAbonents->assignProperty(ui->actionWorld_Show_Area_For_Grad_Descent, "enabled", true);
+    StateShowAbonents->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", true);
+    StateShowAbonents->assignProperty(ui->actionWorld_Show_Routes, "enabled", true);
     StateShowAbonents->assignProperty(ui->actionGradSwitch_Show_One_All, "enabled", true);
     StateShowAbonents->assignProperty(ui->menuGrad_Count_of_Viewports, "enabled", true);
     StateShowAbonents->assignProperty(ui->actionGrad_SetDrawCount_Custom, "enabled", true);
@@ -234,6 +242,8 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNewRoute->assignProperty(ui->actionWorld_Show_Points_on_Radii, "enabled", true);
     StateNewRoute->assignProperty(ui->actionWorld_Show_Area_For_Random_Nodes, "enabled", true);
     StateNewRoute->assignProperty(ui->actionWorld_Show_Area_For_Grad_Descent, "enabled", true);
+    StateNewRoute->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", true);
+    StateNewRoute->assignProperty(ui->actionWorld_Show_Routes, "enabled", true);
     StateNewRoute->assignProperty(ui->actionGradSwitch_Show_One_All, "enabled", true);
     StateNewRoute->assignProperty(ui->menuGrad_Count_of_Viewports, "enabled", true);
     StateNewRoute->assignProperty(ui->actionGrad_SetDrawCount_Custom, "enabled", true);
@@ -283,6 +293,8 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Points_on_Radii, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Area_For_Random_Nodes, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Area_For_Grad_Descent, "enabled", true);
+    StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", true);
+    StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Routes, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionGradSwitch_Show_One_All, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->menuGrad_Count_of_Viewports, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionGrad_SetDrawCount_Custom, "enabled", true);

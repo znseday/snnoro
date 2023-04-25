@@ -31,6 +31,14 @@ struct GridSettingsStruct
     void LoadFromJsonObject(const QJsonObject &_jsonObject);
 };
 
+struct IsolinesSettingsStruct
+{
+    int nDetails = 7;
+    int nLevels = 5;
+    bool IsShowPoints = false;
+    QJsonObject RepresentAsJsonObject() const;
+    void LoadFromJsonObject(const QJsonObject &_jsonObject);
+};
 
 class Relief3D
 {
@@ -79,8 +87,12 @@ public:
     Relief3D() = default;
     ~Relief3D();
 
-    double Get_kz() const {return Global_kz;}
+    double GetGlobal_kz() const {return Global_kz;}
     double GetAverZ() const {return AverZ;}
+//    double Get_xStartInside() const {return xStartInside;}
+//    double Get_yStartInside() const {return yStartInside;}
+//    double Get_wInside() const {return wInside;}
+//    double Get_hInside() const {return hInside;}
 
     static double LinearInterpol(double x, double x1, double x0, double f1, double f0);
 

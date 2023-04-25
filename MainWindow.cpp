@@ -395,6 +395,8 @@ void MainWindow::on_actionGradSettings_triggered()
 
         on_actionWorld_Show_Grid_triggered();
 
+        on_actionWorld_Show_Isolines_of_Access_Rate_triggered();
+
         mainGLWidget->repaint();
     }
     else
@@ -521,6 +523,12 @@ void MainWindow::on_actionWorld_Show_Abonents_triggered()
     if (WorkMode != WorkModeType::GradWork)
         return;
 
+    if (ui->actionWorld_Show_Routes->isChecked() == false)
+    {
+        ui->actionWorld_Show_Routes->setChecked(true);
+        on_actionWorld_Show_Routes_triggered();
+    }
+
     GradModel.SetIsDrawAbonents(true);
     formAboCalc.show();
 //    SlotReceiveAboTime(0);
@@ -584,6 +592,20 @@ void MainWindow::on_actionWorld_Show_Area_For_Random_Nodes_triggered()
 void MainWindow::on_actionWorld_Show_Area_For_Grad_Descent_triggered()
 {
     GradModel.SetShowAreaForGradDesc(ui->actionWorld_Show_Area_For_Grad_Descent->isChecked());
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Isolines_of_Access_Rate_triggered()
+{
+    GradModel.SetShowIsolinesOfAccessRate(ui->actionWorld_Show_Isolines_of_Access_Rate->isChecked());
+    mainGLWidget->repaint();
+}
+//-------------------------------------------------------------
+
+void MainWindow::on_actionWorld_Show_Routes_triggered()
+{
+    GradModel.SetShowRoutes(ui->actionWorld_Show_Routes->isChecked());
     mainGLWidget->repaint();
 }
 //-------------------------------------------------------------
@@ -1021,6 +1043,10 @@ void MainWindow::Init_UI_AccordingGlobalSettings()
     ui->actionWorld_Show_Area_For_Random_Nodes->setChecked(GradModel.GetWhatShow().ShowAreaForRandomNodes);
     ui->actionWorld_Show_Area_For_Grad_Descent->setChecked(GradModel.GetWhatShow().ShowAreaForGradDesc);
     ui->actionWorld_Show_Points_on_Radii->setChecked(GradModel.GetWhatShow().ShowPointsOnRadii);
+
+    ui->actionWorld_Show_Isolines_of_Access_Rate->setChecked(GradModel.GetWhatShow().ShowIsolinesOfAccessRate);
+
+    ui->actionWorld_Show_Routes->setChecked(GradModel.GetWhatShow().ShowRoutes);
 }
 //-------------------------------------------------------------
 

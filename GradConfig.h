@@ -92,6 +92,16 @@ protected:
     void DrawIntersectsWithEllipses(const Settings3dType & _settings3d,
                                     const WhatShowStruct &_whatShow) const;
 
+
+    GLuint IsolinesARFCompileList = 0;
+    bool IsIsolinesARFBuilt = false;
+    GLuint IsolinesARF2dCompileList = 0;
+    bool IsIsolinesARF2dBuilt = false;
+
+    void HandleSquare(const MyPos3d<> &p0, const MyPos3d<> &p1,
+                             const MyPos3d<> &p2, const MyPos3d<> &p3,
+                             double level, double offsetX, double offsetY, double offsetZ, double k, bool _is2d);
+
 public:
 
     Settings3dType Settings3d;
@@ -109,6 +119,15 @@ public:
 
     MyConfig(MyConfig &&) = default;
     MyConfig & operator=(MyConfig &&) = default;
+
+    void ReCreateIsolinesARFListsGL();
+    void ClearIsolinesARF();
+
+    void ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
+                                int nDetail, bool _isShowPoints,
+                                bool _isUseLineBetweenTwoPoints,
+                                SignalNodeType _snt,
+                                TargetFuncTypeEnum funcType);
 
 //    void SetArea(const QRectF &_area) {Area = _area;}
     void SetNodes(const std::vector<SignalNode> &_nodes) {Nodes = _nodes;}
@@ -162,6 +181,10 @@ public:
     void CalcAccessRateForAbos(bool _isUseLineBetweenTwoPoints,
                                SignalNodeType _snt,
                                TargetFuncTypeEnum funcType);
+
+    double CalcAccessRateForAnyPos(const MyPos3d<> &_pos, bool _isUseLineBetweenTwoPoints,
+                                         SignalNodeType _snt,
+                                         TargetFuncTypeEnum funcType);
 
     void FindCoveredPointsUsingParams(const std::vector<long double>& params, SignalNodeType _snt);
 

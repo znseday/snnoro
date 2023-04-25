@@ -91,6 +91,9 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
     ui->EditGrid_dy->setText(QString().setNum(_gm.GetGridSettings().dy));
     ui->EditGrid_nDetails->setText(QString().setNum(_gm.GetGridSettings().nDetails));
 
+    ui->EditIsolines_nDetails->setText(QString().setNum(_gm.GetIsolinesSettings().nDetails));
+    ui->EditIsolines_nLevels->setText(QString().setNum(_gm.GetIsolinesSettings().nLevels));
+    ui->cbIsolinesIsShowPoints->setChecked(_gm.GetIsolinesSettings().IsShowPoints);
 
     switch (_gm.GetBoundsRandCoords().BoundsType)
     {
@@ -223,6 +226,9 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
                         ui->EditGrid_dy->text().toDouble(),
                         ui->EditGrid_nDetails->text().toInt()});
 
+    _gm.SetIsolinesSettings({ui->EditIsolines_nDetails->text().toInt(),
+                             ui->EditIsolines_nLevels->text().toInt(),
+                             ui->cbIsolinesIsShowPoints->isChecked()});
 
     BoundsStruct bs;
     if (ui->rbBoundsRandCoordsAllArea->isChecked())
