@@ -48,6 +48,11 @@ struct WhatShowStruct
     bool ShowAreaForGradDesc = false;
     bool ShowRoutes = false;
 
+    enum class WhatIsolinesEnum
+    {
+        Relief, ARF
+    } WhatIsolines = WhatIsolinesEnum::Relief;
+
     bool ShowIsolinesOfAccessRate = false;
 
     QJsonObject RepresentAsJsonObject() const;

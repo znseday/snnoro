@@ -1771,13 +1771,15 @@ void MyGradModel::SetShowIsolinesOfAccessRate(bool _isShow)
                                        IsolinesSettings.IsShowPoints,
                                        TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
                                                        NodesType,
-                                                       funcType);
+                                                       funcType,
+                                                       WhatShow.WhatIsolines);
 
             cnf.ReBuildIsolinesARFToGL(true,  IsolinesSettings.nLevels, IsolinesSettings.nDetails,
                                        IsolinesSettings.IsShowPoints,
                                        TargetFuncSettingsGlobal.IsUseLineBetweenTwoPoints,
                                                                    NodesType,
-                                                                   funcType);
+                                                                   funcType,
+                                                                   WhatShow.WhatIsolines);
         }
         else
         {

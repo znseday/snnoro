@@ -127,7 +127,8 @@ public:
                                 int nDetail, bool _isShowPoints,
                                 bool _isUseLineBetweenTwoPoints,
                                 SignalNodeType _snt,
-                                TargetFuncTypeEnum funcType);
+                                TargetFuncTypeEnum funcType,
+                                WhatShowStruct::WhatIsolinesEnum wi);
 
 //    void SetArea(const QRectF &_area) {Area = _area;}
     void SetNodes(const std::vector<SignalNode> &_nodes) {Nodes = _nodes;}

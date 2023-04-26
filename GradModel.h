@@ -106,6 +106,8 @@ public:
     void Set_nDraws(size_t _nDraws);
     size_t Get_nDraw() const {return nDraws;}
 
+    void SetWhatShowWhatIsolines(WhatShowStruct::WhatIsolinesEnum wi) {WhatShow.WhatIsolines = wi;}
+
     bool IsDrawOnlyOne() const {return DrawOnlyOne;}
     const std::vector<QRect> & GetViewPorts() const {return ViewPorts;}
 

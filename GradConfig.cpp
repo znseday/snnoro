@@ -307,7 +307,8 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
                                   int nDetail, bool _isShowPoints,
                                   bool _isUseLineBetweenTwoPoints,
                                   SignalNodeType _snt,
-                                  TargetFuncTypeEnum funcType)
+                                  TargetFuncTypeEnum funcType,
+                                  WhatShowStruct::WhatIsolinesEnum wi)
 {
     if (!_is2d && IsIsolinesARFBuilt)
         throw std::runtime_error("IsGridBuilt == true in Relief3D::ReBuildGridToGL");
@@ -365,11 +366,19 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
             double y = _area.top() + /*dy/2.0*/ + dy*i;
             double z = Relief->CalcRealZbyRealXY(x, y);
 
-            double arf = CalcAccessRateForAnyPos({x, y, z}, _isUseLineBetweenTwoPoints, _snt, funcType);
-
-
-            points.at(i).at(j) = {x, y, z};
-//            points.at(i).at(j) = {x, y, arf};
+            if (wi == WhatShowStruct::WhatIsolinesEnum::Relief)
+            {
+                points.at(i).at(j) = {x, y, z};
+            }
+            else if (wi == WhatShowStruct::WhatIsolinesEnum::ARF)
+            {
+                double arf = CalcAccessRateForAnyPos({x, y, z}, _isUseLineBetweenTwoPoints, _snt, funcType);
+                points.at(i).at(j) = {x, y, arf};
+            }
+            else
+            {
+                throw std::runtime_error("Unknown WhatShowStruct::WhatIsolinesEnum in MyConfig::ReBuildIsolinesARFToGL");
+            }
         }
     }
     //--------------------------------------------------

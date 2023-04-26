@@ -64,6 +64,8 @@ QJsonObject WhatShowStruct::RepresentAsJsonObject() const
 //    res.insert("ShowIsolinesOfAccessRate", ShowIsolinesOfAccessRate);
     res.insert("ShowRoutes", ShowRoutes);
 
+    res.insert("WhatIsolines", (int)WhatIsolines);
+
     return res;
 }
 //-------------------------------------------------------------
@@ -80,6 +82,8 @@ void WhatShowStruct::LoadFromJsonObject(const QJsonObject &_jsonObject)
     ShowAreaForGradDesc         = _jsonObject["ShowAreaForGradDesc"].toBool(false);  
 //    ShowIsolinesOfAccessRate    = _jsonObject["ShowIsolinesOfAccessRate"].toBool(false);
     ShowRoutes                  = _jsonObject["ShowRoutes"].toBool(false);
+
+    WhatIsolines = (WhatIsolinesEnum)_jsonObject["WhatIsolines"].toInt(0);
 }
 //-------------------------------------------------------------
 //-------------------------------------------------------------
