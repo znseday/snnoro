@@ -534,9 +534,9 @@
         <widget class="QGroupBox" name="groupBoxGridReliefSettings_2">
          <property name="geometry">
           <rect>
-           <x>220</x>
-           <y>20</y>
-           <width>151</width>
+           <x>240</x>
+           <y>30</y>
+           <width>201</width>
            <height>131</height>
           </rect>
          </property>
@@ -583,6 +583,38 @@
            <widget class="QCheckBox" name="cbIsolinesIsShowPoints">
             <property name="text">
              <string>Show</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="geometry">
+          <rect>
+           <x>240</x>
+           <y>180</y>
+           <width>201</width>
+           <height>93</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Isolines for</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QRadioButton" name="rbIsolinesRelief">
+            <property name="text">
+             <string>Relief</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rbIsolinesARF">
+            <property name="text">
+             <string>Access rate</string>
             </property>
            </widget>
           </item>

@@ -95,6 +95,20 @@ void DialogGradConfig::InitDialog(const MyGradModel &_gm)
     ui->EditIsolines_nLevels->setText(QString().setNum(_gm.GetIsolinesSettings().nLevels));
     ui->cbIsolinesIsShowPoints->setChecked(_gm.GetIsolinesSettings().IsShowPoints);
 
+    if (_gm.GetWhatShow().WhatIsolines == WhatShowStruct::WhatIsolinesEnum::Relief)
+    {
+        ui->rbIsolinesRelief->setChecked(true);
+    }
+    else if (_gm.GetWhatShow().WhatIsolines == WhatShowStruct::WhatIsolinesEnum::ARF)
+    {
+        ui->rbIsolinesARF->setChecked(true);
+    }
+    else
+    {
+        throw std::runtime_error("Unknown WhatShowStruct::WhatIsolinesEnum in DialogGradConfig::InitDialog");
+    }
+
+
     switch (_gm.GetBoundsRandCoords().BoundsType)
     {
     case BoundsTypeEnum::AllArea:
@@ -217,6 +231,13 @@ void DialogGradConfig::ReInitGradModel(MyGradModel &_gm)
         }
     }
 
+    WhatShowStruct::WhatIsolinesEnum whatIsolines = WhatShowStruct::WhatIsolinesEnum::Relief;
+    if (ui->rbIsolinesARF->isChecked())
+    {
+        whatIsolines = WhatShowStruct::WhatIsolinesEnum::ARF;
+    }
+
+    _gm.SetWhatShowWhatIsolines(whatIsolines);
 
     _gm.SetGradDescFileName(ui->EditGradDescFile->text());
 
