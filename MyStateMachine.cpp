@@ -137,7 +137,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateGradDesc->assignProperty(ui->actionWorld_Show_Points_on_Radii, "enabled", true);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Area_For_Random_Nodes, "enabled", true);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Area_For_Grad_Descent, "enabled", true);
-    StateGradDesc->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", true);
+    StateGradDesc->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", false);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Routes, "enabled", true);
     StateGradDesc->assignProperty(ui->actionGradSwitch_Show_One_All, "enabled", true);
     StateGradDesc->assignProperty(ui->menuGrad_Count_of_Viewports, "enabled", true);
@@ -326,7 +326,6 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_TwoLines, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_Get_Last_Cost_For_Current, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_Calc_Access_Rate_for_current, "enabled", true);
-
 
     StateNormal->addTransition(this, SIGNAL(SignalStateToCurPosOrAngleEditing()), StateCurPosOrAngleEditting);
     StateCurPosOrAngleEditting->addTransition(this, SIGNAL(SignalStateToNormal()), StateNormal);

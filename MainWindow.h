@@ -159,6 +159,8 @@ private:
 
     void Init_UI_AccordingGlobalSettings();
 
+    void IsolinesTurnOff();
+
 public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);
     void SlotReceiveRouteDeleted(bool isDeleted);

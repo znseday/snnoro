@@ -81,6 +81,8 @@ protected:
 
     WhatShowStruct WhatShow;
 
+    TargetFuncTypeEnum GetTargetFuncTypeByCurrentFuncNameName();
+
 public:
 
     void ReCalcAreasByBounds();

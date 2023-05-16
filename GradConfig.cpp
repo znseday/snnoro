@@ -16,10 +16,9 @@ static constexpr double arfThreshold = 0.5;
 
 const QString ConfigsExtension = "*.cnf";
 
-static constexpr float zOffset = 0.01f;
+static constexpr float zOffset = 0.0003f;
 
 using namespace std;
-
 
 //----------------------------------------------------------
 BoundsTypeEnum BoundsStruct::ConvertStringToBoundsTypeEnum(const QString &str)  // static
@@ -325,7 +324,7 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
 
 
     const auto & _area = Relief->GetArea();
-    constexpr float zOffset = 0.0001f;
+//    constexpr float zOffset = 0.0001f;
     double kx = 2.0/_area.width();
     double ky = 2.0/_area.height();
     double k = min(kx, ky);
@@ -339,7 +338,8 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
     double offsetZ = 0;
 
     std::vector<MyVector3D<>> oneRow(ColCount);
-    std::vector<std::vector<MyVector3D<>>> points(RowCount, oneRow);
+    std::vector<std::vector<MyVector3D<>>> pointsForCalc(RowCount, oneRow);
+    std::vector<std::vector<MyVector3D<>>> pointsForDraw(RowCount, oneRow);
 
 //    const double aspect = _area.width()/_area.height();
 
@@ -365,15 +365,16 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
             double x = _area.left() + /*dx/2.0*/ + dx*j;
             double y = _area.top() + /*dy/2.0*/ + dy*i;
             double z = Relief->CalcRealZbyRealXY(x, y);
+            pointsForDraw.at(i).at(j) = {x, y, z};
 
             if (wi == WhatShowStruct::WhatIsolinesEnum::Relief)
             {
-                points.at(i).at(j) = {x, y, z};
+                pointsForCalc.at(i).at(j) = {x, y, z};
             }
             else if (wi == WhatShowStruct::WhatIsolinesEnum::ARF)
             {
                 double arf = CalcAccessRateForAnyPos({x, y, z}, _isUseLineBetweenTwoPoints, _snt, funcType);
-                points.at(i).at(j) = {x, y, arf};
+                pointsForCalc.at(i).at(j) = {x, y, arf};
             }
             else
             {
@@ -391,8 +392,8 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
     {
         for (int j = 0; j < ColCount; ++j)
         {
-            levelMin = std::min(levelMin, (double)points.at(i).at(j).z());
-            levelMax = std::max(levelMax, (double)points.at(i).at(j).z());
+            levelMin = std::min(levelMin, (double)pointsForCalc.at(i).at(j).z());
+            levelMax = std::max(levelMax, (double)pointsForCalc.at(i).at(j).z());
         }
     }
 
@@ -400,7 +401,6 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
 //    qDebug() << "levelMax = " << levelMax;
 
     const double dLevel = (levelMax - levelMin) / double(nLevels);
-
 
     glColor3f(0.5f, 0.5f, 0.5f);
 
@@ -412,9 +412,9 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
         {
             for (int j = 0; j < ColCount; ++j)
             {
-                double x = (points.at(i).at(j).x() - offsetX)*k;
-                double y = (points.at(i).at(j).y() - offsetY)*k;
-                double z = (points.at(i).at(j).z() - offsetZ)*Relief->GetGlobal_kz();
+                double x = (pointsForDraw.at(i).at(j).x() - offsetX)*k;
+                double y = (pointsForDraw.at(i).at(j).y() - offsetY)*k;
+                double z = (pointsForDraw.at(i).at(j).z() - offsetZ)*Relief->GetGlobal_kz();
 
                 glVertex3f(x, y, (_is2d ? 0 : z) + zOffset);
             }
@@ -437,8 +437,8 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
         {
             for (int j = 0; j < ColCount-1; ++j)
             {
-                HandleSquare(points.at(i+1).at(j), points.at(i+1).at(j+1),
-                             points.at(i).at(j+1), points.at(i).at(j),
+                HandleSquare(pointsForCalc.at(i+1).at(j), pointsForCalc.at(i+1).at(j+1),
+                             pointsForCalc.at(i).at(j+1), pointsForCalc.at(i).at(j),
                              level, offsetX, offsetY, offsetZ, k, _is2d);
             }
         }

@@ -14,6 +14,8 @@
 #include "FormGradGeneral.h"
 #include "MainGLWidget.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -115,6 +117,13 @@ void MainWindow::AfterShow()
 {
     on_actionFileOpen_Grad_Descent_triggered();  // for debug
 //    on_actionRelief_Relief_Creator_triggered();    // for debug
+}
+//-------------------------------------------------------------
+
+void MainWindow::IsolinesTurnOff()
+{
+    ui->actionWorld_Show_Isolines_of_Access_Rate->setChecked(false);
+    on_actionWorld_Show_Isolines_of_Access_Rate_triggered();
 }
 //-------------------------------------------------------------
 
@@ -368,6 +377,7 @@ void MainWindow::on_actionGradChange_Population_size_triggered()
     {
         GradModel.CreatePopulation(DialogNewPopulationSize.GetNewPopulationSize());
         GradModel.MarkAsNotSaved();
+        IsolinesTurnOff();
         this->repaint();
     }
     else
@@ -417,7 +427,11 @@ void MainWindow::on_actionGradStart_Phase_1_triggered()
     if (GradModel.GetIsGradCalculating())
         return;
 
-    this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1... ");
+    this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1...");
+
+    IsolinesTurnOff();
+
+    GradModel.SetShowIsolinesOfAccessRate(false);
 
 //    emit SignalStateToGradDesc();
     StateMachine.ToGradDesc();
@@ -441,6 +455,7 @@ void MainWindow::on_actionGradStart_Phase_1_for_Current_Config_triggered()
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1 for Current Config... ");
 
 //    emit SignalStateToGradDesc();
+    IsolinesTurnOff();
     StateMachine.ToGradDesc();
 
     GradModel.StartGradDescent_Phase_1_for_Current(mainGLWidget);
@@ -469,6 +484,7 @@ void MainWindow::on_actionGradStart_Phase_2_triggered()
 
 //    emit SignalStateToGradDesc();
     StateMachine.ToGradDesc();
+    IsolinesTurnOff();
 
     GradModel.StartGradDescent_Phase_2(mainGLWidget);
 
@@ -489,6 +505,7 @@ void MainWindow::on_actionGradStart_Phase_2_for_Current_Config_triggered()
     this->setWindowTitle(QApplication::applicationName() + " - Calculating Phase 1 for Current Config... ");
 
 //    emit SignalStateToGradDesc();
+    IsolinesTurnOff();
     StateMachine.ToGradDesc();
 
     GradModel.StartGradDescent_Phase_2_for_Current(mainGLWidget);
@@ -632,6 +649,7 @@ void MainWindow::on_actionEdit_Finish_Route_triggered()
     GradModel.FinishRoute();
     GradModel.CreatePopulation(GradModel.GetPopulationSize());
     GradModel.MarkAsNotSaved();
+    IsolinesTurnOff();
 
     WorldMode = WorldModeType::Nothing;
 //    emit SignalStateToNormal();
@@ -666,6 +684,7 @@ void MainWindow::on_actionEdit_Editing_Pos_Cur_Node_triggered()
         ui->actionEdit_Editing_Angle_Cur_Node->setChecked(false);
 //        emit SignalStateToCurPosOrAngleEditing();
         StateMachine.ToCurPosOrAngleEditing();
+        IsolinesTurnOff();
     }
     else
     {
@@ -690,6 +709,7 @@ void MainWindow::on_actionEdit_Editing_Angle_Cur_Node_triggered()
         WorldMode = WorldModeType::EditingAngleSignalNode;
         ui->actionEdit_Editing_Pos_Cur_Node->setChecked(false);
         StateMachine.ToCurPosOrAngleEditing();
+        IsolinesTurnOff();
     }
     else
     {
@@ -708,6 +728,7 @@ void MainWindow::on_actionEdit_Edit_Signal_Nodes_for_All_triggered()
         DialogSignalNodesEdit.ChangeSignalNodesParameters_ForAll(GradModel.GetNodesType(), GradModel.SignalNodesDirectAccess());
 
         GradModel.ApplySignalNodesToAllConfigs();
+        IsolinesTurnOff();
         mainGLWidget->repaint();
     }
     else
@@ -736,7 +757,7 @@ void MainWindow::on_actionEdit_Edit_Signal_Nodes_for_Current_triggered()
                                                                      GradModel.GetRelief());
 
         UpdateCurNodeCoordsOnLabel();
-
+        IsolinesTurnOff();
         //GradModel.ApplySignalNodesToAllConfigs();
         mainGLWidget->repaint();
     }
@@ -756,6 +777,7 @@ void MainWindow::on_actionEdit_Edit_Routes_triggered()
         DialogRoutesEdit.ChangeRoutes(GradModel.RoutesDirectAccess());
 
         GradModel.ApplyRoutesToAllConfigs(NeedToSave::Need);
+//        IsolinesTurnOff();
         mainGLWidget->repaint();
     }
     else
@@ -791,6 +813,7 @@ void MainWindow::on_actionEdit_Change_Count_of_Nodes_triggered()
     GradModel.SignalNodesDirectAccess().resize(newCount);
 
     GradModel.ApplySignalNodesToAllConfigs();
+    IsolinesTurnOff();
 
     mainGLWidget->repaint();
 }
@@ -799,6 +822,7 @@ void MainWindow::on_actionEdit_Change_Count_of_Nodes_triggered()
 void MainWindow::on_actionEdit_Apply_Cur_Node_to_All_Configs_triggered()
 {
     GradModel.ApplyCurNodeFromCurConfigToAllConfigs();
+    IsolinesTurnOff();
 }
 //-------------------------------------------------------------
 
@@ -949,6 +973,7 @@ void MainWindow::SlotReceiveRouteDeleted(bool isDeleted)
     {
         GradModel.CreatePopulation(GradModel.GetPopulationSize());
         GradModel.MarkAsNotSaved();
+        IsolinesTurnOff();
     }
     else
         qDebug() << "Warning: SlotReceiveRouteDeleted: isDeleted == false";
