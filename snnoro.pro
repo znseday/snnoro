@@ -33,6 +33,7 @@ SOURCES += \
         FormAboCalc.cpp \
         FormGradConfigDetails.cpp \
         FormGradGeneral.cpp \
+        FormLegendIsolines.cpp \
         FormRelief.cpp \
         GradConfig.cpp \
         GradDescSaveLoad.cpp \
@@ -68,6 +69,7 @@ HEADERS += \
     FormAboCalc.h \
     FormGradConfigDetails.h \
     FormGradGeneral.h \
+    FormLegendIsolines.h \
     FormRelief.h \
     GradConfig.h \
     GradDescSaveLoad.h \
@@ -96,6 +98,7 @@ FORMS += \
     FormAboCalc.ui \
     FormGradConfigDetails.ui \
     FormGradGeneral.ui \
+    FormLegendIsolines.ui \
     FormRelief.ui \
     MainWindow.ui
 

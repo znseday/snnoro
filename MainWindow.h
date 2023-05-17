@@ -21,6 +21,8 @@ class FormGradGeneral;
 
 #include "FormRelief.h"
 
+#include "FormLegendIsolines.h"
+
 #include "FormAboCalc.h"
 #include "DialogAboReport.h"
 
@@ -113,6 +115,8 @@ private slots:
 
     void on_actionWorld_Show_Routes_triggered();
 
+    void on_actionWorld_Show_Legend_Isolines_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -133,6 +137,8 @@ private:
     FormGradGeneral *formGradGeneral = nullptr;
 
     FormRelief formRelief;
+
+    FormLegendIsolines formLegendIsolines;
 
     FormAboCalc formAboCalc;
     DialogAboReport dlgAboReport;
@@ -158,6 +164,9 @@ private:
     MyStateMachine StateMachine;
 
     void Init_UI_AccordingGlobalSettings();
+
+    void IsolinesTurnOff();
+    void SendLegendIsolines();
 
 public slots:
     void SlotReceiveWorldCoords(double wx, double wy, double wz, bool wExists);

@@ -55,7 +55,7 @@ struct BoundsStruct
     static QString ConvertBoundsTypeEnumToString(BoundsTypeEnum bt);
 };
 
-
+//using LegendIsolinesType = std::vector<std::pair<QColor, double>>;
 
 class MyConfig
 {
@@ -101,6 +101,8 @@ protected:
     void HandleSquare(const MyPos3d<> &p0, const MyPos3d<> &p1,
                              const MyPos3d<> &p2, const MyPos3d<> &p3,
                              double level, double offsetX, double offsetY, double offsetZ, double k, bool _is2d);
+
+    LegendIsolinesType LegendIsolines;
 
 public:
 
@@ -200,6 +202,8 @@ public:
     const SignalNode & GetCurNode() const;
 
     void SetNode(int ind, const SignalNode &_node);
+
+    const LegendIsolinesType & GetLegendIsolines() const {return LegendIsolines;}
 };
 
 //bool operator<(const MyConfig &a, const MyConfig &b)

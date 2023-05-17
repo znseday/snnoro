@@ -1746,17 +1746,30 @@ void MyGradModel::SetShowGridOnRelief(bool _isShow)
 }
 //----------------------------------------------------------
 
+TargetFuncTypeEnum MyGradModel::GetTargetFuncTypeByCurrentFuncNameName()
+{
+    if (GetActiveTargetFuncFirstPhase().find("Additive") != std::string::npos)
+    {
+        return TargetFuncTypeEnum::Additive;
+    }
+    else if (GetActiveTargetFuncFirstPhase().find("Probabilistic") != std::string::npos)
+    {
+        return TargetFuncTypeEnum::Probabilistic;
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, "Error", "Unknown TargetFuncTypeEnum");
+        return TargetFuncTypeEnum::Unknown;
+    }
+}
+//----------------------------------------------------------
+
 void MyGradModel::SetShowIsolinesOfAccessRate(bool _isShow)
 {
     WhatShow.ShowIsolinesOfAccessRate = _isShow;
 
-//    auto it_TargetFunc = TargetFunctions.find(ActiveTargetFuncFirstPhase);
-//    if (it_TargetFunc == TargetFunctions.end())
-//        throw std::logic_error("TargetFunctionFirstPhase not found in MyGradModel::StartGradDescent_Phase_1");
-
-//    auto & tf = *it_TargetFunc->second;
-
-    TargetFuncTypeEnum funcType = TargetFuncTypeEnum::Additive; //  !!!!!!!!!!!!!
+//    TargetFuncTypeEnum funcType = TargetFuncTypeEnum::Additive; //  !!!!!!!!!!!!!
+    TargetFuncTypeEnum funcType = GetTargetFuncTypeByCurrentFuncNameName();
 
     for (auto & cnf : Configs)
     {

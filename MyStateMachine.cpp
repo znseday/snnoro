@@ -29,6 +29,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNothing->assignProperty(ui->actionFileSave_Grad_Config, "enabled", false);
     StateNothing->assignProperty(ui->actionFileSave_Grad_Config_As, "enabled", false);
     StateNothing->assignProperty(ui->actionWorld_Show_Abonents, "enabled", false);
+    StateNothing->assignProperty(ui->actionWorld_Show_Legend_Isolines, "enabled", false);
     StateNothing->assignProperty(ui->actionWorld_Show_Grid, "enabled", false);
     StateNothing->assignProperty(ui->actionWorld_Show_Cones, "enabled", false);
     StateNothing->assignProperty(ui->actionWorld_Show_Radii, "enabled", false);
@@ -78,6 +79,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNormal->assignProperty(ui->actionFileSave_Grad_Config, "enabled", true);
     StateNormal->assignProperty(ui->actionFileSave_Grad_Config_As, "enabled", true);
     StateNormal->assignProperty(ui->actionWorld_Show_Abonents, "enabled", true);
+    StateNormal->assignProperty(ui->actionWorld_Show_Legend_Isolines, "enabled", true);
     StateNormal->assignProperty(ui->actionWorld_Show_Grid, "enabled", true);  
     StateNormal->assignProperty(ui->actionWorld_Show_Cones, "enabled", true);
     StateNormal->assignProperty(ui->actionWorld_Show_Radii, "enabled", true);
@@ -129,6 +131,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateGradDesc->assignProperty(ui->actionFileSave_Grad_Config, "enabled", true);
     StateGradDesc->assignProperty(ui->actionFileSave_Grad_Config_As, "enabled", true);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Abonents, "enabled", false);
+    StateGradDesc->assignProperty(ui->actionWorld_Show_Legend_Isolines, "enabled", false);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Grid, "enabled", true);   
     StateGradDesc->assignProperty(ui->actionWorld_Show_Cones, "enabled", true);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Radii, "enabled", true);
@@ -137,7 +140,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateGradDesc->assignProperty(ui->actionWorld_Show_Points_on_Radii, "enabled", true);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Area_For_Random_Nodes, "enabled", true);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Area_For_Grad_Descent, "enabled", true);
-    StateGradDesc->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", true);
+    StateGradDesc->assignProperty(ui->actionWorld_Show_Isolines_of_Access_Rate, "enabled", false);
     StateGradDesc->assignProperty(ui->actionWorld_Show_Routes, "enabled", true);
     StateGradDesc->assignProperty(ui->actionGradSwitch_Show_One_All, "enabled", true);
     StateGradDesc->assignProperty(ui->menuGrad_Count_of_Viewports, "enabled", true);
@@ -184,6 +187,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateShowAbonents->assignProperty(ui->actionFileSave_Grad_Config, "enabled", true);
     StateShowAbonents->assignProperty(ui->actionFileSave_Grad_Config_As, "enabled", true);
     StateShowAbonents->assignProperty(ui->actionWorld_Show_Abonents, "enabled", false);
+    StateShowAbonents->assignProperty(ui->actionWorld_Show_Legend_Isolines, "enabled", false);
     StateShowAbonents->assignProperty(ui->actionWorld_Show_Grid, "enabled", true);   
     StateShowAbonents->assignProperty(ui->actionWorld_Show_Cones, "enabled", true);
     StateShowAbonents->assignProperty(ui->actionWorld_Show_Radii, "enabled", true);
@@ -234,6 +238,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNewRoute->assignProperty(ui->actionFileSave_Grad_Config, "enabled", true);
     StateNewRoute->assignProperty(ui->actionFileSave_Grad_Config_As, "enabled", true);
     StateNewRoute->assignProperty(ui->actionWorld_Show_Abonents, "enabled", false);
+    StateNewRoute->assignProperty(ui->actionWorld_Show_Legend_Isolines, "enabled", false);
     StateNewRoute->assignProperty(ui->actionWorld_Show_Grid, "enabled", true);   
     StateNewRoute->assignProperty(ui->actionWorld_Show_Cones, "enabled", true);
     StateNewRoute->assignProperty(ui->actionWorld_Show_Radii, "enabled", true);
@@ -285,6 +290,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateCurPosOrAngleEditting->assignProperty(ui->actionFileSave_Grad_Config, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionFileSave_Grad_Config_As, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Abonents, "enabled", false);
+    StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Legend_Isolines, "enabled", false);
     StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Grid, "enabled", true);   
     StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Cones, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionWorld_Show_Radii, "enabled", true);
@@ -326,7 +332,6 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_TwoLines, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_Get_Last_Cost_For_Current, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_Calc_Access_Rate_for_current, "enabled", true);
-
 
     StateNormal->addTransition(this, SIGNAL(SignalStateToCurPosOrAngleEditing()), StateCurPosOrAngleEditting);
     StateCurPosOrAngleEditting->addTransition(this, SIGNAL(SignalStateToNormal()), StateNormal);
