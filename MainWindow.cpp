@@ -616,6 +616,7 @@ void MainWindow::on_actionWorld_Show_Area_For_Grad_Descent_triggered()
 void MainWindow::on_actionWorld_Show_Isolines_of_Access_Rate_triggered()
 {
     GradModel.SetShowIsolinesOfAccessRate(ui->actionWorld_Show_Isolines_of_Access_Rate->isChecked());
+    SendLegendIsolines();
     mainGLWidget->repaint();
 }
 //-------------------------------------------------------------
@@ -1041,11 +1042,27 @@ void MainWindow::SlotReceiveShowAboReport(TargetFuncTypeEnum funcType)
 }
 //-------------------------------------------------------------
 
+void MainWindow::SendLegendIsolines()
+{
+    try
+    {
+        const auto & li = GradModel.GetCurrentConfig().GetLegendIsolines();
+        formLegendIsolines.ReceiveLegendIsolines(li);
+    }
+    catch (std::exception & e)
+    {
+        // nothing
+    }
+}
+//-------------------------------------------------------------
+
 void MainWindow::SlotReceive_iCurConfigChanged(int i)
 {
     UpdateCurNodeCoordsOnLabel();
 
     lbl_iCurConfig->setText("iCurConfig: " + QString().setNum(i));
+
+    SendLegendIsolines();
 }
 //-------------------------------------------------------------
 
@@ -1075,4 +1092,9 @@ void MainWindow::Init_UI_AccordingGlobalSettings()
 }
 //-------------------------------------------------------------
 
+void MainWindow::on_actionWorld_Show_Legend_Isolines_triggered()
+{
+    formLegendIsolines.show();
+}
+//-------------------------------------------------------------
 

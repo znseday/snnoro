@@ -422,15 +422,20 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
         glEnd();
     }
 
+    LegendIsolines.resize(nLevels);
 
     for (int n = 0; n < nLevels; ++n)
     {
         double level = dLevel/2.0 + dLevel*n;
 //        qDebug() << "level = " << level;
 
-        double color = dColor/2.0 + dColor*n;
+        double c = dColor/2.0 + dColor*n;
+        QColor color = {int(c*255/2.0), 0, int(c*255)};
 
-        glColor3f(color/2.0, 0, color);
+        LegendIsolines.at(n) = {color, level};
+
+//        glColor3f(color/2.0, 0, color);
+        glColor3f(color.redF(), color.greenF(), color.blueF());
 
         glBegin(GL_LINES);
         for (int i = 0; i < RowCount-1; ++i)

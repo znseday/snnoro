@@ -59,6 +59,9 @@ struct WhatShowStruct
     void LoadFromJsonObject(const QJsonObject &_jsonObject);
 };
 
+using LegendIsolinesType = std::vector<std::pair<QColor, double>>;
+
+
 class IGradDrawable
 {
 public:

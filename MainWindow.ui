@@ -119,6 +119,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionWorld_Show_Abonents"/>
+    <addaction name="actionWorld_Show_Legend_Isolines"/>
     <addaction name="separator"/>
     <addaction name="actionWorld_Show_Grid"/>
     <addaction name="actionWorld_Show_Cones"/>
@@ -597,6 +598,14 @@
    </property>
    <property name="text">
     <string>Show Routes</string>
+   </property>
+  </action>
+  <action name="actionWorld_Show_Legend_Isolines">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Legend Isolines</string>
    </property>
   </action>
  </widget>
