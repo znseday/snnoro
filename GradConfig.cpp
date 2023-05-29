@@ -430,7 +430,8 @@ void MyConfig::ReBuildIsolinesARFToGL(bool _is2d, int nLevels,
 //        qDebug() << "level = " << level;
 
         double c = dColor/2.0 + dColor*n;
-        QColor color = {int(c*255/2.0), 0, int(c*255)};
+//        QColor color = {126 + int(c*255/2.0), 126 + int(c*255/2.0), 126 + int(c*255/2.0)};
+        QColor color = {80 + int(c*255/1.5), 80 + int(c*255/1.5), 80 + int(c*255/1.5)};
 
         LegendIsolines.at(n) = {color, level};
 
