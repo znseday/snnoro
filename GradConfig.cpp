@@ -1447,7 +1447,7 @@ void MyConfig::FillExternVportModlAndProj(GLint _vport[4], GLdouble _modl[16], G
 //----------------------------------------------------------
 
 double MyConfig::IsLineBetweenTwoPoints(const MyPos3d<> &_p1, const MyPos3d<> &_p2) const
-{
+{    
     double result = 1.0;
 
     long double dRay = Relief->GetDeltaDiag();
@@ -1459,6 +1459,13 @@ double MyConfig::IsLineBetweenTwoPoints(const MyPos3d<> &_p1, const MyPos3d<> &_
     //p2.setZ(Relief->CalcRealZbyRealXY(p2.x(), p2.y()));
 
     double len = (_p1.toVector2D() - _p2.toVector2D()).length();
+
+    if (qFuzzyCompare(len, 0))
+    {
+        return result;
+    }
+
+
     int n = 2 + int( len / dRay );
     dRay = len / (n-1);
   //  qDebug() << "n =" << n;
@@ -1509,19 +1516,46 @@ double MyConfig::IsLineBetweenTwoPoints(const MyPos3d<> &_p1, const MyPos3d<> &_
 
 void MyConfig::TestTwoLines() const
 {
-    for (const auto &p : Routes.front().Points)
-    {
-//        if ( IsLineBetweenTwoPoints(p.Pos, Nodes.front().Pos)  )
-//        {
-//            qDebug() << "YES " << p.Pos;
-//        }
-//        else
-//        {
-//            qDebug() << "NO " << p.Pos;
-//        }
+//    for (const auto &p : Routes.front().Points)
+//    {
+////        if ( IsLineBetweenTwoPoints(p.Pos, Nodes.front().Pos)  )
+////        {
+////            qDebug() << "YES " << p.Pos;
+////        }
+////        else
+////        {
+////            qDebug() << "NO " << p.Pos;
+////        }
 
-        qDebug() << "IsLineBetweenTwoPoints =" << IsLineBetweenTwoPoints(p.Pos, Nodes.front().Pos);
+//        qDebug() << "IsLineBetweenTwoPoints =" << IsLineBetweenTwoPoints(p.Pos, Nodes.front().Pos);
+//    }
+
+
+    MyPos3d<> p1, p2, p3;
+
+    p1 = {1000, 1000, Relief->CalcRealZbyRealXY(1000, 1000)};
+    p2 = {5000, 4000, Relief->CalcRealZbyRealXY(5000, 4000)};
+
+    int n = 1000;
+    double dx = (p2.x() - p1.x()) / (n-1);
+    double dy = (p2.y() - p1.y()) / (n-1);
+
+    for (int i = 0; i < n ; ++i)
+    {
+        p3.setX(p1.x() + i*dx);
+        p3.setY(p1.y() + i*dy);
+        p3.setZ( Relief->CalcRealZbyRealXY(p3.x(), p3.y()) );
+
+        double r3d = (p3-p1).length();
+
+        double r2d = (p3.toVector2D() - p1.toVector2D()).length();
+
+        double k = IsLineBetweenTwoPoints(p3, p2);
+
+        qDebug() << i << r2d << r3d << k;
     }
+
+//     qDebug() << "IsLineBetweenTwoPoints =" << IsLineBetweenTwoPoints(p.Pos, Nodes.front().Pos);
 }
 //----------------------------------------------------------
 
