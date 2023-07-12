@@ -482,14 +482,13 @@ void MyGradModel::NewGradModelBulk()
     Routes.clear();
     IsRandomRoutes = false;
 
-//    ReliefMatInfo = ReliefMatInfoStruct();
     Relief.Clear();
 
     IsRandomRelief = false;
 
     Configs.clear();
 
-    Width = 200; Height = 200; // ???
+    //Width = 200; Height = 200; // ???
     iCurConfig = -1;
     DrawOnlyOne = false;
     ViewPorts.clear();
@@ -501,6 +500,12 @@ void MyGradModel::NewGradModelBulk()
 
     nDraws = 1;
     IsGradCalculating = false;
+
+    GridSettings = {};
+    IsolinesSettings = {};
+
+    IsPerspectiveForAll = false;
+    DrawOnlyOne = false;
 
 //    TargetFuncSettingsGlobal.TargetFuncType = TargetFuncEnum::Additive;
 
@@ -1298,6 +1303,25 @@ void MyGradModel::CreatePopulation(size_t _count)
 
     nDraws = min(nDraws, Configs.size());
 
+    SetRandomNodeCoords();
+
+//    for (auto & cnf : Configs)
+//    {
+////        cnf.SetArea(Area);
+////        cnf.SetNodes(Nodes);
+////        cnf.;
+
+//        if (IsRandomNodeCoords)
+//        {
+
+//            cnf.SetRandomNodeCoords(AreaRandCoords);
+//        }
+//    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::SetRandomNodeCoords()
+{
     for (auto & cnf : Configs)
     {
 //        cnf.SetArea(Area);
@@ -1306,8 +1330,7 @@ void MyGradModel::CreatePopulation(size_t _count)
 
         if (IsRandomNodeCoords)
         {
-//            cnf.SetRandomNodeCoords(Relief.GetArea());
-//            cnf.SetRandomNodeCoords(CalcAreaByBoundsRandCoords());
+
             cnf.SetRandomNodeCoords(AreaRandCoords);
         }
     }

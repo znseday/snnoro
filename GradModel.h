@@ -51,7 +51,7 @@ protected:
     IsolinesSettingsStruct IsolinesSettings;
 
     Relief3D Relief;
-    bool IsRandomRelief = true;
+    bool IsRandomRelief = false;
 
     int Width = 200, Height = 200;
     int iCurConfig = -1;
@@ -119,6 +119,8 @@ public:
 
     int GetPopulationSize() const {return Configs.size();}
     void CreatePopulation(size_t _count);
+
+    void SetRandomNodeCoords();
 
     void DrawMeIn3D();
     void DrawOneConfig(size_t ind, bool OnlyOne);

@@ -117,6 +117,8 @@ private slots:
 
     void on_actionWorld_Show_Legend_Isolines_triggered();
 
+    void on_actionEdit_Set_Random_Node_Coords_triggered();
+
 private:
     Ui::MainWindow *ui;
 

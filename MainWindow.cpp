@@ -178,6 +178,12 @@ void MainWindow::on_actionFileNew_Grad_Config_triggered()
     WorkMode = WorkModeType::GradWork;
     GradModel.MarkAsNotSaved();
 
+    on_actionWorld_Show_Grid_triggered();
+
+    on_actionWorld_Show_Isolines_of_Access_Rate_triggered();
+
+    StateMachine.ToNormal();
+
     GradModel.Set_nDraws(35);
     mainGLWidget->repaint();
 }
@@ -209,12 +215,14 @@ void MainWindow::on_actionFileOpen_Grad_Descent_triggered()
 
     GradModel.SetWidthAndHeight(mainGLWidget->width(), mainGLWidget->height());
 
+    on_actionWorld_Show_Grid_triggered();
+
+    on_actionWorld_Show_Isolines_of_Access_Rate_triggered();
+
     GradModel.Set_nDraws(35);
     mainGLWidget->repaint();
 
-//    emit SignalStateToNormal();
     StateMachine.ToNormal();
-
 }
 //-------------------------------------------------------------
 
@@ -1097,4 +1105,15 @@ void MainWindow::on_actionWorld_Show_Legend_Isolines_triggered()
     formLegendIsolines.show();
 }
 //-------------------------------------------------------------
+
+void MainWindow::on_actionEdit_Set_Random_Node_Coords_triggered()
+{
+    if (WorkMode == WorkModeType::GradWork)
+    {
+        GradModel.SetRandomNodeCoords();
+        mainGLWidget->repaint();
+    }
+}
+//-------------------------------------------------------------
+
 

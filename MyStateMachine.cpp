@@ -68,6 +68,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNothing->assignProperty(ui->actionEdit_Edit_Routes, "enabled", false);
     StateNothing->assignProperty(ui->actionEdit_Change_Count_of_Nodes, "enabled", false);
     StateNothing->assignProperty(ui->actionEdit_Apply_Cur_Node_to_All_Configs, "enabled", false);
+    StateNothing->assignProperty(ui->actionEdit_Set_Random_Node_Coords, "enabled", false);
     StateNothing->assignProperty(ui->actionDebug_TwoLines, "enabled", false);
     StateNothing->assignProperty(ui->actionDebug_Get_Last_Cost_For_Current, "enabled", false);
     StateNothing->assignProperty(ui->actionDebug_Calc_Access_Rate_for_current, "enabled", false);
@@ -116,6 +117,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNormal->assignProperty(ui->actionEdit_Edit_Signal_Nodes_for_All, "enabled", true);
     StateNormal->assignProperty(ui->actionEdit_Edit_Signal_Nodes_for_Current, "enabled", true);
     StateNormal->assignProperty(ui->actionEdit_Edit_Routes, "enabled", true);
+    StateNormal->assignProperty(ui->actionEdit_Set_Random_Node_Coords, "enabled", true);
     StateNormal->assignProperty(ui->actionEdit_Change_Count_of_Nodes, "enabled", true);
     StateNormal->assignProperty(ui->actionEdit_Apply_Cur_Node_to_All_Configs, "enabled", true);
     StateNormal->assignProperty(ui->actionDebug_TwoLines, "enabled", true);
@@ -170,6 +172,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateGradDesc->assignProperty(ui->actionEdit_Edit_Routes, "enabled", false);
     StateGradDesc->assignProperty(ui->actionEdit_Change_Count_of_Nodes, "enabled", false);
     StateGradDesc->assignProperty(ui->actionEdit_Apply_Cur_Node_to_All_Configs, "enabled", false);
+    StateGradDesc->assignProperty(ui->actionEdit_Set_Random_Node_Coords, "enabled", false);
     StateGradDesc->assignProperty(ui->actionDebug_TwoLines, "enabled", false);
     StateGradDesc->assignProperty(ui->actionDebug_Get_Last_Cost_For_Current, "enabled", false);
     StateGradDesc->assignProperty(ui->actionDebug_Calc_Access_Rate_for_current, "enabled", false);
@@ -224,6 +227,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateShowAbonents->assignProperty(ui->actionEdit_Edit_Signal_Nodes_for_All, "enabled", false);
     StateShowAbonents->assignProperty(ui->actionEdit_Edit_Signal_Nodes_for_Current, "enabled", false);
     StateShowAbonents->assignProperty(ui->actionEdit_Edit_Routes, "enabled", false);
+    StateShowAbonents->assignProperty(ui->actionEdit_Set_Random_Node_Coords, "enabled", false);
     StateShowAbonents->assignProperty(ui->actionEdit_Change_Count_of_Nodes, "enabled", false);
     StateShowAbonents->assignProperty(ui->actionEdit_Apply_Cur_Node_to_All_Configs, "enabled", false);
     StateShowAbonents->assignProperty(ui->actionDebug_TwoLines, "enabled", true);
@@ -277,6 +281,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateNewRoute->assignProperty(ui->actionEdit_Edit_Routes, "enabled", false);
     StateNewRoute->assignProperty(ui->actionEdit_Change_Count_of_Nodes, "enabled", false);
     StateNewRoute->assignProperty(ui->actionEdit_Apply_Cur_Node_to_All_Configs, "enabled", false);
+    StateNewRoute->assignProperty(ui->actionEdit_Set_Random_Node_Coords, "enabled", false);
     StateNewRoute->assignProperty(ui->actionDebug_TwoLines, "enabled", true);
     StateNewRoute->assignProperty(ui->actionDebug_Get_Last_Cost_For_Current, "enabled", true);
     StateNewRoute->assignProperty(ui->actionDebug_Calc_Access_Rate_for_current, "enabled", true);
@@ -329,6 +334,7 @@ void MyStateMachine::InitStateMachine(Ui::MainWindow *ui)
     StateCurPosOrAngleEditting->assignProperty(ui->actionEdit_Edit_Routes, "enabled", false);
     StateCurPosOrAngleEditting->assignProperty(ui->actionEdit_Change_Count_of_Nodes, "enabled", false);
     StateCurPosOrAngleEditting->assignProperty(ui->actionEdit_Apply_Cur_Node_to_All_Configs, "enabled", false);
+    StateCurPosOrAngleEditting->assignProperty(ui->actionEdit_Set_Random_Node_Coords, "enabled", false);
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_TwoLines, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_Get_Last_Cost_For_Current, "enabled", true);
     StateCurPosOrAngleEditting->assignProperty(ui->actionDebug_Calc_Access_Rate_for_current, "enabled", true);

@@ -151,6 +151,8 @@
     <addaction name="separator"/>
     <addaction name="actionEdit_Change_Count_of_Nodes"/>
     <addaction name="actionEdit_Apply_Cur_Node_to_All_Configs"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_Set_Random_Node_Coords"/>
    </widget>
    <widget class="QMenu" name="menuDebug">
     <property name="title">
@@ -586,7 +588,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Show Isolines of Access Rate</string>
+    <string>Show Isolines</string>
    </property>
   </action>
   <action name="actionWorld_Show_Routes">
@@ -606,6 +608,14 @@
    </property>
    <property name="text">
     <string>Show Legend Isolines</string>
+   </property>
+  </action>
+  <action name="actionEdit_Set_Random_Node_Coords">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Set Random Node Coords</string>
    </property>
   </action>
  </widget>
