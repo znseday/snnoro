@@ -95,17 +95,89 @@ GLUquadric* MyConfig::Quadric()
 //----------------------------------------------------------
 
 void MyConfig::SetRandomNodeCoords(const QRectF &_area)
-//void MyConfig::SetRandomNodeCoords()
 {
     if (!Relief)
         throw std::runtime_error("There is no relief in MyConfig");
 
     for (auto & node : Nodes)
     {
-//        node.SetRandomCoord(*Relief);
         node.SetRandomCoord(_area, *Relief);
         node.SetRandomAlpha();
     }
+}
+//----------------------------------------------------------
+
+void MyConfig::SetNodeCoordsByPeaks(const QRectF &_area)
+{
+    std::vector<MyPos3d<>> v;
+
+    for (const auto & [y, row] : Relief->GetReliefMap())
+    {
+        for (const auto & [x, z] : row)
+        {
+            v.emplace_back(x, y, z);
+//            v.emplace_back(x, y, Relief->CalcRealZbyRealXY( x, y ));
+
+//            qDebug() << double(x) << "   " << double(y) << "    " << double(z) << "     "
+//                        << double(Relief->CalcRealZbyRealXY(x, y));
+
+        }
+    }
+
+    std::sort(v.begin(), v.end(), [](const auto & lhs, const auto & rhs)
+                    {
+                        return lhs.z() > rhs.z();
+                    });
+
+//    for (const auto & p : v)
+//        qDebug() << double(p.x()) << "   " << double(p.y()) << "    " << double(p.z());
+
+//    Pos.setX( SimpleRandom(_area.left(), _area.right()) );
+//    Pos.setY( SimpleRandom(_area.bottom(), _area.top()) );
+//    Pos.setZ( _relief.CalcRealZbyRealXY( Pos.x(), Pos.y()) );
+
+    int iNode = 0;
+    for (const auto & p : v)
+    {
+        if ( !_area.contains(QPointF(p.x(), p.y())) )
+        {
+            continue;
+        }
+
+        if ( std::all_of(Nodes.begin(), Nodes.begin()+iNode, [this, iNode, p] (const auto & node)
+                            {
+                                 return node.Pos.distanceToPoint(p) >= node.R + Nodes.at(iNode).R;
+                            }
+                            ) )
+        {
+            Nodes.at(iNode++).Pos = p;
+            if (iNode >= (int)Nodes.size() )
+                break;
+        }
+
+
+//        if ( !_area.contains(QPointF(p.x(), p.y())) )
+//        {
+//            continue;
+//        }
+
+//        bool podhodit = true;
+//        for (int jNode = 0; jNode < iNode; ++jNode)
+//        {
+//            if ( Nodes.at(jNode).Pos.distanceToPoint(p) < Nodes.at(jNode).R + Nodes.at(iNode).R )
+//            {
+//                podhodit = false;
+//                break;
+//            }
+//        }
+//        if (podhodit)
+//        {
+//            Nodes.at(iNode++).Pos = p;
+//            if (iNode >= (int)Nodes.size() )
+//                break;
+//        }
+    }
+
 }
 //----------------------------------------------------------
 

@@ -282,7 +282,9 @@ void SignalNode::DrawIn3D(SignalNodeType _snt, const Relief3D *relief,
                           const Settings3dType & _settings3d, SignalNodeStatus _sns,
                           const WhatShowStruct &_whatShow) const
 {
-    constexpr float zOffset = 0.01f;
+//    constexpr float zOffset = 0.01f;
+    constexpr float zOffset = 0.005f;
+
     const auto & area = relief->GetArea();
     double kx = 2.0/area.width();
     double ky = 2.0/area.height();

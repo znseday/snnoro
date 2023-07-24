@@ -119,6 +119,8 @@ private slots:
 
     void on_actionEdit_Set_Random_Node_Coords_triggered();
 
+    void on_actionEdit_Set_Node_Coords_by_Peaks_triggered();
+
 private:
     Ui::MainWindow *ui;
 

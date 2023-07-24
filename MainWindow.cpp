@@ -1116,4 +1116,14 @@ void MainWindow::on_actionEdit_Set_Random_Node_Coords_triggered()
 }
 //-------------------------------------------------------------
 
+void MainWindow::on_actionEdit_Set_Node_Coords_by_Peaks_triggered()
+{
+    if (WorkMode == WorkModeType::GradWork)
+    {
+        GradModel.SetNodeCoordsByPeaks();
+        mainGLWidget->repaint();
+    }
+}
+//-------------------------------------------------------------
+
 
