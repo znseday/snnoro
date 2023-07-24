@@ -121,6 +121,7 @@ public:
     void CreatePopulation(size_t _count);
 
     void SetRandomNodeCoords();
+    void SetNodeCoordsByPeaks();
 
     void DrawMeIn3D();
     void DrawOneConfig(size_t ind, bool OnlyOne);

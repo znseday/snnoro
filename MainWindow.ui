@@ -153,6 +153,7 @@
     <addaction name="actionEdit_Apply_Cur_Node_to_All_Configs"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Set_Random_Node_Coords"/>
+    <addaction name="actionEdit_Set_Node_Coords_by_Peaks"/>
    </widget>
    <widget class="QMenu" name="menuDebug">
     <property name="title">
@@ -616,6 +617,14 @@
    </property>
    <property name="text">
     <string>Set Random Node Coords</string>
+   </property>
+  </action>
+  <action name="actionEdit_Set_Node_Coords_by_Peaks">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Set Node Coords by Peaks</string>
    </property>
   </action>
  </widget>

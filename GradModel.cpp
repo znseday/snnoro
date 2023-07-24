@@ -1324,15 +1324,23 @@ void MyGradModel::SetRandomNodeCoords()
 {
     for (auto & cnf : Configs)
     {
-//        cnf.SetArea(Area);
-//        cnf.SetNodes(Nodes);
-//        cnf.;
-
         if (IsRandomNodeCoords)
         {
-
             cnf.SetRandomNodeCoords(AreaRandCoords);
         }
+    }
+}
+//----------------------------------------------------------
+
+void MyGradModel::SetNodeCoordsByPeaks()
+{
+
+//    Configs.at(0).SetNodeCoordsByPeaks(AreaRandCoords);
+
+
+    for (auto & cnf : Configs)
+    {
+        cnf.SetNodeCoordsByPeaks(AreaRandCoords);
     }
 }
 //----------------------------------------------------------

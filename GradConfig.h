@@ -142,7 +142,8 @@ public:
     const Relief3D * GetRelief() const {return Relief;}
 
     void SetRandomNodeCoords(const QRectF &_area);
-//    void SetRandomNodeCoords();
+    void SetNodeCoordsByPeaks(const QRectF &_area);
+
 
     void DrawSomeArea(const QRectF & _area, double offsetX, double offsetY,
                    double offsetZ, double k, bool _isPerpective) const;
